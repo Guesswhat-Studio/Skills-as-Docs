@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Agent SkillDocs</title>
+    <meta name="description" content="Manage Agent Skills like docs. Distribute them through Git.">
+    <link rel="stylesheet" href="./assets/site.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="Agent SkillDocs home">
+        <span class="brand-mark" aria-hidden="true">SD</span>
+        <span>Agent SkillDocs</span>
+      </a>
+      <nav class="nav" aria-label="Primary navigation">
+        <a href="#loop">Loop</a>
+        <a href="#repo">Repo</a>
+        <a href="#adopt">Adopt</a>
+        <a href="#positioning">Positioning</a>
+      </nav>
+      <a class="nav-cta" href="https://github.com/Guesswhat-Studio/Skills-as-Docs">GitHub</a>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <h1 id="hero-title">Agent SkillDocs</h1>
+          <p class="hero-statement">Manage Agent Skills like docs. Distribute them through Git.</p>
+          <p class="hero-subtitle">Human-readable. Agent-executable. A workflow for skill libraries where humans maintain the procedures, Git keeps the trust path, and agents install the latest version.</p>
+          <div class="hero-actions" aria-label="Primary actions">
+            <a class="button primary" href="#manifesto">Read the manifesto</a>
+            <a class="button secondary" href="https://github.com/Guesswhat-Studio/Skills-as-Docs">View on GitHub</a>
+          </div>
+        </div>
+        <div class="hero-visual" aria-label="SkillDocs Loop diagram">
+          <div class="loop-title">The SkillDocs Loop</div>
+          <div class="loop-stage">
+            <svg class="loop-path" viewBox="0 0 560 284" preserveAspectRatio="none" aria-hidden="true">
+              <defs>
+                <marker id="loopArrow" markerWidth="7" markerHeight="7" refX="5.8" refY="3.5" orient="auto" markerUnits="strokeWidth">
+                  <path d="M0,0 L7,3.5 L0,7 Z"></path>
+                </marker>
+              </defs>
+              <path d="M70 104 V62 C70 34 92 24 126 24 H432 C466 24 490 42 490 82 V104" marker-end="url(#loopArrow)"></path>
+              <path d="M490 180 V212 C490 246 464 260 426 260 H314" marker-end="url(#loopArrow)"></path>
+              <path d="M246 260 H126 C92 260 70 246 70 212 V184" marker-end="url(#loopArrow)"></path>
+            </svg>
+            <div class="loop-flow">
+              <div class="loop-card docs">
+                <span class="card-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <rect x="4" y="5" width="16" height="14" rx="2"></rect>
+                    <path d="M8 9h8M8 13h3M13 13h3"></path>
+                  </svg>
+                </span>
+                <strong>Docs UI</strong>
+              </div>
+              <div class="flow-arrow" aria-hidden="true">→</div>
+              <div class="loop-card git">
+                <span class="card-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <circle cx="7" cy="5" r="2"></circle>
+                    <circle cx="7" cy="19" r="2"></circle>
+                    <circle cx="17" cy="12" r="2"></circle>
+                    <path d="M7 7v10M9 7c4 0 3 5 8 5"></path>
+                  </svg>
+                </span>
+                <strong>Git sync + hooks</strong>
+              </div>
+              <div class="flow-arrow" aria-hidden="true">→</div>
+              <div class="loop-card skill">
+                <span class="card-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M7 3h7l4 4v14H7z"></path>
+                    <path d="M14 3v5h4M10 13l-2 2 2 2M14 13l2 2-2 2"></path>
+                  </svg>
+                </span>
+                <strong>SKILL.md</strong>
+                <small>Registry</small>
+              </div>
+              <div class="flow-arrow" aria-hidden="true">→</div>
+              <div class="loop-card agents">
+                <span class="card-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <rect x="5" y="8" width="14" height="10" rx="3"></rect>
+                    <path d="M12 8V4M9 4h6M8 13h.01M16 13h.01M3 12h2M19 12h2"></path>
+                  </svg>
+                </span>
+                <strong>Agents</strong>
+              </div>
+            </div>
+            <div class="improve-chip">
+              <span aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <path d="M5 19l4.5-1 9-9-3.5-3.5-9 9z"></path>
+                  <path d="M13.5 7.5l3 3"></path>
+                </svg>
+              </span>
+              Improve the docs
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="manifesto" class="manifesto" aria-labelledby="manifesto-title">
+        <div class="section-inner">
+          <h2 id="manifesto-title">Skills are operational docs for agents.</h2>
+          <p><code>SKILL.md</code> should not disappear into hidden config folders. It should be readable, reviewable, versioned, and improved by the same people who own the workflow.</p>
+          <div class="principles">
+            <article>
+              <h3>Human-readable</h3>
+              <p>Teams can browse, edit, discuss, and improve skills in familiar documentation tools.</p>
+            </article>
+            <article>
+              <h3>Agent-executable</h3>
+              <p>The same Markdown becomes procedural memory that agents can install and use.</p>
+            </article>
+            <article>
+              <h3>Git-backed</h3>
+              <p>Review, CI, provenance, releases, and rollback make skill changes safer.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="loop" class="workflow" aria-labelledby="workflow-title">
+        <div class="section-inner split">
+          <div>
+            <h2 id="workflow-title">A positive loop between people and agents.</h2>
+            <p>Every useful correction should become part of the skill library, not another lost chat message. The workflow turns repeated agent coaching into durable team knowledge.</p>
+          </div>
+          <ol class="steps">
+            <li><span>1</span>Write or revise a skill in a docs surface.</li>
+            <li><span>2</span>Sync Markdown to Git and review the change.</li>
+            <li><span>3</span>Run hooks to lint metadata, links, and registry output.</li>
+            <li><span>4</span>Agents update from the trusted repository.</li>
+            <li><span>5</span>Failures become new skill patches.</li>
+          </ol>
+        </div>
+      </section>
+
+      <section id="repo" class="repo" aria-labelledby="repo-title">
+        <div class="section-inner">
+          <h2 id="repo-title">What ships in the GitHub repo.</h2>
+          <div class="repo-grid">
+            <article>
+              <h3>Manifesto</h3>
+              <p>A clear explanation of why skills should be managed as shared operational docs.</p>
+            </article>
+            <article>
+              <h3>Schema</h3>
+              <p>A minimal file model for <code>skills/&lt;name&gt;/SKILL.md</code> and <code>skills.json</code>.</p>
+            </article>
+            <article>
+              <h3>CLI</h3>
+              <p><code>skilldocs lint</code>, <code>skilldocs generate registry</code>, and adapter generators.</p>
+            </article>
+            <article>
+              <h3>Adapters</h3>
+              <p>GitBook and VitePress first, then MkDocs, Obsidian, Feishu, and Yuque.</p>
+            </article>
+            <article>
+              <h3>Templates</h3>
+              <p>Ready-to-fork team and personal skill library structures.</p>
+            </article>
+            <article>
+              <h3>Case studies</h3>
+              <p>Real examples showing how agent workflow failures turn into skill improvements.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="adopt" class="adopt" aria-labelledby="adopt-title">
+        <div class="section-inner split">
+          <div>
+            <h2 id="adopt-title">Adopt the pattern before the tooling is complete.</h2>
+            <p>Create a skill folder, write clean Markdown, review changes through Git, and let your agent clients install from the repo. The first CLI milestone will automate the repetitive parts.</p>
+          </div>
+          <pre aria-label="Recommended skill library structure"><code>skills/
+  literature-review/
+    SKILL.md
+    references/
+  code-review/
+    SKILL.md
+skills.json</code></pre>
+        </div>
+      </section>
+
+      <section id="positioning" class="positioning" aria-labelledby="positioning-title">
+        <div class="section-inner">
+          <h2 id="positioning-title">Clear positioning keeps the project useful.</h2>
+          <div class="compare">
+            <article>
+              <h3>Not a marketplace</h3>
+              <p>Public discovery can come later. The first job is helping teams govern their own private skills.</p>
+            </article>
+            <article>
+              <h3>Not a prompt manager</h3>
+              <p>Skills are filesystem packages and workflow docs, not only runtime prompt templates.</p>
+            </article>
+            <article>
+              <h3>Not an AI docs generator</h3>
+              <p>The promise is not to make docs readable by AI. It is to make team procedures installable by agents.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Agent SkillDocs: human-readable, agent-executable workflow docs.</p>
+      <a href="#top">Back to top</a>
+    </footer>
+  </body>
+</html>
