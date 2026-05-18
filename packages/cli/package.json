@@ -1,0 +1,14 @@
+{
+  "name": "@skilldocs/cli",
+  "version": "0.1.0",
+  "type": "module",
+  "bin": {
+    "skilldocs": "./dist/index.js"
+  },
+  "dependencies": {
+    "@skilldocs/core": "file:../core"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  }
+}

@@ -1,149 +1,154 @@
 # Agent SkillDocs
 
-Manage Agent Skills like docs. Distribute them through Git.
+Git-backed review and management for Agent Skill packages.
 
-Agent SkillDocs is an open-source paradigm and starter kit for building human-readable, agent-executable workflow documentation. It treats `SKILL.md` files as team knowledge assets: people can browse, discuss, review, and improve them, while agents can install and execute them as procedural memory.
+> Status: `0.1.0 preview`. This release is for workflow validation and early feedback. The manager is static and usable for browsing, editing, registry preview, and Git handoff, but authenticated GitHub PR creation and full file-level CRUD are not stable yet.
 
-> Skills are not hidden prompts. They are operational docs for agents.
+Agent SkillDocs turns a GitHub repository into a governed workspace for team skills. People edit, review, validate, and version skill packages in Git. Agent clients install approved packages with the existing `npx skills` ecosystem.
 
-## The Idea
+The short version:
 
-Most teams already have the raw material for great Agent Skills:
-
-- onboarding docs
-- research playbooks
-- code review rules
-- deployment checklists
-- writing guidelines
-- recurring AI instructions
-- lessons from failed agent runs
-
-The missing layer is a workflow that keeps humans and agents in the same loop.
-
-```mermaid
-flowchart LR
-  A["Docs UI<br/>GitBook, VitePress, Obsidian, Feishu"] --> B["Git sync + hooks<br/>PR review, CI, releases"]
-  B --> C["Skill package<br/>SKILL.md + skills.json"]
-  C --> D["Agent clients<br/>Claude Code, Codex, Cursor, Gemini CLI"]
-  D --> E["Agent behavior<br/>work gets done"]
-  E --> F["Feedback<br/>failures become docs patches"]
-  F --> A
+```text
+GitHub repo + Pages Manager = source of truth and review surface
+npx skills = installation and local agent directory placement
 ```
 
-This is the SkillDocs Loop:
+## Quickstart
 
-1. Humans maintain skills in a readable documentation workflow.
-2. Git records review, provenance, versions, and releases.
-3. Hooks and CI validate the skill library.
-4. Agents install or update the same `SKILL.md` files.
-5. Agent failures become improvements to the docs.
+Use this repository as the starting point for a team skill library:
 
-## What This Is
+```bash
+git clone https://github.com/Guesswhat-Studio/Skills-as-Docs.git team-skills
+cd team-skills
+npm install
+npm run check
+node packages/cli/dist/index.js init --root . --source org/team-skills
+node packages/cli/dist/index.js new literature-review --root . --description "Use this skill when the user needs a structured literature review workflow." --category research --owner @team
+node packages/cli/dist/index.js lint --root .
+node packages/cli/dist/index.js generate registry --root . --source org/team-skills --out skills.json
+npx skills add . --list
+```
 
-Agent SkillDocs is:
+Then test locally:
 
-- a docs-native management layer for team Agent Skills
-- a Git-backed publishing workflow for `SKILL.md`
-- a practical pattern for private skill libraries
-- a future CLI and adapter toolkit for GitBook, VitePress, MkDocs, Obsidian, Feishu, and Yuque
+```bash
+npx skills add . --skill literature-review -g -a codex
+```
 
-It is not:
+`npm run smoke:npx-list` runs a non-mutating compatibility check against the upstream `npx skills add <path> --list` flow.
 
-- a new `SKILL.md` standard
-- a public skill marketplace
-- a hosted prompt management platform
-- an AI documentation generator
-- a universal rich-text sync engine
+See [docs/quickstart.md](./docs/quickstart.md) for the daily Git + PR workflow.
 
-## Why It Matters
+## What This Project Is
 
-Agent skills are becoming a portable way to package procedures for coding agents and research agents. But if skills only live in hidden config folders, chat snippets, or one person's machine, teams cannot govern them.
+Agent SkillDocs is being designed as a lightweight open-source toolkit with three layers:
 
-Agent SkillDocs makes skills visible and reviewable:
+- **GitHub Pages Skill Manager**: a static web app for browsing, editing, reviewing, and opening PRs for skill packages.
+- **Core package model and checks**: schema, linting, registry generation, provenance, package health, and security review signals.
+- **Optional docs adapters**: templates for GitBook, VitePress, MkDocs, Obsidian, Feishu, Yuque, and similar tools when teams already author there.
 
-- technical writers can improve instructions
-- researchers can encode repeatable methods
-- engineers can review risky workflow changes
-- agents can inherit the latest team practice
-- teams can roll back bad instructions like code
+It is not trying to replace `npx skills`, become a public marketplace, or define a new universal skill standard.
 
-The practical principle is simple:
+## Product Direction
 
-> Keep the skill source human-readable. Keep the distribution path machine-reliable.
+P0 is no longer a GitBook-first adapter. P0 is the GitHub Pages Skill Manager.
 
-## Use The Pattern Today
+The GitHub Pages site should become the product surface:
 
-The CLI is planned for the first implementation milestone. You can still use the pattern manually now:
+- Home: a static prototype of the manager workspace.
+- Import: start from an existing GitHub repository, a local skill folder, an existing agent skills directory, or a new package template.
+- Library: repository tree view for `skills/<name>/` packages and their files.
+- Editor: click any package file, edit it, preview Markdown, inspect generated diffs, and use focused Zen mode.
+- Inspector: `SKILL.md` frontmatter fields, core-aligned browser lint, package scope, install target, and install commands.
+- Registry: browser-side `skills.json` preview with package risk, file list, and `npx skills` snippets.
+- Review: Git handoff commands now, GitHub branch/PR/CI status later.
+
+The manifesto can live in docs later. The front page should show the system people will use.
+
+## Skill Package Model
+
+A skill is a package directory with `SKILL.md` as the required entrypoint.
 
 ```text
 skills/
   literature-review/
-    SKILL.md
-    references/
-  code-review/
-    SKILL.md
-  release-checklist/
-    SKILL.md
-skills.json
+    SKILL.md              # required entrypoint
+    references/           # supporting docs loaded on demand
+    templates/            # reusable output or prompt templates
+    examples/             # sample inputs and outputs
+    scripts/              # executable helpers, highest review risk
+    assets/               # PDFs, images, schemas, fixtures
+skills.json               # generated registry
 ```
 
-Recommended `SKILL.md` frontmatter:
+Runtime package files stay inside `skills/<name>/`. Governance files such as tests, reports, docs-site output, and CI fixtures stay outside the package.
 
-```yaml
----
-name: literature-review
-description: Use this skill when the user needs a structured literature review workflow, paper triage, evidence extraction, or synthesis across academic sources.
-category: Reading & Analysis
-version: 0.1.0
-owner: research-team
-review_status: approved
----
-```
+## User Flow
 
-Then connect the loop:
+For a team maintaining a shared library:
 
-1. Use GitBook, VitePress, MkDocs, Obsidian, Feishu, or Yuque as the human editing surface.
-2. Sync or export clean Markdown into `skills/<name>/SKILL.md`.
-3. Review changes through Git pull requests.
-4. Run hooks or CI to lint metadata, links, and generated registry files.
-5. Let agents install or update from the Git repo.
+1. Create or fork a SkillDocs repository.
+2. Add packages under `skills/<name>/`.
+3. Enable GitHub Pages and the SkillDocs workflow.
+4. Use the Pages Manager to edit, lint, preview, and open pull requests.
+5. Merge approved PRs.
+6. CI regenerates `skills.json` and redeploys Pages.
 
-## Planned CLI
-
-The working CLI name is `skilldocs`.
+For a developer installing approved skills:
 
 ```bash
-skilldocs init
-skilldocs lint
-skilldocs generate registry
-skilldocs generate gitbook
-skilldocs generate vitepress
-skilldocs doctor
+npx skills add org/team-skills --list
+npx skills add org/team-skills --skill literature-review -g -a claude-code
+npx skills add org/team-skills --skill literature-review -g -a codex
+npx skills add org/team-skills --skill literature-review -g -a antigravity
 ```
 
-Planned adapter commands:
+For a maintainer testing local edits:
 
 ```bash
-skilldocs generate mkdocs
-skilldocs generate obsidian
-skilldocs normalize feishu
-skilldocs normalize yuque
-skilldocs export claude
-skilldocs export codex
-skilldocs export cursor
+git clone https://github.com/org/team-skills.git ~/skilldocs/team-skills
+cd ~/skilldocs/team-skills
+npx skills add . --skill literature-review -g -a claude-code -a codex
 ```
 
-## What This Repository Should Contain
+Do not clone a full multi-skill SkillDocs repository into another repository's `.claude/skills`, `.agents/skills`, or equivalent agent directory. Use `npx skills` to install or materialize packages.
 
-This repo is intended to become a complete public starting point:
+## Technical Stack
+
+The manager should stay static and lightweight.
+
+```text
+Static app:       Vite + React + TypeScript
+Editor:           CodeMirror 6
+Markdown preview: markdown-it or marked + DOMPurify
+Frontmatter:      gray-matter + js-yaml
+Validation:       zod or ajv
+GitHub API:       @octokit/rest
+Diff preview:     react-diff-view or diff2html
+Styling:          plain CSS or a very small component layer
+CI/runtime:       GitHub Actions + Node.js
+Install layer:    npx skills
+```
+
+No full-stack app is needed for P0. GitHub and GitHub Actions are the durable backend. A small token broker can be added later only if GitHub App authentication becomes necessary.
+
+## Planned Repository Shape
 
 ```text
 agent-skilldocs/
   README.md
   PLAN.md
-  docs/                    # GitHub Pages site
-  schemas/                 # skills.json schema
-  packages/cli/            # skilldocs CLI
+  docs/
+    index.html             # product site
+    manager/               # built static Skill Manager, future
+    assets/
+  schemas/
+    skills-registry.v0.json
+    skill-package.v0.json
+  packages/
+    core/                  # scanner, parser, linter, registry generator
+    manager/               # Vite + React source
+    cli/                   # skilldocs CLI
   adapters/
     gitbook/
     vitepress/
@@ -152,32 +157,52 @@ agent-skilldocs/
     feishu/
     yuque/
   examples/
-    gitbook-research-skills/
-    vitepress-team-skills/
-    obsidian-personal-skills/
-    feishu-lab-skills/
   templates/
-    team-skill-library/
-    personal-skill-library/
   case-studies/
-    vios-research-skills.md
 ```
 
-## GitHub Pages
+## MVP Scope
 
-The project site lives in `docs/` and is designed to work with GitHub Pages.
+The first useful release should include:
 
-Recommended setup:
+- package-aware `skills.json`
+- `skilldocs lint`
+- `skilldocs generate registry`
+- `skilldocs generate install-snippets`
+- `skilldocs doctor`
+- GitHub Pages manager read-only mode
+- text editing and PR flow
+- CI checks for metadata, links, registry drift, scripts, assets, and secrets
 
-1. Push this repository to GitHub.
-2. In repository settings, enable Pages.
-3. Choose GitHub Actions as the Pages source, or publish from the `docs/` folder.
-4. The included workflow at `.github/workflows/pages.yml` publishes the static site.
+Adapters are useful, but they are not the center of the project.
 
-## Launch Thesis
+## Development
 
-The first public release should not try to win by having the most adapters or the biggest marketplace. It should win by making one idea obvious:
+The first implementation slice is the Git-native core: scan a checked-out skill repository, parse `SKILL.md`, lint package health, generate registry data, and produce `npx skills` install snippets.
 
-> Agent Skills need the same care as docs and the same trust path as code.
+```bash
+npm install
+npm run check
+npm run build
+node packages/cli/dist/index.js scan --root /path/to/skill-repo
+node packages/cli/dist/index.js lint --root /path/to/skill-repo
+node packages/cli/dist/index.js generate registry --root /path/to/skill-repo --source owner/repo
+node packages/cli/dist/index.js generate registry --root /path/to/skill-repo --source owner/repo --out skills.json --check
+```
 
-That is the reason for Agent SkillDocs.
+The CLI should work against a normal Git checkout. That is the core claim of this project: Git is the management layer.
+
+## Current Status
+
+This repository is in early public-surface and core implementation development. The static Pages prototype can load public GitHub skill repos, import local folders, edit files, run core-aligned browser lint, preview `skills.json`, and generate Git handoff plus `npx skills` commands. `packages/core` plus `packages/cli` provide the first scanner, frontmatter parser, lint rules, registry generator, install snippets, onboarding smoke, `npx skills --list` compatibility smoke, and doctor command. The registry schema and SkillDocs CI workflow are in place. The React manager rewrite, authenticated GitHub write flow, and richer CI policy checks are still upcoming.
+
+The detailed product and technical plan lives in [PLAN.md](./PLAN.md).
+The current manager UI semantics are documented in [docs/manager-semantics.md](./docs/manager-semantics.md).
+The MVP development contract lives in [docs/development.md](./docs/development.md).
+The day-one user workflow lives in [docs/quickstart.md](./docs/quickstart.md).
+
+## Core Thesis
+
+Skills are not hidden prompts. They are operational documents for agents.
+
+Agent SkillDocs exists to make those documents visible, reviewable, installable, and reversible.

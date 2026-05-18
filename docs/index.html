@@ -1,448 +1,285 @@
 <!doctype html>
-<html lang="en" data-theme="light" data-accent="blue" data-density="normal">
+<html lang="en" data-theme="light" data-locale="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Agent SkillDocs · An Operating Model for Agent Skills</title>
-    <meta name="description" content="Manage Agent Skills like docs. Distribute them through Git.">
+    <title>Agent SkillDocs · Skill Package Manager</title>
+    <meta name="description" content="A GitHub Pages manager for reviewing and editing Agent Skill packages as repository trees.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
     <link rel="stylesheet" href="./assets/site.css">
     <script src="./assets/site.js" defer></script>
   </head>
   <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#">
+          <span class="brand-mark">SD</span>
+          <span>
+            <strong>Agent SkillDocs</strong>
+            <small data-i18n="brand.subtitle">Package tree editor</small>
+          </span>
+        </a>
 
-    <!-- ── top meta strip ────────────────────────────────────── -->
-    <header class="meta-strip" role="banner">
-      <div class="left">
-        <span><b>SKILLDOCS</b>&nbsp;·&nbsp;001</span>
-        <span class="dot">/</span>
-        <span data-i18n="metaDoc">Operating model</span>
-        <span class="dot">/</span>
-        <span>v0.1</span>
-        <span class="dot">/</span>
-        <span>2026.05</span>
-        <span class="dot">/</span>
-        <span class="status" data-i18n="metaStatus">Working draft</span>
-      </div>
-      <div class="right" aria-label="Site controls">
-        <button type="button" data-language-toggle aria-label="Switch language">中文</button>
-        <button type="button" data-theme-toggle aria-label="Switch theme"><span data-theme-label>Dark</span></button>
-        <a class="gh" href="https://github.com/Guesswhat-Studio/Skills-as-Docs">GitHub ↗</a>
-      </div>
-    </header>
-
-    <!-- ── frame: rail + main column ─────────────────────────── -->
-    <div class="frame">
-
-      <!-- left rail: brand + TOC + meta -->
-      <aside class="rail" aria-label="Document outline">
-        <div class="brand" data-i18n="brand">Agent SkillDocs</div>
-        <div class="subbrand" data-i18n="subbrand">specification &amp; pattern</div>
-
-        <div class="toc-label" data-i18n="tocLabel">Contents</div>
-        <nav class="toc" id="toc">
-          <a href="#hero"        data-section="hero"><span class="n">00</span><span data-i18n="tocHero">Abstract</span></a>
-          <a href="#proposition" data-section="proposition"><span class="n">01</span><span data-i18n="tocProp">Proposition</span></a>
-          <a href="#evidence"    data-section="evidence"><span class="n">02</span><span data-i18n="tocEvidence">Evidence</span></a>
-          <a href="#protocol"    data-section="protocol"><span class="n">03</span><span data-i18n="tocProto">Protocol</span></a>
-          <a href="#artifacts"   data-section="artifacts"><span class="n">04</span><span data-i18n="tocArt">Artifacts</span></a>
-          <a href="#adopt"       data-section="adopt"><span class="n">05</span><span data-i18n="tocAdopt">Adoption</span></a>
-          <a href="#nongoals"    data-section="nongoals"><span class="n">06</span><span data-i18n="tocNon">Non-goals</span></a>
-        </nav>
-
-        <div class="rail-meta">
-          <div><b data-i18n="railAuthors">Authors</b></div>
-          <div class="author-value">yuyangxueed@guesswhat studio</div>
-          <div><b data-i18n="railLicence">Licence</b></div>
-          <div>MIT · CC BY 4.0</div>
+        <div class="repo-context" aria-label="Repository context">
+          <span>anthropics/skills</span>
+          <span>main</span>
+          <span>skills.json preview</span>
         </div>
-      </aside>
 
-      <!-- main column -->
-      <main class="col">
+        <div class="topbar-actions">
+          <span class="sync-state" data-sync-state>Clean</span>
+          <button type="button" data-import-open data-i18n="action.import">Import skills</button>
+          <button type="button" class="locale-toggle" data-locale-toggle aria-label="Switch language" title="Switch language">中</button>
+          <button type="button" class="icon-button" data-settings-toggle aria-label="Workspace settings" aria-expanded="false" aria-controls="settings-popover" title="Workspace settings" data-i18n-aria="action.settings" data-i18n-title="action.settings">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5Z"></path><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 0 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1A2 2 0 0 1 4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1A2 2 0 0 1 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1A2 2 0 0 1 19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1h.1a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"></path></svg>
+          </button>
+          <button type="button" class="icon-button" data-theme-toggle aria-label="Toggle theme" title="Toggle theme" data-i18n-aria="action.theme" data-i18n-title="action.theme">
+            <svg data-theme-icon viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A8.3 8.3 0 1 1 11.2 3a6.6 6.6 0 0 0 9.8 9.8Z"></path></svg>
+          </button>
+          <a class="icon-button" href="https://github.com/Guesswhat-Studio/Skills-as-Docs" aria-label="GitHub" title="GitHub">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.3a9.7 9.7 0 0 0-3.1 18.9c.5.1.7-.2.7-.5v-1.9c-2.8.6-3.4-1.2-3.4-1.2-.5-1.1-1.1-1.4-1.1-1.4-.9-.6.1-.6.1-.6 1 .1 1.6 1.1 1.6 1.1.9 1.5 2.4 1.1 2.9.8.1-.7.4-1.1.7-1.3-2.2-.3-4.6-1.1-4.6-4.8 0-1.1.4-1.9 1-2.6-.1-.3-.4-1.3.1-2.6 0 0 .8-.3 2.7 1a9.3 9.3 0 0 1 4.9 0c1.9-1.3 2.7-1 2.7-1 .5 1.3.2 2.3.1 2.6.6.7 1 1.5 1 2.6 0 3.7-2.3 4.5-4.6 4.8.4.3.7 1 .7 2v2.9c0 .3.2.6.7.5A9.7 9.7 0 0 0 12 2.3Z"></path></svg>
+          </a>
+          <button type="button" data-run-checks title="Recompute browser-side lint rules" data-i18n="action.runChecks" data-i18n-title="action.runChecksTitle">Run checks</button>
+          <button type="button" class="primary" data-open-pr title="Prepare a PR payload; GitHub sync needs authentication" data-i18n="action.preparePr" data-i18n-title="action.preparePrTitle">Prepare draft PR</button>
+        </div>
+      </header>
 
-        <!-- ── §00 Hero ─────────────────────────────────────── -->
-        <section id="hero" class="hero" data-section="hero">
-          <div class="kicker"><span class="bar"></span><span data-i18n="kicker">An operating model for agent skills</span></div>
-          <h1>
-            <span data-i18n="h1A">Skills, managed</span><br>
-            <span class="accent" data-i18n="h1B">as docs.</span>
-          </h1>
-          <p class="subtitle" data-i18n="subtitle">Human-readable. Agent-executable. Distributed through Git.</p>
-          <p class="abstract" data-i18n="abstract">The procedural memory of an agent — how it writes a code review, how it cites literature, how it formats a release — should not live inside a hidden config folder. It should live where the people who own the workflow can read it, review it, version it, and improve it. SkillDocs is a small, deliberately boring pattern for doing exactly that.</p>
-          <div class="ctas">
-            <a class="btn primary" href="#proposition"><span data-i18n="ctaRead">Read the proposition</span><span class="arr">→</span></a>
-            <a class="btn ghost" href="https://github.com/Guesswhat-Studio/Skills-as-Docs"><span data-i18n="ctaSource">View source</span></a>
+      <section class="settings-popover hidden" id="settings-popover" data-settings-popover aria-label="Workspace settings">
+        <div class="settings-head">
+          <div>
+            <span class="label" data-i18n="settings.label">Settings</span>
+            <strong data-i18n="settings.title">Workspace setup</strong>
           </div>
+          <button type="button" data-settings-reset data-i18n="settings.reset">Reset reading</button>
+        </div>
 
-          <div class="factrow" aria-label="Project facts">
-            <div class="fact">
-              <span class="k" data-i18n="factFormat">Format</span>
-              <span class="v">Markdown · Git</span>
-            </div>
-            <div class="fact">
-              <span class="k" data-i18n="factPrimitive">Primitive</span>
-              <span class="v"><code>SKILL.md</code></span>
-            </div>
-            <div class="fact">
-              <span class="k" data-i18n="factStatus">Status</span>
-              <span class="v acc" data-i18n="factStatusV">v0.1 · working draft</span>
-            </div>
-            <div class="fact">
-              <span class="k" data-i18n="factScope">Scope</span>
-              <span class="v" data-i18n="factScopeV">team-private skills</span>
-            </div>
+        <section class="settings-section">
+          <div>
+            <span class="label" data-i18n="settings.source">Source</span>
+            <strong data-i18n="action.import">Import skills</strong>
+            <p data-i18n="settings.importHint">Load a public GitHub repo or select a local skill folder. Local imports stay in this browser.</p>
           </div>
+          <label class="repo-import">
+            <span data-i18n="settings.githubRepo">GitHub repo</span>
+            <input type="text" value="anthropics/skills" data-repo-input>
+          </label>
+          <div class="import-actions">
+            <button type="button" data-import-repo data-i18n="action.loadRepo">Load repo</button>
+            <button type="button" data-import-folder data-i18n="action.localFolder">Local folder</button>
+            <button type="button" data-create-package data-i18n="action.newPackage">New package</button>
+          </div>
+          <input type="file" hidden multiple webkitdirectory data-folder-input>
         </section>
 
-        <!-- ── Figure 1: System loop ────────────────────────── -->
-        <figure class="diagram" id="figure-1" aria-label="The SkillDocs loop">
-          <div class="head">
-            <span><b data-i18n="figLabel">FIG&nbsp;01</b> &nbsp;/&nbsp; <span data-i18n="figTitle">The SkillDocs loop</span></span>
-            <span class="coords">A · B · C · D &nbsp;/&nbsp; <span class="id" data-i18n="figClosed">closed-loop</span></span>
+        <section class="settings-section">
+          <div>
+            <span class="label" data-i18n="settings.reading">Reading</span>
+            <strong data-i18n="settings.readingTitle">Editor, preview, diff</strong>
           </div>
-          <div class="diagram-body">
-            <div class="teaser-loop" role="img" aria-label="Docs UI to Git sync to SKILL.md to Agents, with improvements looping back to docs">
-              <svg class="teaser-lines" viewBox="0 0 1000 430" preserveAspectRatio="none" aria-hidden="true">
-                <defs>
-                  <marker id="teaserArrow" markerWidth="6" markerHeight="6" refX="5.5" refY="3" orient="auto" markerUnits="strokeWidth">
-                    <path d="M0,0 L6,3 L0,6 Z"></path>
-                  </marker>
-                </defs>
-                <path d="M145 90 C145 35 190 28 245 28 H755 C815 28 855 58 855 122" marker-end="url(#teaserArrow)"></path>
-                <path d="M855 245 V292 C855 342 815 364 760 364 H548" marker-end="url(#teaserArrow)"></path>
-                <path d="M452 364 H245 C185 364 145 342 145 292 V245" marker-end="url(#teaserArrow)"></path>
-              </svg>
-              <div class="teaser-flow">
-                <div class="teaser-card docs">
-                  <span class="teaser-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24">
-                      <rect x="4" y="5" width="16" height="14" rx="2"></rect>
-                      <path d="M8 9h8M8 13h3M13 13h3"></path>
-                    </svg>
-                  </span>
-                  <strong data-i18n="nodeDocs">Docs UI</strong>
-                  <small data-i18n="nodeDocsDesc">humans write</small>
-                </div>
-                <div class="teaser-arrow" aria-hidden="true">→</div>
-                <div class="teaser-card git">
-                  <span class="teaser-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24">
-                      <circle cx="7" cy="5" r="2"></circle>
-                      <circle cx="7" cy="19" r="2"></circle>
-                      <circle cx="17" cy="12" r="2"></circle>
-                      <path d="M7 7v10M9 7c4 0 3 5 8 5"></path>
-                    </svg>
-                  </span>
-                  <strong data-i18n="nodeGit">Git sync + hooks</strong>
-                  <small data-i18n="nodeGitDesc">hooks · ci · provenance</small>
-                </div>
-                <div class="teaser-arrow" aria-hidden="true">→</div>
-                <div class="teaser-card skill">
-                  <span class="teaser-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24">
-                      <path d="M7 3h7l4 4v14H7z"></path>
-                      <path d="M14 3v5h4M10 13l-2 2 2 2M14 13l2 2-2 2"></path>
-                    </svg>
-                  </span>
-                  <strong>SKILL.md</strong>
-                  <small data-i18n="nodeRegistryDesc">Registry</small>
-                </div>
-                <div class="teaser-arrow" aria-hidden="true">→</div>
-                <div class="teaser-card agents">
-                  <span class="teaser-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24">
-                      <rect x="5" y="8" width="14" height="10" rx="3"></rect>
-                      <path d="M12 8V4M9 4h6M8 13h.01M16 13h.01M3 12h2M19 12h2"></path>
-                    </svg>
-                  </span>
-                  <strong data-i18n="nodeAgents">Agents</strong>
-                  <small data-i18n="nodeAgentsDesc">execute &amp; report</small>
-                </div>
-              </div>
-              <div class="teaser-improve">
-                <span class="teaser-pencil" aria-hidden="true">
-                  <svg viewBox="0 0 24 24">
-                    <path d="M5 19l4.5-1 9-9-3.5-3.5-9 9z"></path>
-                    <path d="M13.5 7.5l3 3"></path>
-                  </svg>
-                </span>
-                <span data-i18n="loopImprove">Improve</span>
-              </div>
+          <label class="setting-row">
+            <span data-i18n="settings.font">Font</span>
+            <select data-setting-font>
+              <option value="ibm">IBM Plex Mono</option>
+              <option value="consolas">Consolas</option>
+              <option value="system">System mono</option>
+              <option value="serif">Serif review</option>
+            </select>
+          </label>
+
+          <label class="setting-row">
+            <span><span data-i18n="settings.textSize">Text size</span> <output data-setting-size-value>14px</output></span>
+            <input type="range" min="12" max="20" step="1" data-setting-size>
+          </label>
+
+          <label class="setting-row">
+            <span><span data-i18n="settings.lineHeight">Line height</span> <output data-setting-line-value>1.76</output></span>
+            <input type="range" min="1.35" max="2.1" step="0.05" data-setting-line>
+          </label>
+
+          <label class="setting-check">
+            <input type="checkbox" data-setting-wrap checked>
+            <span data-i18n="settings.wrap">Soft wrap long lines</span>
+          </label>
+        </section>
+      </section>
+
+      <main class="workspace">
+        <aside class="tree-panel" aria-label="Repository tree" data-i18n-aria="tree.aria">
+          <div class="panel-head">
+            <span class="label" data-i18n="tree.title">Repository tree</span>
+            <strong>skills/</strong>
+          </div>
+
+          <label class="search-box">
+            <span data-i18n="tree.search">Search files</span>
+            <input type="search" placeholder="SKILL.md, scripts, references..." data-search data-i18n-placeholder="tree.searchPlaceholder">
+          </label>
+
+          <div class="tree-tools">
+            <button type="button" class="filter-trigger" data-filter-trigger aria-expanded="false" aria-controls="filter-popover" title="Show filters">
+              <svg viewBox="0 0 24 24"><path d="M4 6h16l-6 7v4l-4 2v-6z"></path></svg>
+            </button>
+            <button type="button" data-collapse-all data-i18n="tree.collapse">Collapse</button>
+            <button type="button" data-expand-selected data-i18n="tree.expandCurrent">Expand current</button>
+          </div>
+
+          <div class="package-actions" aria-label="Skill package actions" data-i18n-aria="crud.aria">
+            <label class="package-folder">
+              <span data-i18n="crud.folder">Skill folder</span>
+              <input type="text" data-package-folder aria-label="Skill folder name" data-i18n-aria="crud.folder">
+            </label>
+            <div class="package-action-buttons">
+              <button type="button" class="primary" data-create-package data-i18n="crud.create">New skill</button>
+              <button type="button" data-rename-package data-i18n="crud.rename">Rename</button>
+              <button type="button" class="danger" data-delete-package data-i18n="crud.delete">Delete</button>
             </div>
           </div>
-        </figure>
 
-        <!-- ── §01 Proposition ──────────────────────────────── -->
-        <section id="proposition" class="sec" data-section="proposition">
-          <div class="sec-tag"><span>§&nbsp;01&nbsp;/&nbsp;<span data-i18n="tagProp">PROPOSITION</span></span><span class="rule"></span></div>
-          <h2>
-            <span data-i18n="propTitleA">Skills are </span><span class="accent" data-i18n="propTitleB">operational documents</span><span data-i18n="propTitleC"> for agents.</span>
-          </h2>
-          <p class="lede"><code>SKILL.md</code> <span data-i18n="propLede">should not disappear into a hidden config folder. It should be readable, reviewable, versioned, and improved by the same people who own the workflow.</span></p>
+          <div class="filter-popover hidden" id="filter-popover" data-filter-popover>
+            <label><input type="checkbox" data-filter="entrypoint" checked> entrypoint</label>
+            <label><input type="checkbox" data-filter="supporting" checked> supporting files</label>
+            <label><input type="checkbox" data-filter="script" checked> scripts</label>
+            <label><input type="checkbox" data-filter="changed"> changed only</label>
+          </div>
 
-          <div class="props">
-            <article class="prop">
-              <div class="plabel">P&nbsp;·&nbsp;01</div>
+          <div class="tree" data-tree></div>
+        </aside>
+
+        <section class="editor-panel" aria-label="File editor" data-i18n-aria="editor.aria">
+          <div class="editor-toolbar">
+            <div>
+              <span class="label" data-current-kind>entrypoint</span>
+              <h1 data-current-path>skills/skill-creator/SKILL.md</h1>
+            </div>
+            <div class="view-tabs" role="tablist" aria-label="Editor views">
+              <button type="button" class="active" data-view="edit" data-i18n="view.edit">Edit</button>
+              <button type="button" data-view="preview" data-i18n="view.preview">Preview</button>
+              <button type="button" data-view="diff" data-i18n="view.diff">Diff</button>
+              <button type="button" data-view="registry" data-i18n="view.registry">Registry</button>
+              <button type="button" data-zen-toggle data-i18n="view.zen">Zen</button>
+            </div>
+          </div>
+
+          <div class="editor-surface" data-view-surface="edit">
+            <pre class="editor-highlight" data-editor-highlight aria-hidden="true"></pre>
+            <textarea spellcheck="false" data-editor aria-label="Selected file editor"></textarea>
+          </div>
+
+          <div class="preview-surface hidden" data-view-surface="preview">
+            <article class="markdown-preview" data-preview></article>
+          </div>
+
+          <div class="diff-surface hidden" data-view-surface="diff">
+            <div data-diff></div>
+            <div class="handoff-card">
               <div>
-                <h3 data-i18n="propHumanT">Human-readable</h3>
-                <p data-i18n="propHumanB">Teams can browse, edit, discuss, and improve skills inside the documentation tools they already trust — Notion, GitBook, VitePress, Obsidian, 飞书, 语雀.</p>
+                <span class="label" data-i18n="diff.handoff">Git handoff</span>
+                <strong data-handoff-summary>0 changed files</strong>
               </div>
-            </article>
-            <article class="prop">
-              <div class="plabel">P&nbsp;·&nbsp;02</div>
+              <pre><code data-handoff-command></code></pre>
+            </div>
+          </div>
+
+          <div class="registry-surface hidden" data-view-surface="registry">
+            <div class="registry-tools">
               <div>
-                <h3 data-i18n="propAgentT">Agent-executable</h3>
-                <p data-i18n="propAgentB">The same Markdown becomes procedural memory an agent installs and uses at runtime. No separate prompt store; the document is the skill.</p>
+                <span class="label">skills.json</span>
+                <strong data-registry-summary>Registry preview</strong>
               </div>
-            </article>
-            <article class="prop">
-              <div class="plabel">P&nbsp;·&nbsp;03</div>
-              <div>
-                <h3 data-i18n="propGitT">Git-backed</h3>
-                <p data-i18n="propGitB">Review, CI, provenance, releases, and rollback bring decades of software-engineering safety into the management of agent behaviour.</p>
-              </div>
-            </article>
+              <button type="button" data-copy-registry data-i18n="action.copyJson">Copy JSON</button>
+            </div>
+            <pre class="registry-preview"><code data-registry-preview></code></pre>
           </div>
         </section>
 
-        <!-- ── §02 Evidence ─────────────────────────────────── -->
-        <section id="evidence" class="sec" data-section="evidence">
-          <div class="sec-tag"><span>§&nbsp;02&nbsp;/&nbsp;<span data-i18n="tagEvidenceSec">EVIDENCE</span></span><span class="rule"></span></div>
-          <h2>
-            <span data-i18n="evidenceTitleA">The ecosystem already shows </span><span class="accent" data-i18n="evidenceTitleB">a management gap</span><span data-i18n="evidenceTitleC">.</span>
-          </h2>
-          <p class="lede" data-i18n="evidenceLede">Public skills are growing quickly, real users are already juggling local folders and installers, and security researchers have found malicious skills in the wild. The answer is not fear; it is visible ownership, review, provenance, and rollback.</p>
+        <aside class="inspector" aria-label="Inspector" data-i18n-aria="inspector.aria">
+          <details class="inspector-section" open>
+            <summary class="section-title">
+              <span class="label" data-i18n="inspector.metadata">Metadata</span>
+              <strong>SKILL.md frontmatter</strong>
+            </summary>
+            <div class="field-grid">
+              <label>
+                <span><span data-i18n="field.name">name</span> <small data-i18n="field.required">required</small></span>
+                <input data-field="name" data-required="true" type="text">
+              </label>
+              <label>
+                <span><span data-i18n="field.description">description</span> <small data-i18n="field.required">required</small></span>
+                <textarea data-field="description" data-required="true"></textarea>
+              </label>
+              <label>
+                <span><span data-i18n="field.category">category</span> <small data-i18n="field.optional">optional</small></span>
+                <input data-field="category" type="text" placeholder="Writing, coding, research..." data-i18n-placeholder="field.categoryPlaceholder">
+              </label>
+              <label>
+                <span><span data-i18n="field.version">version</span> <small data-i18n="field.optional">optional</small></span>
+                <input data-field="version" type="text" placeholder="0.1.0">
+              </label>
+              <label>
+                <span><span data-i18n="field.owner">owner</span> <small data-i18n="field.optional">optional</small></span>
+                <input data-field="owner" type="text" placeholder="@team or maintainer" data-i18n-placeholder="field.ownerPlaceholder">
+              </label>
+              <label>
+                <span><span data-i18n="field.reviewStatus">review status</span> <small data-i18n="field.optional">optional</small></span>
+                <select data-field="review_status">
+                  <option value="" data-i18n="field.unset">Unset</option>
+                  <option value="draft">draft</option>
+                  <option value="review">review</option>
+                  <option value="approved">approved</option>
+                </select>
+              </label>
+            </div>
+            <p class="hint" data-i18n="inspector.metadataHint">These fields are a form view of the selected package's `SKILL.md` frontmatter. Editing here rewrites the Markdown frontmatter; editing `SKILL.md` updates this panel.</p>
+          </details>
 
-          <div class="manifest signals">
-            <div class="man-row">
-              <div class="mn">01</div>
-              <div class="mname" data-i18n="evidenceGrowthT">Rapid growth</div>
-              <div class="mdesc"><span data-i18n="evidenceGrowthB">SkillsBench found tens of thousands of unique public skills across thousands of repositories.</span> <a href="https://www.skillsbench.ai/skillsbench.pdf" data-i18n="evidenceSourceSkillsBench">SkillsBench</a></div>
-              <div class="mtag" data-i18n="evidenceTagEco">Ecosystem</div>
-            </div>
-            <div class="man-row">
-              <div class="mn">02</div>
-              <div class="mname" data-i18n="evidenceWorkflowT">Fragmented workflows</div>
-              <div class="mdesc"><span data-i18n="evidenceWorkflowB">Users create, copy, install, edit, update, and sync skills across personal folders, project folders, GitHub repos, and multiple agent clients.</span> <a href="https://github.com/vercel-labs/skills" data-i18n="evidenceSourceCli">Skills CLI</a></div>
-              <div class="mtag" data-i18n="evidenceTagOps">Operations</div>
-            </div>
-            <div class="man-row">
-              <div class="mn">03</div>
-              <div class="mname" data-i18n="evidenceSecurityT">Real security risk</div>
-              <div class="mdesc"><span data-i18n="evidenceSecurityB">Snyk found critical issues in 13.4% of scanned skills, and SC Media reported 341 malicious ClawHub skills.</span> <a href="https://snyk.io/blog/toxicskills-malicious-ai-agent-skills-clawhub/" data-i18n="evidenceSourceSnyk">Snyk</a> · <a href="https://www.scworld.com/news/openclaw-agents-targeted-with-341-malicious-clawhub-skills" data-i18n="evidenceSourceSC">SC Media</a></div>
-              <div class="mtag" data-i18n="evidenceTagRisk">Risk</div>
-            </div>
-            <div class="man-row">
-              <div class="mn">04</div>
-              <div class="mname" data-i18n="evidenceGovernanceT">Governance required</div>
-              <div class="mdesc"><span data-i18n="evidenceGovernanceB">Official guidance warns that malicious skills can cause data exfiltration or unauthorized access. Scanners help, but review and provenance still matter.</span> <a href="https://docs.claude.com/en/docs/agents-and-tools/agent-skills" data-i18n="evidenceSourceClaude">Claude docs</a> · <a href="https://github.com/cisco-ai-defense/skill-scanner" data-i18n="evidenceSourceCisco">Cisco scanner</a></div>
-              <div class="mtag" data-i18n="evidenceTagGov">Governance</div>
-            </div>
-          </div>
-        </section>
+          <details class="inspector-section">
+            <summary class="section-title">
+              <span class="label" data-i18n="inspector.labels">Labels</span>
+              <strong data-i18n="inspector.generated">generated</strong>
+            </summary>
+            <div class="metadata-chips" data-metadata-chips></div>
+            <p class="hint" data-i18n="inspector.labelsHint">Generated from frontmatter, file type, and package scan. Future versions can write selected labels back to metadata.</p>
+          </details>
 
-        <!-- ── §03 Protocol ─────────────────────────────────── -->
-        <section id="protocol" class="sec" data-section="protocol">
-          <div class="sec-tag"><span>§&nbsp;03&nbsp;/&nbsp;<span data-i18n="tagProto">PROTOCOL</span></span><span class="rule"></span></div>
-          <h2>
-            <span data-i18n="protoTitleA">A closed loop between </span><span class="accent" data-i18n="protoTitleB">people</span><span data-i18n="protoTitleC"> and </span><span class="accent" data-i18n="protoTitleD">agents</span>.
-          </h2>
-          <p class="lede" data-i18n="protoLede">Every useful correction should become part of the skill library — not another lost chat message. The protocol turns repeated agent coaching into durable team knowledge.</p>
+          <details class="inspector-section">
+            <summary class="section-title">
+              <span class="label" data-i18n="inspector.liveLint">Live lint</span>
+              <strong data-risk-summary>Browser checks</strong>
+            </summary>
+            <ul class="check-list" data-check-list></ul>
+            <p class="hint" data-i18n="inspector.lintHint">Risk is derived from this lint list: failures make it high, warnings make it medium, and a clean package is low. CI is the final gate before merge.</p>
+          </details>
 
-          <div class="steps">
-            <div class="step">
-              <span class="stnum">01</span>
-              <span class="sttag" data-i18n="sTag1">Author</span>
-              <span class="sttext" data-i18n="sText1">Write or revise a skill inside a familiar docs surface.</span>
+          <details class="inspector-section">
+            <summary class="section-title">
+              <span class="label" data-i18n="inspector.install">Install</span>
+              <strong>npx skills</strong>
+            </summary>
+            <div class="agent-tabs" aria-label="Install target" data-i18n-aria="install.target">
+              <button type="button" class="active" data-agent="codex">Codex</button>
+              <button type="button" data-agent="claude-code">Claude</button>
+              <button type="button" data-agent="antigravity">Antigravity</button>
             </div>
-            <div class="step">
-              <span class="stnum">02</span>
-              <span class="sttag" data-i18n="sTag2">Review</span>
-              <span class="sttext" data-i18n="sText2">Sync the Markdown to Git and review the change as a pull request.</span>
-            </div>
-            <div class="step">
-              <span class="stnum">03</span>
-              <span class="sttag" data-i18n="sTag3">Verify</span>
-              <span class="sttext" data-i18n="sText3">Run hooks to lint metadata, links, and the generated registry.</span>
-            </div>
-            <div class="step">
-              <span class="stnum">04</span>
-              <span class="sttag" data-i18n="sTag4">Distribute</span>
-              <span class="sttext" data-i18n="sText4">Agents pull updated skills from the trusted repository.</span>
-            </div>
-            <div class="step">
-              <span class="stnum">05</span>
-              <span class="sttag" data-i18n="sTag5">Improve</span>
-              <span class="sttext" data-i18n="sText5">Failures and corrections become the next skill patch.</span>
-            </div>
-          </div>
-        </section>
+            <p class="hint" data-i18n="install.hint">Discovery stays non-mutating; install writes the package into the selected agent target.</p>
+            <pre class="install-command muted"><code data-list-command></code></pre>
+            <pre class="install-command"><code data-install-command></code></pre>
+          </details>
 
-        <!-- ── §04 Artifacts ────────────────────────────────── -->
-        <section id="artifacts" class="sec" data-section="artifacts">
-          <div class="sec-tag"><span>§&nbsp;04&nbsp;/&nbsp;<span data-i18n="tagArt">ARTIFACTS</span></span><span class="rule"></span></div>
-          <h2>
-            <span data-i18n="artTitleA">What ships </span><span class="accent" data-i18n="artTitleB">in the repository</span>.
-          </h2>
-          <p class="lede" data-i18n="artLede">A deliberately small surface area. Every item below is either a document people read, or a generator that reads documents.</p>
-
-          <div class="manifest">
-            <div class="man-row">
-              <div class="mn">01</div>
-              <div class="mname" data-i18n="repoManT">Manifesto</div>
-              <div class="mdesc" data-i18n="repoManB">A clear explanation of why skills should be managed as shared operational docs — this document.</div>
-              <div class="mtag" data-i18n="tagText">Prose</div>
-            </div>
-            <div class="man-row">
-              <div class="mn">02</div>
-              <div class="mname" data-i18n="repoSchT">Schema</div>
-              <div class="mdesc"><span data-i18n="repoSchBA">A minimal file model for</span> <code>skills/&lt;name&gt;/SKILL.md</code> <span data-i18n="repoSchBB">and the generated</span> <code>skills.json</code>.</div>
-              <div class="mtag" data-i18n="tagSpec">Spec</div>
-            </div>
-            <div class="man-row">
-              <div class="mn">03</div>
-              <div class="mname">CLI</div>
-              <div class="mdesc"><code>skilldocs lint</code>, <code>skilldocs generate registry</code>, <span data-i18n="repoCliB">and adapter generators that emit per-tool indexes.</span></div>
-              <div class="mtag" data-i18n="tagTool">Tool</div>
-            </div>
-            <div class="man-row">
-              <div class="mn">04</div>
-              <div class="mname" data-i18n="repoAdaT">Adapters</div>
-              <div class="mdesc" data-i18n="repoAdaB">GitBook and VitePress first, then MkDocs, Obsidian, 飞书, 语雀 — any docs surface that can host plain Markdown.</div>
-              <div class="mtag" data-i18n="tagInteg">Integration</div>
-            </div>
-            <div class="man-row">
-              <div class="mn">05</div>
-              <div class="mname" data-i18n="repoTmpT">Templates</div>
-              <div class="mdesc" data-i18n="repoTmpB">Ready-to-fork team and personal skill libraries — opinionated about layout, neutral about content.</div>
-              <div class="mtag" data-i18n="tagStarter">Starter</div>
-            </div>
-            <div class="man-row">
-              <div class="mn">06</div>
-              <div class="mname" data-i18n="repoCasT">Case studies</div>
-              <div class="mdesc" data-i18n="repoCasB">Real examples showing how repeated agent failures get distilled into a single skill patch.</div>
-              <div class="mtag" data-i18n="tagEvidence">Evidence</div>
-            </div>
-          </div>
-        </section>
-
-        <!-- ── §05 Adoption ─────────────────────────────────── -->
-        <section id="adopt" class="sec" data-section="adopt">
-          <div class="sec-tag"><span>§&nbsp;05&nbsp;/&nbsp;<span data-i18n="tagAdopt">ADOPTION</span></span><span class="rule"></span></div>
-          <h2>
-            <span data-i18n="adoptTitleA">Adopt the pattern </span><span class="accent" data-i18n="adoptTitleB">before the tooling is complete</span>.
-          </h2>
-          <p class="lede" data-i18n="adoptLede">Create a folder. Write clean Markdown. Review changes through Git. Let your agent clients install from the repository. The first CLI milestone will automate the rest.</p>
-
-          <div class="codeblock">
-            <div class="cb-head">
-              <span><b>tree</b> skills/</span>
-              <span class="dots"><i></i><i></i><i></i></span>
-            </div>
-<pre class="tree" aria-label="Recommended skill library structure"><span class="dir">skills/</span>
-<span class="draw">├──</span> <span class="dir">literature-review/</span>
-<span class="draw">│   ├──</span> <span class="file">SKILL.md</span>            <span class="note"># the document agents install</span>
-<span class="draw">│   └──</span> <span class="dir">references/</span>        <span class="note"># supporting material</span>
-<span class="draw">├──</span> <span class="dir">code-review/</span>
-<span class="draw">│   └──</span> <span class="file">SKILL.md</span>
-<span class="draw">└──</span> <span class="dir">release-notes/</span>
-<span class="draw">    └──</span> <span class="file">SKILL.md</span>
-<span class="file">skills.json</span>                        <span class="note"># generated registry, checked-in</span></pre>
-          </div>
-        </section>
-
-        <!-- ── §06 Non-goals ────────────────────────────────── -->
-        <section id="nongoals" class="sec" data-section="nongoals">
-          <div class="sec-tag"><span>§&nbsp;06&nbsp;/&nbsp;<span data-i18n="tagNon">NON-GOALS</span></span><span class="rule"></span></div>
-          <h2>
-            <span data-i18n="ngTitleA">Three things SkillDocs is </span><span class="accent" data-i18n="ngTitleB">deliberately not</span>.
-          </h2>
-          <p class="lede" data-i18n="ngLede">Each negation is load-bearing: it keeps the project useful by keeping it small.</p>
-
-          <div class="nongoals">
-            <article class="ng">
-              <div class="x" data-i18n="ngX">not</div>
-              <div>
-                <h3 data-i18n="ngMktT">a marketplace</h3>
-                <p data-i18n="ngMktB">Public discovery can come later. The first job is helping teams govern their own private skills with confidence.</p>
-              </div>
-            </article>
-            <article class="ng">
-              <div class="x" data-i18n="ngX">not</div>
-              <div>
-                <h3 data-i18n="ngPromT">a prompt manager</h3>
-                <p data-i18n="ngPromB">Skills are filesystem packages and workflow documents, not only runtime prompt templates retrieved by string match.</p>
-              </div>
-            </article>
-            <article class="ng">
-              <div class="x" data-i18n="ngX">not</div>
-              <div>
-                <h3 data-i18n="ngDocT">an AI docs generator</h3>
-                <p data-i18n="ngDocB">The goal is not to make existing docs readable by AI. The goal is to make team procedures installable by agents.</p>
-              </div>
-            </article>
-          </div>
-        </section>
-
+          <details class="inspector-section">
+            <summary class="section-title">
+              <span class="label" data-i18n="inspector.packageScope">Package scope</span>
+              <strong data-package-name>skill-creator</strong>
+            </summary>
+            <dl class="package-facts">
+              <div><dt>entrypoint</dt><dd data-package-entry>SKILL.md</dd></div>
+              <div><dt>files</dt><dd data-package-count>9</dd></div>
+              <div><dt>risk</dt><dd data-package-risk>scripts present</dd></div>
+            </dl>
+          </details>
+        </aside>
       </main>
     </div>
-
-    <!-- ── status bar ────────────────────────────────────────── -->
-    <footer class="statusbar" role="contentinfo">
-      <span class="seg acc">— READY —</span>
-      <span class="sep">·</span>
-      <span class="seg"><b>SKILLDOCS</b>&nbsp;001</span>
-      <span class="sep">·</span>
-      <span class="seg">v0.1&nbsp;<span data-i18n="sbDraft">draft</span></span>
-      <span class="sep">·</span>
-      <span class="seg" data-i18n="sbLang">EN</span>
-      <span class="sep">·</span>
-      <span class="seg"><a href="https://github.com/Guesswhat-Studio/Skills-as-Docs">git/guesswhat-studio/skills-as-docs</a></span>
-      <span class="spacer"></span>
-      <span class="seg" id="sb-section">§ 00 abstract</span>
-    </footer>
-
-    <!-- ── tweaks panel ──────────────────────────────────────── -->
-    <aside class="tweaks" id="tweaks" aria-hidden="true">
-      <header>
-        <span>Tweaks</span>
-        <button type="button" data-tweaks-close aria-label="Close">×</button>
-      </header>
-      <div class="group">
-        <label>Accent</label>
-        <div class="sw-row" data-tweak-group="accent">
-          <button class="sw" data-value="blue"   aria-pressed="true"  title="Electric blue"><span class="dot" style="background:#1228c4"></span></button>
-          <button class="sw" data-value="mono"   aria-pressed="false" title="Monochrome"><span class="dot" style="background:#0a0e14"></span></button>
-          <button class="sw" data-value="violet" aria-pressed="false" title="Violet"><span class="dot" style="background:#5b21d6"></span></button>
-          <button class="sw" data-value="cyan"   aria-pressed="false" title="Cyan"><span class="dot" style="background:#0e7490"></span></button>
-        </div>
-      </div>
-      <div class="group">
-        <label>Theme</label>
-        <div class="seg-row" data-tweak-group="theme">
-          <button data-value="light" aria-pressed="true">Light</button>
-          <button data-value="dark"  aria-pressed="false">Dark</button>
-        </div>
-      </div>
-      <div class="group">
-        <label>Density</label>
-        <div class="seg-row" data-tweak-group="density">
-          <button data-value="dense"  aria-pressed="false">Dense</button>
-          <button data-value="normal" aria-pressed="true">Normal</button>
-          <button data-value="airy"   aria-pressed="false">Airy</button>
-        </div>
-      </div>
-      <div class="group">
-        <label>Language</label>
-        <div class="seg-row" data-tweak-group="lang">
-          <button data-value="en" aria-pressed="true">EN</button>
-          <button data-value="zh" aria-pressed="false">中文</button>
-        </div>
-      </div>
-    </aside>
-
   </body>
 </html>

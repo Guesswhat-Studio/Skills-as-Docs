@@ -1,0 +1,23 @@
+{
+  "name": "agent-skilldocs",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/core",
+    "packages/cli"
+  ],
+  "scripts": {
+    "build": "tsc -b packages/core packages/cli",
+    "test": "tsx --test packages/core/test/*.test.ts",
+    "smoke:onboarding": "node scripts/smoke-onboarding.mjs",
+    "smoke:npx-list": "npm run build && node scripts/smoke-npx-list.mjs",
+    "check": "npm run build && npm run test && node --check docs/assets/site.js && npm run smoke:onboarding",
+    "skilldocs": "node packages/cli/dist/index.js"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}
