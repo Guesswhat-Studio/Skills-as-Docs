@@ -173,11 +173,14 @@
             </div>
             <div class="view-tabs" role="tablist" aria-label="Editor views">
               <button type="button" class="active" data-view="dashboard" data-i18n="view.dashboard">Dashboard</button>
+              <button type="button" data-view="library" data-i18n="view.library">Library</button>
+              <button type="button" data-view="review" data-i18n="view.review">Review</button>
               <button type="button" data-view="package" data-i18n="view.package">Package</button>
               <button type="button" data-view="edit" data-i18n="view.edit">Edit</button>
               <button type="button" data-view="preview" data-i18n="view.preview">Preview</button>
               <button type="button" data-view="diff" data-i18n="view.diff">Diff</button>
               <button type="button" data-view="registry" data-i18n="view.registry">Registry</button>
+              <button type="button" data-view="history" data-i18n="view.history">History</button>
               <button type="button" data-zen-toggle data-i18n="view.zen">Zen</button>
             </div>
           </div>
@@ -192,6 +195,14 @@
 
           <div class="dashboard-surface" data-view-surface="dashboard">
             <div class="governance-dashboard" data-dashboard></div>
+          </div>
+
+          <div class="library-surface hidden" data-view-surface="library">
+            <div class="library-workspace" data-library></div>
+          </div>
+
+          <div class="review-surface hidden" data-view-surface="review">
+            <div class="review-workspace" data-review-workspace></div>
           </div>
 
           <div class="package-surface" data-view-surface="package">
@@ -227,6 +238,10 @@
               <button type="button" data-copy-registry data-i18n="action.copyJson">Copy JSON</button>
             </div>
             <pre class="registry-preview"><code data-registry-preview></code></pre>
+          </div>
+
+          <div class="history-surface hidden" data-view-surface="history">
+            <div class="history-workspace" data-history></div>
           </div>
         </section>
 

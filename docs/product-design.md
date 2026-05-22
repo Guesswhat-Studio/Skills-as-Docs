@@ -168,11 +168,14 @@ The product home is not a landing page. It is the working surface for a team ski
 The current static manager should expose:
 
 - **Dashboard**: repository health, governance loop, review queue, registry readiness
+- **Library**: package inventory by category, owner, review status, risk, and install readiness
+- **Review**: selected-package policy gate, provenance, evidence, blockers, and approval decision
 - **Package**: selected package structure, category, package graph
 - **Edit**: selected file editor
 - **Preview**: markdown or text preview
 - **Diff**: browser-local Git handoff
 - **Registry**: generated `skills.json`
+- **History**: Git audit model, local changed files, and database boundary
 - **Zen**: focused editor mode
 
 ## Non-Goals For P0

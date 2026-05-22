@@ -170,6 +170,9 @@ const provenanceFacts = document.querySelector("[data-provenance-facts]");
 const evidenceSummary = document.querySelector("[data-evidence-summary]");
 const governanceProgress = document.querySelector("[data-governance-progress]");
 const dashboard = document.querySelector("[data-dashboard]");
+const libraryWorkspace = document.querySelector("[data-library]");
+const reviewWorkspace = document.querySelector("[data-review-workspace]");
+const historyWorkspace = document.querySelector("[data-history]");
 const packageIndex = document.querySelector("[data-package-index]");
 const riskSummary = document.querySelector("[data-risk-summary]");
 const packageName = document.querySelector("[data-package-name]");
@@ -463,11 +466,14 @@ const localeCopy = {
     "crud.deleted": "Package deleted",
     "editor.aria": "File editor",
     "view.dashboard": "Dashboard",
+    "view.library": "Library",
+    "view.review": "Review",
     "view.package": "Package",
     "view.edit": "Edit",
     "view.preview": "Preview",
     "view.diff": "Diff",
     "view.registry": "Registry",
+    "view.history": "History",
     "view.zen": "Zen",
     "view.exitZen": "Exit zen",
     "diff.handoff": "Git handoff",
@@ -590,7 +596,45 @@ const localeCopy = {
     "dashboard.localFolderBody": "Review private skills before team-wide install.",
     "dashboard.newSkillBody": "Create from a governed template with required metadata.",
     "dashboard.readyCommand": "List approved skills",
-    "dashboard.selected": "Selected package"
+    "dashboard.selected": "Selected package",
+    "library.label": "Library inventory",
+    "library.title": "Governed skill corpus",
+    "library.body": "Browse packages as runtime assets by category, owner, review status, risk, and install readiness.",
+    "library.allPackages": "All packages",
+    "library.categoryMap": "Category map",
+    "library.openPackage": "Open package",
+    "library.review": "Review",
+    "library.files": "files",
+    "library.evidence": "evidence",
+    "library.blockers": "blockers",
+    "review.label": "Approval workspace",
+    "review.title": "Review before install",
+    "review.body": "A package becomes installable only when its charter has owner, provenance, evidence, policy checks, and an approved lifecycle state.",
+    "review.policy": "Policy gate",
+    "review.provenance": "Provenance",
+    "review.evidence": "Evidence",
+    "review.install": "Install decision",
+    "review.next": "Next action",
+    "review.noBlockers": "No blockers. This package can expose install snippets.",
+    "review.addEvidence": "Add evidence",
+    "review.preparePr": "Prepare PR",
+    "history.label": "Git audit trail",
+    "history.title": "Versioning lives in Git",
+    "history.body": "Skills Charter keeps durable state in commits, pull requests, CI checks, generated registries, tags, and releases rather than a private database.",
+    "history.local": "Browser edits",
+    "history.pr": "Pull request review",
+    "history.ci": "CI policy",
+    "history.merge": "Merge and tag",
+    "history.install": "Approved install",
+    "history.localBody": "Edit skills in the static manager; changes stay browser-local until handed to Git.",
+    "history.prBody": "Open a branch and PR so humans review provenance, evidence, and risk.",
+    "history.ciBody": "Actions run strict policy, registry drift checks, and package lint.",
+    "history.mergeBody": "Merge approval history and optionally tag a library release.",
+    "history.installBody": "Approved registry output enables npx skills install snippets.",
+    "history.changedFiles": "Changed files",
+    "history.noChanges": "No browser-local file edits yet.",
+    "history.database": "Database boundary",
+    "history.databaseBody": "P0 stays static. Add a database only for hosted multi-repo search, accounts, analytics, or SaaS collaboration."
   },
   zh: {
     "brand.subtitle": "治理管理器",
@@ -690,11 +734,14 @@ const localeCopy = {
     "crud.deleted": "已删除 package",
     "editor.aria": "文件编辑器",
     "view.dashboard": "总览",
+    "view.library": "资产库",
+    "view.review": "审查",
     "view.package": "包视图",
     "view.edit": "编辑",
     "view.preview": "预览",
     "view.diff": "Diff",
     "view.registry": "Registry",
+    "view.history": "历史",
     "view.zen": "专注",
     "view.exitZen": "退出专注",
     "diff.handoff": "Git 交接",
@@ -817,7 +864,45 @@ const localeCopy = {
     "dashboard.localFolderBody": "把个人私有 skills 审阅后再团队安装。",
     "dashboard.newSkillBody": "从带必填元数据的治理模板开始。",
     "dashboard.readyCommand": "列出已批准 skills",
-    "dashboard.selected": "当前选中"
+    "dashboard.selected": "当前选中",
+    "library.label": "资产库清单",
+    "library.title": "被治理的 Skills 语料库",
+    "library.body": "把 package 当作运行资产查看：分类、owner、审查状态、风险和安装就绪度都应该清楚。",
+    "library.allPackages": "全部 packages",
+    "library.categoryMap": "分类地图",
+    "library.openPackage": "打开包",
+    "library.review": "审查",
+    "library.files": "文件",
+    "library.evidence": "证据",
+    "library.blockers": "阻塞项",
+    "review.label": "批准工作台",
+    "review.title": "安装前先审查",
+    "review.body": "只有当一个 package 的 charter 具备 owner、provenance、evidence、policy checks 和 approved 生命周期状态时，才允许暴露安装命令。",
+    "review.policy": "Policy gate",
+    "review.provenance": "来源追踪",
+    "review.evidence": "证据",
+    "review.install": "安装决策",
+    "review.next": "下一步",
+    "review.noBlockers": "没有阻塞项。这个 package 可以暴露安装命令。",
+    "review.addEvidence": "添加证据",
+    "review.preparePr": "准备 PR",
+    "history.label": "Git 审计轨迹",
+    "history.title": "版本管理留在 Git 里",
+    "history.body": "Skills Charter 把持久状态放在 commit、PR、CI 检查、生成的 registry、tag 和 release 里，而不是私有数据库。",
+    "history.local": "浏览器编辑",
+    "history.pr": "PR 审查",
+    "history.ci": "CI 策略",
+    "history.merge": "合并与 tag",
+    "history.install": "批准安装",
+    "history.localBody": "在静态管理器里编辑 skills；交接给 Git 前，改动只停留在浏览器本地。",
+    "history.prBody": "开分支和 PR，让人审查 provenance、evidence 和 risk。",
+    "history.ciBody": "Actions 运行 strict policy、registry drift 检查和 package lint。",
+    "history.mergeBody": "合并审批历史，并可选择给 skill library 打 tag。",
+    "history.installBody": "approved registry 输出之后才启用 npx skills 安装片段。",
+    "history.changedFiles": "已改文件",
+    "history.noChanges": "当前还没有浏览器本地文件编辑。",
+    "history.database": "数据库边界",
+    "history.databaseBody": "P0 保持静态。只有 hosted 多仓搜索、账号、analytics 或 SaaS 协作才需要数据库。"
   }
 };
 let editorSettings = loadEditorSettings();
@@ -2195,9 +2280,235 @@ function renderDashboard() {
   `;
 }
 
+function decisionTone(decision) {
+  if (decision.installable) return "pass";
+  if (decision.lint.risk === "high") return "fail";
+  return "warn";
+}
+
+function renderLibrary() {
+  if (!libraryWorkspace) return;
+  const records = dashboardRecords().sort((a, b) => a.pkg.name.localeCompare(b.pkg.name));
+  const libraryTree = buildCategoryHierarchy();
+  libraryWorkspace.innerHTML = `
+    <section class="library-hero">
+      <div>
+        <span class="label">${escapeHtml(t("library.label"))}</span>
+        <h2>${escapeHtml(t("library.title"))}</h2>
+        <p>${escapeHtml(t("library.body"))}</p>
+      </div>
+      <div class="library-summary">
+        <strong>${records.length}</strong>
+        <span>${escapeHtml(t("library.allPackages"))}</span>
+      </div>
+    </section>
+
+    <section class="library-layout">
+      <article class="library-table-card">
+        <div class="package-section-head">
+          <span class="label">${escapeHtml(t("library.allPackages"))}</span>
+          <strong>${repo.owner}/${repo.name}</strong>
+        </div>
+        <div class="library-table">
+          ${records.map((record) => {
+            const tone = decisionTone(record.decision);
+            const topics = topicsForPackage(record.pkg);
+            return `
+              <article class="library-package-row ${tone}${record.pkg === selectedPackage ? " active" : ""}">
+                <div>
+                  <strong>${escapeHtml(record.pkg.name)}</strong>
+                  <span>${escapeHtml(categoryForPackage(record.pkg))}${topics.length ? ` · ${escapeHtml(topics.join(", "))}` : ""}</span>
+                </div>
+                <dl>
+                  <div><dt>${escapeHtml(t("dashboard.owner"))}</dt><dd>${escapeHtml(record.decision.owner || "missing")}</dd></div>
+                  <div><dt>${escapeHtml(t("dashboard.status"))}</dt><dd>${escapeHtml(record.decision.lifecycle)}</dd></div>
+                  <div><dt>risk</dt><dd>${escapeHtml(record.decision.lint.risk)}</dd></div>
+                  <div><dt>${escapeHtml(t("library.files"))}</dt><dd>${record.pkg.files.length}</dd></div>
+                  <div><dt>${escapeHtml(t("library.evidence"))}</dt><dd>${record.decision.evidenceCount}</dd></div>
+                  <div><dt>${escapeHtml(t("library.blockers"))}</dt><dd>${record.decision.blockers.length}</dd></div>
+                </dl>
+                <div class="library-row-actions">
+                  <button type="button" data-library-package="${escapeHtml(record.pkg.name)}">${escapeHtml(t("library.openPackage"))}</button>
+                  <button type="button" data-library-review="${escapeHtml(record.pkg.name)}">${escapeHtml(t("library.review"))}</button>
+                </div>
+              </article>
+            `;
+          }).join("")}
+        </div>
+      </article>
+
+      <article class="library-category-panel">
+        <div class="package-section-head">
+          <span class="label">${escapeHtml(t("library.categoryMap"))}</span>
+          <strong>${repo.packages.length} ${escapeHtml(t("packageIndex.packages"))}</strong>
+        </div>
+        <div class="category-tree">
+          ${renderCategoryNode(libraryTree)}
+        </div>
+      </article>
+    </section>
+  `;
+}
+
+function reviewPolicyRows(pkg) {
+  const fm = frontmatterForPackage(pkg);
+  const decision = approvalDecision(pkg);
+  const evidence = evidencePaths(pkg);
+  const sourceType = fm.source_type || "unspecified";
+  const importedOrGenerated = GOVERNED_SOURCE_TYPES.includes(sourceType);
+  const provenanceOk = Boolean(sourceType !== "unspecified") && (!importedOrGenerated || Boolean(fm.source_url || fm.source_commit || fm.upstream || fm.generator));
+  return [
+    ["lifecycle.approved", decision.lifecycle === "approved", `status: ${decision.lifecycle}`],
+    ["owner.present", Boolean(decision.owner.trim()), decision.owner || "missing"],
+    ["risk.not-high", decision.lint.risk !== "high", `${decision.lint.risk} risk`],
+    ["provenance.visible", provenanceOk, sourceType],
+    ["evidence.attached", !importedOrGenerated || decision.evidenceCount > 0, `${decision.evidenceCount} evidence`],
+    ["scripts.reviewed", pkg.files.filter((file) => file.kind === "script").length === 0 || evidence.review_notes.length > 0, `${pkg.files.filter((file) => file.kind === "script").length} scripts`]
+  ];
+}
+
+function renderReviewWorkspace() {
+  if (!reviewWorkspace) return;
+  const fm = frontmatterForPackage(selectedPackage);
+  const decision = approvalDecision(selectedPackage);
+  const evidence = evidencePaths(selectedPackage);
+  const policyRows = reviewPolicyRows(selectedPackage);
+  const blockers = decision.blockers.length ? decision.blockers : [t("review.noBlockers")];
+  reviewWorkspace.innerHTML = `
+    <section class="review-hero">
+      <div>
+        <span class="label">${escapeHtml(t("review.label"))}</span>
+        <h2>${escapeHtml(t("review.title"))}: ${escapeHtml(selectedPackage.name)}</h2>
+        <p>${escapeHtml(t("review.body"))}</p>
+      </div>
+      <div class="review-decision ${decisionTone(decision)}">
+        <span class="label">${escapeHtml(t("review.install"))}</span>
+        <strong>${escapeHtml(decision.installable ? t("packageIndex.installAllowed") : t("packageIndex.installBlocked"))}</strong>
+        <small>${escapeHtml(decision.installable ? generateInstallCommand(installSource(), selectedPackage.name, selectedAgent) : blockers[0])}</small>
+      </div>
+    </section>
+
+    <section class="review-grid">
+      <article class="review-card">
+        <div class="package-section-head">
+          <span class="label">${escapeHtml(t("review.policy"))}</span>
+          <strong>${policyRows.filter((row) => row[1]).length}/${policyRows.length}</strong>
+        </div>
+        <ul class="review-policy-list">
+          ${policyRows.map(([id, pass, detail]) => `
+            <li class="${pass ? "pass" : "fail"}">
+              <span></span>
+              <strong>${escapeHtml(id)}</strong>
+              <small>${escapeHtml(detail)}</small>
+            </li>
+          `).join("")}
+        </ul>
+      </article>
+
+      <article class="review-card">
+        <div class="package-section-head">
+          <span class="label">${escapeHtml(t("review.provenance"))}</span>
+          <strong>${escapeHtml(fm.source_type || "unspecified")}</strong>
+        </div>
+        <dl class="review-facts">
+          <div><dt>source url</dt><dd>${escapeHtml(fm.source_url || "not recorded")}</dd></div>
+          <div><dt>source commit</dt><dd>${escapeHtml(fm.source_commit || "not recorded")}</dd></div>
+          <div><dt>generator</dt><dd>${escapeHtml(fm.generator || "not recorded")}</dd></div>
+          <div><dt>approved by</dt><dd>${escapeHtml(fm.approved_by || "not recorded")}</dd></div>
+        </dl>
+      </article>
+
+      <article class="review-card">
+        <div class="package-section-head">
+          <span class="label">${escapeHtml(t("review.evidence"))}</span>
+          <strong>${decision.evidenceCount}</strong>
+        </div>
+        <dl class="review-facts">
+          <div><dt>evals</dt><dd>${escapeHtml(evidence.evals[0] || "none yet")}</dd></div>
+          <div><dt>reports</dt><dd>${escapeHtml(evidence.reports[0] || "none yet")}</dd></div>
+          <div><dt>review notes</dt><dd>${escapeHtml(evidence.review_notes[0] || "none yet")}</dd></div>
+          <div><dt>trigger samples</dt><dd>${escapeHtml(evidence.trigger_samples[0] || "none yet")}</dd></div>
+        </dl>
+      </article>
+
+      <article class="review-card">
+        <div class="package-section-head">
+          <span class="label">${escapeHtml(t("review.next"))}</span>
+          <strong>${escapeHtml(decision.installable ? t("review.preparePr") : t("review.addEvidence"))}</strong>
+        </div>
+        <ul class="review-blockers">
+          ${blockers.map((blocker) => `<li>${escapeHtml(blocker)}</li>`).join("")}
+        </ul>
+        <div class="review-actions">
+          <button type="button" data-review-action="evidence">${escapeHtml(t("review.addEvidence"))}</button>
+          <button type="button" data-review-action="diff">${escapeHtml(t("review.preparePr"))}</button>
+        </div>
+      </article>
+    </section>
+  `;
+}
+
+function renderHistory() {
+  if (!historyWorkspace) return;
+  const changedFiles = [
+    ...allFiles().filter((file) => file.changed).map((file) => ({ path: file.path, kind: file.created ? "created" : "changed" })),
+    ...deletedFiles.map((file) => ({ path: file.path, kind: "deleted" })),
+    ...deletedPackages.flatMap((pkg) => pkg.files.map((file) => ({ path: file.path, kind: "deleted" })))
+  ];
+  const steps = [
+    [t("history.local"), t("history.localBody")],
+    [t("history.pr"), t("history.prBody")],
+    [t("history.ci"), t("history.ciBody")],
+    [t("history.merge"), t("history.mergeBody")],
+    [t("history.install"), t("history.installBody")]
+  ];
+  historyWorkspace.innerHTML = `
+    <section class="history-hero">
+      <div>
+        <span class="label">${escapeHtml(t("history.label"))}</span>
+        <h2>${escapeHtml(t("history.title"))}</h2>
+        <p>${escapeHtml(t("history.body"))}</p>
+      </div>
+      <div class="history-database">
+        <span class="label">${escapeHtml(t("history.database"))}</span>
+        <p>${escapeHtml(t("history.databaseBody"))}</p>
+      </div>
+    </section>
+
+    <section class="history-grid">
+      <article class="history-card span-2">
+        <div class="history-timeline">
+          ${steps.map(([label, detail], index) => `
+            <div class="history-step">
+              <span>${index + 1}</span>
+              <strong>${escapeHtml(label)}</strong>
+              <p>${escapeHtml(detail)}</p>
+            </div>
+          `).join("")}
+        </div>
+      </article>
+
+      <article class="history-card">
+        <div class="package-section-head">
+          <span class="label">${escapeHtml(t("history.changedFiles"))}</span>
+          <strong>${changedFiles.length}</strong>
+        </div>
+        ${changedFiles.length ? `
+          <ul class="history-changes">
+            ${changedFiles.slice(0, 12).map((file) => `<li><strong>${escapeHtml(file.kind)}</strong><span>${escapeHtml(file.path)}</span></li>`).join("")}
+          </ul>
+        ` : `<p>${escapeHtml(t("history.noChanges"))}</p>`}
+      </article>
+    </section>
+  `;
+}
+
 function renderPackageIndex() {
   if (!packageIndex) return;
   renderDashboard();
+  renderLibrary();
+  renderReviewWorkspace();
+  renderHistory();
   const entry = entryForPackage(selectedPackage);
   const fm = frontmatterForPackage(selectedPackage);
   const decision = approvalDecision(selectedPackage);
@@ -3120,6 +3431,29 @@ dashboard?.addEventListener("click", (event) => {
   }
 });
 
+libraryWorkspace?.addEventListener("click", (event) => {
+  const packageButton = event.target.closest("[data-library-package], [data-library-review], [data-category-package]");
+  if (!packageButton) return;
+  const packageName = packageButton.dataset.libraryPackage || packageButton.dataset.libraryReview || packageButton.dataset.categoryPackage;
+  const pkg = repo.packages.find((item) => item.name === packageName);
+  const entry = pkg?.files.find((file) => file.kind === "entrypoint") || pkg?.files[0];
+  if (!entry) return;
+  void selectFile(entry.path);
+  if (packageButton.dataset.libraryReview) setView("review");
+  else setView("package");
+});
+
+reviewWorkspace?.addEventListener("click", (event) => {
+  const action = event.target.closest("[data-review-action]")?.dataset.reviewAction;
+  if (action === "evidence") {
+    createFileFromTemplate("evidence");
+    setView("edit");
+  } else if (action === "diff") {
+    renderDiff();
+    setView("diff");
+  }
+});
+
 searchInput?.addEventListener("input", renderTree);
 filterInputs.forEach((input) => input.addEventListener("change", renderTree));
 
@@ -3320,7 +3654,7 @@ applyLocale(currentLocale);
 applyEditorSettings(editorSettings);
 setTutorialPanelVisible(localStorage.getItem(TUTORIAL_FINISHED_KEY) !== "true");
 void selectFile("skills/skill-creator/SKILL.md");
-setView(["dashboard", "package", "edit", "preview", "diff", "registry"].includes(window.location.hash.slice(1)) ? window.location.hash.slice(1) : "dashboard");
+setView(["dashboard", "library", "review", "package", "edit", "preview", "diff", "registry", "history"].includes(window.location.hash.slice(1)) ? window.location.hash.slice(1) : "dashboard");
 setZenMode(window.location.hash === "#zen");
 if (window.location.hash === "#settings") {
   settingsPopover?.classList.remove("hidden");
