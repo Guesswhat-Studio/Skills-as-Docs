@@ -3,11 +3,11 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Agent SkillDocs · Skill Package Manager</title>
-    <meta name="description" content="A GitHub Pages manager for reviewing and editing Agent Skill packages as repository trees.">
+    <title>Skills Charter · Agent Skill Governance</title>
+    <meta name="description" content="A GitHub Pages manager for reviewing, chartering, and approving Agent Skill packages before runtime.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap">
     <link rel="stylesheet" href="./assets/site.css">
     <script src="./assets/site.js" defer></script>
   </head>
@@ -15,34 +15,51 @@
     <div class="app-shell">
       <header class="topbar">
         <a class="brand" href="#">
-          <span class="brand-mark">SD</span>
+          <span class="brand-mark">SC</span>
           <span>
-            <strong>Agent SkillDocs</strong>
-            <small data-i18n="brand.subtitle">Package tree editor</small>
+            <strong>Skills Charter</strong>
+            <small data-i18n="brand.subtitle">Governance manager</small>
           </span>
         </a>
 
-        <div class="repo-context" aria-label="Repository context">
-          <span>anthropics/skills</span>
-          <span>main</span>
-          <span>skills.json preview</span>
+        <div class="repo-context" aria-label="Workspace context" data-i18n-aria="context.aria">
+          <span class="context-chip">
+            <span class="context-label" data-i18n="context.repo">Repo</span>
+            <strong data-repo-context-name>anthropics/skills</strong>
+          </span>
+          <span class="context-chip">
+            <span class="context-label" data-i18n="context.branch">Branch</span>
+            <strong data-repo-context-branch>main</strong>
+          </span>
+          <span class="context-chip">
+            <span class="context-label" data-i18n="context.registry">Registry</span>
+            <strong data-repo-context-mode>skills.json preview</strong>
+          </span>
+          <span class="context-chip sync-state" data-sync-state>No local edits</span>
         </div>
 
-        <div class="topbar-actions">
-          <span class="sync-state" data-sync-state>Clean</span>
-          <button type="button" data-import-open data-i18n="action.import">Import skills</button>
-          <button type="button" class="locale-toggle" data-locale-toggle aria-label="Switch language" title="Switch language">中</button>
-          <button type="button" class="icon-button" data-settings-toggle aria-label="Workspace settings" aria-expanded="false" aria-controls="settings-popover" title="Workspace settings" data-i18n-aria="action.settings" data-i18n-title="action.settings">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5Z"></path><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 0 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1A2 2 0 0 1 4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1A2 2 0 0 1 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1A2 2 0 0 1 19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1h.1a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"></path></svg>
-          </button>
-          <button type="button" class="icon-button" data-theme-toggle aria-label="Toggle theme" title="Toggle theme" data-i18n-aria="action.theme" data-i18n-title="action.theme">
-            <svg data-theme-icon viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A8.3 8.3 0 1 1 11.2 3a6.6 6.6 0 0 0 9.8 9.8Z"></path></svg>
-          </button>
-          <a class="icon-button" href="https://github.com/Guesswhat-Studio/Skills-as-Docs" aria-label="GitHub" title="GitHub">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.3a9.7 9.7 0 0 0-3.1 18.9c.5.1.7-.2.7-.5v-1.9c-2.8.6-3.4-1.2-3.4-1.2-.5-1.1-1.1-1.4-1.1-1.4-.9-.6.1-.6.1-.6 1 .1 1.6 1.1 1.6 1.1.9 1.5 2.4 1.1 2.9.8.1-.7.4-1.1.7-1.3-2.2-.3-4.6-1.1-4.6-4.8 0-1.1.4-1.9 1-2.6-.1-.3-.4-1.3.1-2.6 0 0 .8-.3 2.7 1a9.3 9.3 0 0 1 4.9 0c1.9-1.3 2.7-1 2.7-1 .5 1.3.2 2.3.1 2.6.6.7 1 1.5 1 2.6 0 3.7-2.3 4.5-4.6 4.8.4.3.7 1 .7 2v2.9c0 .3.2.6.7.5A9.7 9.7 0 0 0 12 2.3Z"></path></svg>
-          </a>
-          <button type="button" data-run-checks title="Recompute browser-side lint rules" data-i18n="action.runChecks" data-i18n-title="action.runChecksTitle">Run checks</button>
-          <button type="button" class="primary" data-open-pr title="Prepare a PR payload; GitHub sync needs authentication" data-i18n="action.preparePr" data-i18n-title="action.preparePrTitle">Prepare draft PR</button>
+        <div class="topbar-actions" aria-label="Workspace actions" data-i18n-aria="actions.aria">
+          <div class="action-group action-reference">
+            <button type="button" class="text-button" data-tutorial-toggle aria-expanded="false" data-i18n="action.tutorial">Tutorial</button>
+            <a class="text-button" href="./blogs/agent-skills-need-governance.html" data-i18n="action.manifesto">Manifesto</a>
+          </div>
+          <div class="action-group action-workflow">
+            <button type="button" data-import-open data-i18n="action.import">Import skills</button>
+            <button type="button" data-run-checks title="Recompute browser-side lint rules" data-i18n="action.runChecks" data-i18n-title="action.runChecksTitle">Run checks</button>
+            <button type="button" class="primary" data-open-pr title="Prepare a PR payload; GitHub sync needs authentication" data-i18n="action.preparePr" data-i18n-title="action.preparePrTitle">Prepare draft PR</button>
+          </div>
+          <div class="action-group action-utilities" aria-label="Utilities" data-i18n-aria="actions.utilities">
+            <button type="button" class="locale-toggle" data-locale-toggle aria-label="Switch language" title="Switch language">中</button>
+            <button type="button" class="icon-button" data-settings-toggle aria-label="Workspace settings" aria-expanded="false" aria-controls="settings-popover" title="Workspace settings" data-i18n-aria="action.settings" data-i18n-title="action.settings">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5Z"></path><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 0 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1A2 2 0 0 1 4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1A2 2 0 0 1 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1A2 2 0 0 1 19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1h.1a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"></path></svg>
+            </button>
+            <button type="button" class="icon-button" data-theme-toggle aria-label="Toggle theme" title="Toggle theme" data-i18n-aria="action.theme" data-i18n-title="action.theme">
+              <svg data-theme-icon viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A8.3 8.3 0 1 1 11.2 3a6.6 6.6 0 0 0 9.8 9.8Z"></path></svg>
+            </button>
+            <a class="icon-button" href="https://github.com/Guesswhat-Studio/Skills-Charter" aria-label="GitHub" title="GitHub">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.3a9.7 9.7 0 0 0-3.1 18.9c.5.1.7-.2.7-.5v-1.9c-2.8.6-3.4-1.2-3.4-1.2-.5-1.1-1.1-1.4-1.1-1.4-.9-.6.1-.6.1-.6 1 .1 1.6 1.1 1.6 1.1.9 1.5 2.4 1.1 2.9.8.1-.7.4-1.1.7-1.3-2.2-.3-4.6-1.1-4.6-4.8 0-1.1.4-1.9 1-2.6-.1-.3-.4-1.3.1-2.6 0 0 .8-.3 2.7 1a9.3 9.3 0 0 1 4.9 0c1.9-1.3 2.7-1 2.7-1 .5 1.3.2 2.3.1 2.6.6.7 1 1.5 1 2.6 0 3.7-2.3 4.5-4.6 4.8.4.3.7 1 .7 2v2.9c0 .3.2.6.7.5A9.7 9.7 0 0 0 12 2.3Z"></path></svg>
+            </a>
+          </div>
         </div>
       </header>
 
@@ -141,6 +158,7 @@
             <label><input type="checkbox" data-filter="entrypoint" checked> entrypoint</label>
             <label><input type="checkbox" data-filter="supporting" checked> supporting files</label>
             <label><input type="checkbox" data-filter="script" checked> scripts</label>
+            <label><input type="checkbox" data-filter="evidence" checked> evidence</label>
             <label><input type="checkbox" data-filter="changed"> changed only</label>
           </div>
 
@@ -154,7 +172,9 @@
               <h1 data-current-path>skills/skill-creator/SKILL.md</h1>
             </div>
             <div class="view-tabs" role="tablist" aria-label="Editor views">
-              <button type="button" class="active" data-view="edit" data-i18n="view.edit">Edit</button>
+              <button type="button" class="active" data-view="dashboard" data-i18n="view.dashboard">Dashboard</button>
+              <button type="button" data-view="package" data-i18n="view.package">Package</button>
+              <button type="button" data-view="edit" data-i18n="view.edit">Edit</button>
               <button type="button" data-view="preview" data-i18n="view.preview">Preview</button>
               <button type="button" data-view="diff" data-i18n="view.diff">Diff</button>
               <button type="button" data-view="registry" data-i18n="view.registry">Registry</button>
@@ -162,7 +182,23 @@
             </div>
           </div>
 
-          <div class="editor-surface" data-view-surface="edit">
+          <section class="governance-progress editor-governance" aria-label="Governance pipeline">
+            <div class="progress-head">
+              <span class="label">Pipeline</span>
+              <strong data-package-name>skill-creator</strong>
+            </div>
+            <div class="pipeline-steps" data-governance-progress></div>
+          </section>
+
+          <div class="dashboard-surface" data-view-surface="dashboard">
+            <div class="governance-dashboard" data-dashboard></div>
+          </div>
+
+          <div class="package-surface" data-view-surface="package">
+            <div class="package-index" data-package-index></div>
+          </div>
+
+          <div class="editor-surface hidden" data-view-surface="edit">
             <pre class="editor-highlight" data-editor-highlight aria-hidden="true"></pre>
             <textarea spellcheck="false" data-editor aria-label="Selected file editor"></textarea>
           </div>
@@ -195,23 +231,26 @@
         </section>
 
         <aside class="inspector" aria-label="Inspector" data-i18n-aria="inspector.aria">
-          <details class="inspector-section" open>
+          <details class="inspector-section" data-inspector-section="metadata" open>
             <summary class="section-title">
               <span class="label" data-i18n="inspector.metadata">Metadata</span>
-              <strong>SKILL.md frontmatter</strong>
             </summary>
             <div class="field-grid">
               <label>
                 <span><span data-i18n="field.name">name</span> <small data-i18n="field.required">required</small></span>
                 <input data-field="name" data-required="true" type="text">
               </label>
-              <label>
+              <label class="wide-field">
                 <span><span data-i18n="field.description">description</span> <small data-i18n="field.required">required</small></span>
                 <textarea data-field="description" data-required="true"></textarea>
               </label>
               <label>
                 <span><span data-i18n="field.category">category</span> <small data-i18n="field.optional">optional</small></span>
                 <input data-field="category" type="text" placeholder="Writing, coding, research..." data-i18n-placeholder="field.categoryPlaceholder">
+              </label>
+              <label>
+                <span><span data-i18n="field.topics">topics</span> <small data-i18n="field.optional">optional</small></span>
+                <input data-field="topics" type="text" placeholder="review, security, docs..." data-i18n-placeholder="field.topicsPlaceholder">
               </label>
               <label>
                 <span><span data-i18n="field.version">version</span> <small data-i18n="field.optional">optional</small></span>
@@ -225,37 +264,88 @@
                 <span><span data-i18n="field.reviewStatus">review status</span> <small data-i18n="field.optional">optional</small></span>
                 <select data-field="review_status">
                   <option value="" data-i18n="field.unset">Unset</option>
+                  <option value="candidate">candidate</option>
+                  <option value="in_review">in_review</option>
                   <option value="draft">draft</option>
                   <option value="review">review</option>
                   <option value="approved">approved</option>
+                  <option value="rejected">rejected</option>
+                  <option value="deprecated">deprecated</option>
+                  <option value="retired">retired</option>
                 </select>
+              </label>
+              <label>
+                <span><span>source type</span> <small data-i18n="field.optional">optional</small></span>
+                <select data-field="source_type">
+                  <option value="" data-i18n="field.unset">Unset</option>
+                  <option value="manual">manual</option>
+                  <option value="public_import">public_import</option>
+                  <option value="generated">generated</option>
+                  <option value="evolved">evolved</option>
+                  <option value="internal_template">internal_template</option>
+                </select>
+              </label>
+              <label class="wide-field">
+                <span><span>source url</span> <small data-i18n="field.optional">optional</small></span>
+                <input data-field="source_url" type="url" placeholder="https://github.com/org/repo/tree/main/skills/name">
+              </label>
+              <label>
+                <span><span>generator</span> <small data-i18n="field.optional">optional</small></span>
+                <input data-field="generator" type="text" placeholder="claude skill-creator, SkillClaw...">
+              </label>
+              <label>
+                <span><span>approved by</span> <small data-i18n="field.optional">optional</small></span>
+                <input data-field="approved_by" type="text" placeholder="@reviewer">
               </label>
             </div>
             <p class="hint" data-i18n="inspector.metadataHint">These fields are a form view of the selected package's `SKILL.md` frontmatter. Editing here rewrites the Markdown frontmatter; editing `SKILL.md` updates this panel.</p>
           </details>
 
-          <details class="inspector-section">
+          <details class="inspector-section" data-inspector-section="review-gate">
+            <summary class="section-title">
+              <span class="label">Review gate</span>
+            </summary>
+            <p class="section-kpi approval-summary" data-approval-summary>Install gated until approval.</p>
+            <ul class="check-list" data-review-gate></ul>
+            <p class="hint">Public, generated, and evolved skills stay as candidates until provenance, evidence, and high-risk findings are reviewed.</p>
+          </details>
+
+          <details class="inspector-section" data-inspector-section="labels">
             <summary class="section-title">
               <span class="label" data-i18n="inspector.labels">Labels</span>
-              <strong data-i18n="inspector.generated">generated</strong>
             </summary>
             <div class="metadata-chips" data-metadata-chips></div>
             <p class="hint" data-i18n="inspector.labelsHint">Generated from frontmatter, file type, and package scan. Future versions can write selected labels back to metadata.</p>
           </details>
 
-          <details class="inspector-section">
+          <details class="inspector-section" data-inspector-section="live-lint">
             <summary class="section-title">
               <span class="label" data-i18n="inspector.liveLint">Live lint</span>
-              <strong data-risk-summary>Browser checks</strong>
             </summary>
+            <p class="section-kpi" data-risk-summary>Browser checks</p>
             <ul class="check-list" data-check-list></ul>
             <p class="hint" data-i18n="inspector.lintHint">Risk is derived from this lint list: failures make it high, warnings make it medium, and a clean package is low. CI is the final gate before merge.</p>
           </details>
 
-          <details class="inspector-section">
+          <details class="inspector-section" data-inspector-section="provenance">
+            <summary class="section-title">
+              <span class="label">Provenance</span>
+            </summary>
+            <dl class="package-facts" data-provenance-facts></dl>
+            <p class="hint">Record where a skill came from before it becomes team memory.</p>
+          </details>
+
+          <details class="inspector-section" data-inspector-section="evidence">
+            <summary class="section-title">
+              <span class="label">Evidence</span>
+            </summary>
+            <div class="evidence-grid" data-evidence-summary></div>
+            <p class="hint">Attach evals, reports, review notes, or trigger samples to support approval.</p>
+          </details>
+
+          <details class="inspector-section" data-inspector-section="install">
             <summary class="section-title">
               <span class="label" data-i18n="inspector.install">Install</span>
-              <strong>npx skills</strong>
             </summary>
             <div class="agent-tabs" aria-label="Install target" data-i18n-aria="install.target">
               <button type="button" class="active" data-agent="codex">Codex</button>
@@ -263,14 +353,14 @@
               <button type="button" data-agent="antigravity">Antigravity</button>
             </div>
             <p class="hint" data-i18n="install.hint">Discovery stays non-mutating; install writes the package into the selected agent target.</p>
+            <p class="install-status" data-install-status></p>
             <pre class="install-command muted"><code data-list-command></code></pre>
             <pre class="install-command"><code data-install-command></code></pre>
           </details>
 
-          <details class="inspector-section">
+          <details class="inspector-section" data-inspector-section="package-scope">
             <summary class="section-title">
               <span class="label" data-i18n="inspector.packageScope">Package scope</span>
-              <strong data-package-name>skill-creator</strong>
             </summary>
             <dl class="package-facts">
               <div><dt>entrypoint</dt><dd data-package-entry>SKILL.md</dd></div>
@@ -278,8 +368,53 @@
               <div><dt>risk</dt><dd data-package-risk>scripts present</dd></div>
             </dl>
           </details>
+
+          <details class="inspector-section" data-inspector-section="file-actions">
+            <summary class="section-title">
+              <span class="label" data-i18n="inspector.files">Files</span>
+            </summary>
+            <p class="section-kpi" data-file-action-summary>Selected file: SKILL.md</p>
+            <div class="file-action-buttons">
+              <button type="button" data-create-file="reference" data-i18n="file.addReference">Reference</button>
+              <button type="button" data-create-file="template" data-i18n="file.addTemplate">Template</button>
+              <button type="button" data-create-file="example" data-i18n="file.addExample">Example</button>
+              <button type="button" data-create-file="script" data-i18n="file.addScript">Script</button>
+              <button type="button" data-create-file="asset" data-i18n="file.addAsset">Asset note</button>
+              <button type="button" data-create-file="evidence" data-i18n="file.addEvidence">Evidence</button>
+            </div>
+            <div class="file-action-buttons compact">
+              <button type="button" data-rename-file data-i18n="file.rename">Rename file</button>
+              <button type="button" class="danger" data-delete-file data-i18n="file.delete">Delete file</button>
+            </div>
+            <p class="hint" data-i18n="file.hint">Add supporting files as Git-tracked package material. SKILL.md remains the entrypoint; rename the package to move it.</p>
+          </details>
+
         </aside>
       </main>
+
+      <div class="tutorial-overlay hidden" data-tutorial-panel role="dialog" aria-modal="false" aria-label="Guided demo tutorial" data-i18n-aria="tutorial.aria">
+        <div class="tutorial-scrim" aria-hidden="true"></div>
+        <section class="tutorial-coachmark">
+          <div class="tutorial-head">
+            <div>
+              <span class="label" data-i18n="tutorial.label">Guided demo</span>
+              <strong data-i18n="tutorial.title">Public skill intake review</strong>
+            </div>
+            <button type="button" class="icon-button tutorial-close" data-tutorial-dismiss aria-label="Hide tutorial" data-i18n-aria="tutorial.hide">×</button>
+          </div>
+          <ol class="tutorial-steps" data-tutorial-steps aria-label="Tutorial steps" data-i18n-aria="tutorial.stepsAria"></ol>
+          <div class="tutorial-action">
+            <span class="label" data-tutorial-counter>Step 1 of 6</span>
+            <strong data-tutorial-title>Import public repo</strong>
+            <p data-tutorial-body>Load anthropics/skills. Public discovery stays fast; approval stays in Git.</p>
+            <div class="tutorial-buttons">
+              <button type="button" data-tutorial-prev data-i18n="tutorial.prev">Back</button>
+              <button type="button" class="primary" data-tutorial-apply>Load anthropics/skills</button>
+              <button type="button" data-tutorial-next data-i18n="tutorial.next">Next</button>
+            </div>
+          </div>
+        </section>
+      </div>
     </div>
   </body>
 </html>
