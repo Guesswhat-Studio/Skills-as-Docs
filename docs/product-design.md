@@ -163,6 +163,16 @@ The interface should feel like a quiet operational console:
 
 The product home is not a landing page. It is the working surface for a team skill library.
 
+## Current Pages Redesign
+
+The `charter` branch implementation follows the latest `redesign/` dashboard direction and treats the manager as an operational console:
+
+- **Dashboard first**: repository health, review queue, live findings, changed files, and registry readiness are the first screen.
+- **Package as unit**: `SKILL.md`, references, scripts, assets, agents, eval viewers, and review notes are all displayed as package material.
+- **Governance before editing**: the editor is present, but it sits inside the intake-review-approval-registry flow.
+- **Static by design**: browser-local edits are clearly temporary; Git, CI, and generated registry output remain the durable backend.
+- **Copyable workflow**: the demo uses Anthropic-style public skill intake to show why public discovery and internal approval are separate steps.
+
 ## MVP Navigation
 
 The current static manager should expose:
