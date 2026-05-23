@@ -163,6 +163,8 @@ In the real P0 implementation, CI should run equivalent checks plus link validat
 
 The static manager prepares staged file context, review notes, registry preview, install snippets, and PR intent. It does not create a GitHub PR without authentication.
 
+The `Pull Requests` workspace fetches open PRs from the configured public GitHub repository and shows branch context, changed files, affected skills, policy hints, and Git handoff commands. It is a review cockpit, not an authenticated merge client.
+
 The prototype generates:
 
 - changed file summary;

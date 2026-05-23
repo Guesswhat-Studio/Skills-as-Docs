@@ -64,6 +64,15 @@ No user/account chip is shown in the top bar until Skills Charter has authentica
 | `Delete skill` | active | Deletes the selected browser-local package after confirmation. |
 | font size slider | active | Changes editor, preview, and diff font scale. |
 
+## Pull Requests
+
+| Control | Status | Behavior |
+| --- | --- | --- |
+| `Refresh PRs` | active | Fetches open pull requests and selected PR files from the configured public GitHub repository. |
+| PR rows | active | Selects a PR and loads its changed files. |
+| `Open on GitHub` | active | Opens the selected PR in GitHub for review, checks, comments, or merge. |
+| Git handoff command block | explanatory | Shows checkout, policy, registry generation, commit, push, and merge commands. It does not execute commands in the browser. |
+
 ## Review, Registry, And History
 
 | Control | Status | Behavior |

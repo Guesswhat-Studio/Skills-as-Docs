@@ -94,6 +94,7 @@ const copy = {
     "route.library": "Library",
     "route.editor": "Editor",
     "route.review": "Review",
+    "route.prs": "Pull Requests",
     "route.registry": "Registry",
     "route.history": "History",
     "action.sync": "sync",
@@ -103,6 +104,7 @@ const copy = {
     "action.tutorial": "Tutorial",
     "action.manifesto": "Manifesto",
     "action.runPolicy": "Run policy",
+    "action.refreshPrs": "Refresh PRs",
     "action.runPdfIntake": "Run PDF intake",
     "action.running": "Running...",
     "search.placeholder": "Find package, finding, or commit...",
@@ -130,6 +132,8 @@ const copy = {
     "library.subtitle": "Inspect the corpus by package, category, lifecycle, risk, owner, and install readiness.",
     "review.title": "Review before install",
     "review.subtitle": "Policy checks become review work. Approval stays durable in Git.",
+    "prs.title": "Pull request cockpit",
+    "prs.subtitle": "Fetch open PRs, inspect changed skills, and hand off checkout, fix, policy, and merge commands through Git.",
     "editor.title": "Skill editor",
     "editor.subtitle": "Choose a governed package, inspect its structure, edit files, preview, diff, and switch into Zen without leaving the editor.",
     "package.title": "Package workspace",
@@ -156,6 +160,7 @@ const copy = {
     "tutorial.finish": "Finish",
     "tutorial.replay": "You can replay this from the Tutorial button in the top bar.",
     "toast.synced": "Registry reloaded from the configured GitHub repository.",
+    "toast.prs": "Pull requests reloaded from the configured GitHub repository.",
     "toast.checks": "Policy checks recalculated from the current staged package state.",
     "toast.intake": "New candidate package created in browser-local state.",
     "toast.settings": "Workspace settings saved in browser-local state."
@@ -169,6 +174,7 @@ const copy = {
     "route.library": "库",
     "route.editor": "编辑器",
     "route.review": "审查",
+    "route.prs": "Pull Requests",
     "route.registry": "注册表",
     "route.history": "历史",
     "action.sync": "同步",
@@ -178,6 +184,7 @@ const copy = {
     "action.tutorial": "教程",
     "action.manifesto": "宣言",
     "action.runPolicy": "运行策略",
+    "action.refreshPrs": "刷新 PR",
     "action.runPdfIntake": "导入 PDF",
     "action.running": "运行中...",
     "search.placeholder": "搜索 skill、风险、提交...",
@@ -205,6 +212,8 @@ const copy = {
     "library.subtitle": "按包、分类、生命周期、风险、owner 和可安装状态查看。",
     "review.title": "先审查，后安装",
     "review.subtitle": "策略检查会变成审查任务，审批结论保留在 Git 中。",
+    "prs.title": "Pull Request 工作台",
+    "prs.subtitle": "读取 open PR，查看变更的 skills，并通过 Git 命令完成 checkout、修复、策略检查和合并交接。",
     "editor.title": "Skill 编辑器",
     "editor.subtitle": "选择受治理的 package，查看结构、编辑文件、预览、diff，并在同一个编辑器里进入专注模式。",
     "package.title": "Package 工作台",
@@ -231,6 +240,7 @@ const copy = {
     "tutorial.finish": "完成",
     "tutorial.replay": "之后可以从顶部 Tutorial 按钮重新查看。",
     "toast.synced": "已从配置的 GitHub 仓库重新加载 registry。",
+    "toast.prs": "已从配置的 GitHub 仓库重新加载 Pull Requests。",
     "toast.checks": "已根据当前 staged package 状态重新计算策略检查。",
     "toast.intake": "已在浏览器本地状态中新建 candidate package。",
     "toast.settings": "工作区设置已保存到浏览器本地状态。"
@@ -244,7 +254,8 @@ const navGroups = [
       ["dashboard", "D", null],
       ["library", "L", 47],
       ["editor", "E", null],
-      ["review", "R", 12, true]
+      ["review", "R", 12, true],
+      ["prs", "P", null]
     ]
   },
   {
@@ -284,6 +295,12 @@ const state = {
   dataStatus: "embedded",
   dataSource: "embedded snapshot",
   loadError: "",
+  pullRequests: [],
+  selectedPullRequest: "",
+  pullRequestFiles: [],
+  pullRequestStatus: "idle",
+  pullRequestFilesStatus: "idle",
+  pullRequestError: "",
   intakeStatus: "",
   localFiles: [],
   busy: "",
@@ -334,6 +351,10 @@ function rawFileUrl(path) {
 
 function githubRawUrl(repo, branch, path) {
   return `https://raw.githubusercontent.com/${cleanRepoName(repo)}/${encodeURIComponent(branch || "main")}/${encodePath(path)}`;
+}
+
+function githubApiUrl(path) {
+  return `https://api.github.com/repos/${cleanRepoName()}/${path.replace(/^\/+/, "")}`;
 }
 
 function formatDateTime(value) {
@@ -1200,6 +1221,131 @@ async function loadRegistryFromGitHub(notify = false) {
   }
 }
 
+function normalizePullRequest(pr) {
+  return {
+    number: pr.number,
+    title: pr.title || `PR #${pr.number}`,
+    htmlUrl: pr.html_url,
+    draft: Boolean(pr.draft),
+    user: pr.user?.login || "unknown",
+    baseRef: pr.base?.ref || state.managedBranch,
+    baseRepo: pr.base?.repo?.full_name || cleanRepoName(),
+    headRef: pr.head?.ref || "",
+    headSha: pr.head?.sha || "",
+    headRepo: pr.head?.repo?.full_name || cleanRepoName(),
+    changedFiles: pr.changed_files || 0,
+    additions: pr.additions || 0,
+    deletions: pr.deletions || 0,
+    updatedAt: pr.updated_at,
+    labels: (pr.labels || []).map((label) => label.name).filter(Boolean)
+  };
+}
+
+async function loadPullRequests(notify = false) {
+  state.pullRequestStatus = "loading";
+  state.pullRequestError = "";
+  if (notify || state.route === "prs") render();
+
+  try {
+    const response = await fetch(`${githubApiUrl("pulls?state=open&per_page=30")}&ts=${Date.now()}`, { cache: "no-store" });
+    if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+    const prs = (await response.json()).map(normalizePullRequest);
+    state.pullRequests = prs;
+    state.pullRequestStatus = "ready";
+    if (!prs.some((pr) => String(pr.number) === String(state.selectedPullRequest))) {
+      state.selectedPullRequest = prs[0]?.number ? String(prs[0].number) : "";
+    }
+    if (notify) showToast(t("toast.prs"));
+    if (state.selectedPullRequest) {
+      await loadPullRequestFiles(state.selectedPullRequest, false);
+    } else {
+      state.pullRequestFiles = [];
+      state.pullRequestFilesStatus = "ready";
+      render();
+    }
+  } catch (error) {
+    state.pullRequestStatus = "error";
+    state.pullRequestError = error.message || String(error);
+    state.pullRequestFiles = [];
+    state.pullRequestFilesStatus = "idle";
+    render();
+  }
+}
+
+async function loadPullRequestFiles(number, notify = true) {
+  if (!number) return;
+  state.pullRequestFilesStatus = "loading";
+  if (notify || state.route === "prs") render();
+
+  try {
+    const response = await fetch(`${githubApiUrl(`pulls/${number}/files?per_page=100`)}&ts=${Date.now()}`, { cache: "no-store" });
+    if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+    state.pullRequestFiles = (await response.json()).map((file) => ({
+      path: file.filename,
+      status: file.status,
+      additions: file.additions || 0,
+      deletions: file.deletions || 0,
+      changes: file.changes || 0,
+      patch: file.patch || "",
+      kind: inferFileKind(file.filename),
+      rawUrl: file.raw_url,
+      blobUrl: file.blob_url
+    }));
+    const pr = state.pullRequests.find((item) => String(item.number) === String(number));
+    if (pr) pr.changedFiles = state.pullRequestFiles.length;
+    state.pullRequestFilesStatus = "ready";
+    render();
+  } catch (error) {
+    state.pullRequestFilesStatus = "error";
+    state.pullRequestError = error.message || String(error);
+    state.pullRequestFiles = [];
+    render();
+  }
+}
+
+function currentPullRequest() {
+  return state.pullRequests.find((pr) => String(pr.number) === String(state.selectedPullRequest)) || state.pullRequests[0];
+}
+
+function changedSkillsFromFiles(files) {
+  return uniqueList(files
+    .map((file) => String(file.path || "").match(/^skills\/([^/]+)\//)?.[1])
+    .filter(Boolean));
+}
+
+function pullRequestPolicyChecks(pr, files) {
+  const changedSkills = changedSkillsFromFiles(files);
+  const scriptsChanged = files.some((file) => file.kind === "script" && /^skills\//.test(file.path));
+  const evidenceChanged = files.some((file) => /^skills\/[^/]+\/review-notes?\//i.test(file.path));
+  const registryChanged = files.some((file) => file.path === "skills.json");
+  const manifestChanged = files.some((file) => /^skills\/[^/]+\/SKILL\.md$/i.test(file.path));
+  const changedPackageFiles = files.some((file) => /^skills\//.test(file.path));
+  const evidenceDetail = scriptsChanged
+    ? evidenceChanged
+      ? "Script changes have review evidence in the diff."
+      : "Script changes need review notes in the PR."
+    : "No script evidence required by the file list.";
+
+  return [
+    ["Changed skills detected", changedSkills.length > 0, changedSkills.length ? changedSkills.join(", ") : "No skills/* package files changed."],
+    ["Manifest reviewed", manifestChanged || !changedPackageFiles, manifestChanged ? "SKILL.md is part of the diff." : "No package manifest changed."],
+    ["Evidence included", evidenceChanged || !scriptsChanged, evidenceDetail],
+    ["Registry drift visible", registryChanged, registryChanged ? "skills.json is updated in this PR." : "Run generate registry before merge if approval changed."],
+    ["Local checkout path", Boolean(pr), pr ? `gh pr checkout ${pr.number}` : "Select an open pull request."]
+  ];
+}
+
+function mergeCommand(pr) {
+  if (!pr) return "";
+  return `gh pr checkout ${pr.number}
+npm run check
+npm run skills-charter -- generate registry --approved-only --source ${cleanRepoName()} --branch ${pr.headRef || state.managedBranch} --out skills.json --policy strict
+git add skills skills.json
+git commit -m "review(${changedSkillsFromFiles(state.pullRequestFiles)[0] || "skills"}): address governance findings"
+git push
+gh pr merge ${pr.number} --squash --delete-branch`;
+}
+
 function packageById(id) {
   return seed.packages.find((pkg) => pkg.id === id) || seed.packages[0] || {
     id: "",
@@ -1301,7 +1447,7 @@ function renderSidebar() {
     <div class="nav-section">${t(group.label)}</div>
     <nav class="nav-list" aria-label="${esc(t(group.label))}">
       ${group.items.map(([route, glyph, count, alert]) => {
-        const liveCount = route === "library" ? seed.metrics.total : route === "review" ? seed.metrics.queue : route === "registry" ? seed.metrics.approved : count;
+        const liveCount = route === "library" ? seed.metrics.total : route === "review" ? seed.metrics.queue : route === "registry" ? seed.metrics.approved : route === "prs" ? state.pullRequests.length : count;
         const liveAlert = route === "review" ? seed.metrics.queue > 0 : alert;
         return `
         <button type="button" class="nav-item ${state.route === route ? "active" : ""}" data-action="route" data-route="${route}">
@@ -1899,6 +2045,68 @@ function renderDiff(file) {
   <div class="diff-view">${lines.map(([type, mark, text]) => `<div class="diff-line ${type}"><span>${mark}</span><span>${esc(text)}</span></div>`).join("")}</div>`;
 }
 
+function renderPullRequests() {
+  const pr = currentPullRequest();
+  const files = state.pullRequestFiles || [];
+  const changedSkills = changedSkillsFromFiles(files);
+  const checks = pullRequestPolicyChecks(pr, files);
+  const loading = state.pullRequestStatus === "loading" || state.pullRequestFilesStatus === "loading";
+  const error = state.pullRequestStatus === "error" || state.pullRequestFilesStatus === "error";
+  const meta = `<button type="button" class="button subtle" data-action="refresh-prs">${icons.sync}${t("action.refreshPrs")}</button>`;
+
+  return `${pageHead(t("prs.title"), t("prs.subtitle"), meta)}
+    ${error ? `<section class="empty-state">Could not load Pull Requests from ${esc(cleanRepoName())}: ${esc(state.pullRequestError)}. Public repositories work without auth; private repositories need a future GitHub auth flow.</section>` : ""}
+    <div class="view-layout pr-layout">
+      <section class="card">
+        <div class="card-head"><h2 class="card-title">Open PRs</h2><span class="count-chip">${loading ? "..." : state.pullRequests.length}</span></div>
+        <div class="package-list">
+          ${state.pullRequests.length ? state.pullRequests.map((item) => `
+            <button type="button" class="package-row ${String(item.number) === String(state.selectedPullRequest) ? "selected" : ""}" data-action="select-pr" data-pr="${item.number}">
+              <span><strong>#${item.number} ${esc(item.title)}</strong><span class="package-path">${esc(item.headRepo)}:${esc(item.headRef)} -> ${esc(item.baseRef)}</span></span>
+              <span class="chip-row">${item.draft ? statusChip("candidate") : statusChip("review")}<span class="chip">${item.changedFiles} files</span></span>
+            </button>
+          `).join("") : `<div class="empty-state">${loading ? "Loading open pull requests..." : "No open pull requests were found for this repository."}</div>`}
+        </div>
+      </section>
+      <section class="card">
+        <div class="card-head">
+          <div><h2 class="card-title">${pr ? `#${pr.number} ${esc(pr.title)}` : "No PR selected"}</h2><span class="tiny">${pr ? `${esc(pr.user)} · updated ${esc(formatDateTime(pr.updatedAt))}` : "Fetch PRs from the configured repository."}</span></div>
+          ${pr ? `<a class="button subtle" href="${esc(pr.htmlUrl)}" target="_blank" rel="noreferrer">Open on GitHub</a>` : ""}
+        </div>
+        ${pr ? `<div class="panel-body">
+          <div class="meta-grid">
+            <div class="meta-row"><span class="meta-key">Base</span><span class="meta-value">${esc(pr.baseRepo)}:${esc(pr.baseRef)}</span></div>
+            <div class="meta-row"><span class="meta-key">Head</span><span class="meta-value">${esc(pr.headRepo)}:${esc(pr.headRef)}</span></div>
+            <div class="meta-row"><span class="meta-key">SHA</span><span class="meta-value mono">${esc(pr.headSha.slice(0, 12) || "not loaded")}</span></div>
+            <div class="meta-row"><span class="meta-key">Impact</span><span class="meta-value">${changedSkills.length ? changedSkills.map(esc).join(", ") : "No skills/* package files detected yet"}</span></div>
+          </div>
+          <div class="check-list">
+            ${checks.map(([label, ok, detail]) => `
+              <div class="check-item">
+                <div class="row-between"><strong>${ok ? icons.check : icons.warn}${esc(label)}</strong><span class="status-chip ${ok ? "status-approved" : "status-blocked"}">${ok ? "ready" : "needs work"}</span></div>
+                <span class="tiny">${esc(detail)}</span>
+              </div>
+            `).join("")}
+          </div>
+        </div>` : `<div class="empty-state">Use Refresh PRs to load GitHub review work for the managed repository.</div>`}
+      </section>
+      <section class="card">
+        <div class="card-head"><h2 class="card-title">Git handoff</h2><span class="tiny">static Pages boundary</span></div>
+        <p class="page-subtitle">Skills Charter can inspect public PRs from static Pages. Checkout, commit, push, and merge stay in GitHub CLI or GitHub until authenticated browser writes exist.</p>
+        <pre class="registry-json command-block">${esc(mergeCommand(pr) || "Select an open pull request to generate checkout and merge commands.")}</pre>
+      </section>
+    </div>
+    <section class="card">
+      <div class="card-head"><h2 class="card-title">Changed files</h2><span class="count-chip">${state.pullRequestFilesStatus === "loading" ? "..." : files.length}</span></div>
+      <table class="registry-table">
+        <thead><tr><th>File</th><th>Kind</th><th>Status</th><th>Delta</th></tr></thead>
+        <tbody>${files.length ? files.map((file) => `
+          <tr><td class="mono">${esc(file.path)}</td><td>${esc(file.kind)}</td><td>${esc(file.status)}</td><td class="mono">+${esc(file.additions)} / -${esc(file.deletions)}</td></tr>
+        `).join("") : `<tr><td colspan="4" class="empty-cell">${state.pullRequestFilesStatus === "loading" ? "Loading PR files..." : "No file list loaded yet."}</td></tr>`}</tbody>
+      </table>
+    </section>`;
+}
+
 function renderRegistry() {
   const approved = seed.packages.filter(packageIsInstallable);
   const agentLabel = agentOptions.find(([id]) => id === state.agent)?.[1] || state.agent;
@@ -2034,6 +2242,7 @@ function renderRoute() {
   if (state.route === "library") return renderLibrary();
   if (state.route === "editor") return renderEditorWorkspace();
   if (state.route === "review") return renderReview();
+  if (state.route === "prs") return renderPullRequests();
   if (state.route === "registry") return renderRegistry();
   if (state.route === "history") return renderHistory();
   return renderDashboard();
@@ -2171,6 +2380,9 @@ document.addEventListener("click", async (event) => {
     state.zen = false;
     if (actionEl.dataset.closeTutorial) finishTutorial();
     render();
+    if (state.route === "prs" && state.pullRequestStatus === "idle") {
+      await loadPullRequests(false);
+    }
     return;
   }
 
@@ -2223,6 +2435,15 @@ document.addEventListener("click", async (event) => {
     const id = actionEl.dataset.package;
     if (id) setSelectedPackage(id);
     render();
+    return;
+  }
+
+  if (action === "select-pr") {
+    const number = actionEl.dataset.pr;
+    if (number) {
+      state.selectedPullRequest = number;
+      await loadPullRequestFiles(number);
+    }
     return;
   }
 
@@ -2281,7 +2502,16 @@ document.addEventListener("click", async (event) => {
   }
 
   if (action === "sync") {
+    if (state.route === "prs") {
+      await loadPullRequests(true);
+      return;
+    }
     loadRegistryFromGitHub(true);
+    return;
+  }
+
+  if (action === "refresh-prs") {
+    await loadPullRequests(true);
     return;
   }
 
