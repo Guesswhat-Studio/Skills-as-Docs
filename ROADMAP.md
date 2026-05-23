@@ -81,7 +81,7 @@ Goal: publish a complete enough story that interested teams can understand, fork
 
 Narrative work:
 
-- Launch essay: "Agent Skills Need Governance."
+- Launch essay: "Every Agent Skill Needs a Charter Before Runtime."
 - Practical guide: "Run a Team Agent Skill Library from GitHub." (`docs/guides/run-team-agent-skill-library-from-github.md`)
 - Short explainer: "The Procedural Gap: Why Tools Are Not Enough."
 - Chinese launch essay: "别急着买 Skills Marketplace，先把团队自己的 Skills 管起来。"
@@ -248,7 +248,7 @@ Security:
 
 English:
 
-- "Agent Skills Need Governance"
+- "Every Agent Skill Needs a Charter Before Runtime"
 - "The Procedural Gap: Why Tools Are Not Enough"
 - "Skills Charter: A Git Workflow for Team Skills"
 - "Using GitBook as a Team Agent Skills Manager"

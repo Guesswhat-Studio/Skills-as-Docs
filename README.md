@@ -1,36 +1,41 @@
 # Skills Charter
 
-Agent Skill Governance for the handoff between distribution and runtime.
+Git-backed charters for reviewing and approving agent skills before runtime.
 
-> Status: `0.1.0 preview`. This release is for workflow validation and early feedback. The manager is static and usable for browsing, editing, registry preview, and Git handoff, but authenticated GitHub PR creation and full file-level CRUD are not stable yet.
+> Status: `0.1.0 preview`. This release is for workflow validation and early feedback. The public repository is now [`Guesswhat-Studio/Skills-Charter`](https://github.com/Guesswhat-Studio/Skills-Charter). The manager is static and usable for browsing, importing, editing, linting, registry preview, PR inspection, and Git handoff, but authenticated GitHub PR creation and full file-level CRUD are not stable yet.
 
-Every agent skill needs a charter before runtime. Skills Charter helps individuals and teams turn public, generated, or evolved skills into governed, reviewable, and installable team assets.
+Every distributed agent skill should remain a candidate until its charter is approved.
+
+Skills Charter helps individuals and teams turn public, generated, or evolved skills into governed, reviewable, and installable team assets.
 
 Agent Skills are becoming the procedural memory of AI agents. A skill can include `SKILL.md`, references, scripts, examples, assets, and evaluation notes. Once installed, it can shape how an agent reviews code, runs tools, or follows team workflows.
 
-The gap: skill production and distribution are messy. Teams copy public skills, keep local `SKILL.md` files, or scatter instructions across chat history and personal agent configs. There are few trusted team sources, and most teams cannot easily answer: who owns this skill, where did it come from, what changed, was it reviewed, can we roll it back, and who should install it?
+The gap: creation, evaluation, and distribution are accelerating, but team trust is still ad hoc. Teams copy public skills, generate local `SKILL.md` files, or scatter instructions across chat history and personal agent configs. Most teams cannot easily answer: who owns this skill, where did it come from, what changed, was it reviewed, can we roll it back, and where is it allowed to run?
 
-The solution: Skills Charter turns a GitHub repository into the governance layer for team skills. A skill enters as a candidate and receives a Skill Charter: source, owner, review evidence, policy checks, approval state, install target, and runtime constraints. Only approved charters produce installable runtime packages.
+The solution: Skills Charter turns a GitHub repository into the governance layer for team skills. A skill enters as a candidate and receives a Skill Charter: source, owner, review evidence, policy checks, approval state, install target, and runtime constraints. Only approved charters should produce installable runtime packages.
 
 The short version:
 
 ```text
 creation -> evaluation -> distribution -> governance -> runtime
-candidate skill -> Skill Charter + evidence -> team approval -> approved install
-GitHub repo + Pages Manager = source of truth and review surface
-npx skills = installation and local agent directory placement
+public/generated/evolved skill -> candidate package
+Skill Charter + evidence + PR/CI -> team approval
+approved package -> npx skills -> runtime install
 ```
 
 Skills Charter is not trying to be another marketplace or registry. It answers the earlier question:
 
 > How does a skill become trusted enough for a team to publish and install?
 
+Read the manifesto: [Every Agent Skill Needs a Charter Before Runtime](./docs/blogs/agent-skills-need-governance.md).
+Launch copy draft: [LinkedIn launch post](./docs/pitch/linkedin-launch-post.md).
+
 ## Quickstart
 
 Use this repository as the starting point for a team skill library:
 
 ```bash
-git clone https://github.com/Guesswhat-Studio/Skills-as-Docs.git team-skills
+git clone https://github.com/Guesswhat-Studio/Skills-Charter.git team-skills
 cd team-skills
 npm install
 npm run check
