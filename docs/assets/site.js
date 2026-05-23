@@ -3,8 +3,15 @@ const root = document.documentElement;
 
 const icons = {
   dashboard: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h6V4H4v9Zm10 7h6V4h-6v16ZM4 20h6v-4H4v4Z"></path></svg>',
+  library: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5a2 2 0 0 1 2-2h11v18H6a2 2 0 0 1-2-2Zm4-12h6M8 11h6M19 7h1a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-1"></path></svg>',
+  editor: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l11-11a2.1 2.1 0 0 0-3-3L5 17l-1 3Zm12-12 3 3M13 20h7"></path></svg>',
+  review: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Zm4-12-5 5-3-3"></path></svg>',
+  prs: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a3 3 0 1 1-2-2.83V8.83A3 3 0 1 1 7 8.83v6.34A3 3 0 0 1 7 18Zm10-9a3 3 0 1 0-2-2.83V8a4 4 0 0 1-4 4H9m8 3v-3"></path></svg>',
+  registry: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 4-8 4-8-4 8-4Zm8 8-8 4-8-4m16 4-8 4-8-4"></path></svg>',
+  history: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8m0-5v5h5m4-1v5l4 2"></path></svg>',
   search: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.3-4.3M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z"></path></svg>',
   sync: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 0 0-15.3-6.4L3 8m0-5v5h5M3 12a9 9 0 0 0 15.3 6.4L21 16m0 5v-5h-5"></path></svg>',
+  panel: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4V5Zm6 0v14"></path></svg>',
   sun: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4V2m0 20v-2m8-8h2M2 12h2m14.4-6.4 1.4-1.4M4.2 19.8l1.4-1.4m0-12.8L4.2 4.2m15.6 15.6-1.4-1.4M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path></svg>',
   moon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.7A8.5 8.5 0 1 1 11.3 3a6.7 6.7 0 0 0 9.7 9.7Z"></path></svg>',
   github: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.4a9.6 9.6 0 0 0-3 18.7c.5.1.7-.2.7-.5v-1.8c-2.8.6-3.4-1.1-3.4-1.1-.4-1.1-1.1-1.4-1.1-1.4-.9-.6.1-.6.1-.6 1 .1 1.6 1.1 1.6 1.1.9 1.5 2.3 1 2.9.8.1-.6.4-1 .7-1.3-2.2-.2-4.6-1.1-4.6-4.7 0-1 .4-1.9 1-2.6-.1-.3-.4-1.3.1-2.6 0 0 .8-.3 2.7 1a9.2 9.2 0 0 1 4.8 0c1.9-1.3 2.7-1 2.7-1 .5 1.3.2 2.3.1 2.6.6.7 1 1.5 1 2.6 0 3.6-2.3 4.5-4.6 4.7.4.3.7.9.7 1.9v2.4c0 .3.2.6.7.5A9.6 9.6 0 0 0 12 2.4Z"></path></svg>',
@@ -100,12 +107,11 @@ const copy = {
     "action.sync": "sync",
     "action.intake": "Intake",
     "action.settings": "Settings",
-    "settings.note": "Configure repository, local skill root, and default install provider.",
+    "settings.note": "Configure repository and editor preferences.",
     "action.tutorial": "Tutorial",
     "action.manifesto": "Manifesto",
     "action.runPolicy": "Run policy",
-    "action.refreshPrs": "Refresh PRs",
-    "action.runPdfIntake": "Run PDF intake",
+    "action.refreshPrs": "Refresh GitHub PRs",
     "action.browseFindings": "Browse all",
     "action.running": "Running...",
     "search.placeholder": "Find package, finding, or commit...",
@@ -143,6 +149,8 @@ const copy = {
     "edit.title": "Editor",
     "preview.title": "Preview",
     "diff.title": "Diff",
+    "package.search": "Search skills...",
+    "package.searchEmpty": "No matching skills.",
     "registry.title": "Approved install registry",
     "registry.subtitle": "Only approved packages expose npx skills install snippets.",
     "history.title": "Git audit trail",
@@ -162,8 +170,8 @@ const copy = {
     "tutorial.finish": "Finish",
     "tutorial.replay": "You can replay this from the Tutorial button in the top bar.",
     "toast.synced": "Registry reloaded from the configured GitHub repository.",
-    "toast.prs": "Pull requests reloaded from the configured GitHub repository.",
-    "toast.checks": "Policy checks recalculated from the current staged package state.",
+    "toast.prs": "Open pull requests reloaded from the live GitHub API.",
+    "toast.checks": "Policy checks recalculated from package metadata and files.",
     "toast.intake": "New candidate package created in browser-local state.",
     "toast.settings": "Workspace settings saved in browser-local state."
   },
@@ -182,12 +190,11 @@ const copy = {
     "action.sync": "同步",
     "action.intake": "导入",
     "action.settings": "设置",
-    "settings.note": "配置技能仓库、本地 skill 目录和默认安装目标。",
+    "settings.note": "配置仓库和编辑器偏好。",
     "action.tutorial": "教程",
     "action.manifesto": "宣言",
     "action.runPolicy": "运行策略",
-    "action.refreshPrs": "刷新 PR",
-    "action.runPdfIntake": "导入 PDF",
+    "action.refreshPrs": "刷新 GitHub PR",
     "action.browseFindings": "浏览全部",
     "action.running": "运行中...",
     "search.placeholder": "搜索 skill、风险、提交...",
@@ -225,6 +232,8 @@ const copy = {
     "edit.title": "编辑器",
     "preview.title": "预览",
     "diff.title": "差异",
+    "package.search": "搜索 skills...",
+    "package.searchEmpty": "没有匹配的 skill。",
     "registry.title": "Approved install registry",
     "registry.subtitle": "只有 approved 包会暴露 npx skills 安装命令。",
     "history.title": "Git 审计路径",
@@ -244,8 +253,8 @@ const copy = {
     "tutorial.finish": "完成",
     "tutorial.replay": "之后可以从顶部 Tutorial 按钮重新查看。",
     "toast.synced": "已从配置的 GitHub 仓库重新加载 registry。",
-    "toast.prs": "已从配置的 GitHub 仓库重新加载 Pull Requests。",
-    "toast.checks": "已根据当前 staged package 状态重新计算策略检查。",
+    "toast.prs": "已从实时 GitHub API 重新加载 open Pull Requests。",
+    "toast.checks": "已根据 package metadata 和文件重新计算策略检查。",
     "toast.intake": "已在浏览器本地状态中新建 candidate package。",
     "toast.settings": "工作区设置已保存到浏览器本地状态。"
   }
@@ -255,18 +264,18 @@ const navGroups = [
   {
     label: "nav.workspace",
     items: [
-      ["dashboard", "D", null],
-      ["library", "L", 47],
-      ["editor", "E", null],
-      ["review", "R", 12, true],
-      ["prs", "P", null]
+      ["dashboard", "dashboard", null],
+      ["library", "library", 47],
+      ["editor", "editor", null],
+      ["review", "review", 12, true],
+      ["prs", "prs", null]
     ]
   },
   {
     label: "nav.release",
     items: [
-      ["registry", "S", null],
-      ["history", "H", null]
+      ["registry", "registry", null],
+      ["history", "history", null]
     ]
   }
 ];
@@ -277,6 +286,20 @@ const agentOptions = [
   ["antigravity", "Antigravity"]
 ];
 
+function defaultSkillRootForAgent(agent) {
+  if (agent === "claude-code") return "~/.claude/skills";
+  if (agent === "antigravity") return "~/.agents/skills";
+  return "~/.codex/skills";
+}
+
+function setInstallAgent(agent) {
+  const next = agentOptions.some(([id]) => id === agent) ? agent : "codex";
+  state.agent = next;
+  state.localSkillRoot = defaultSkillRootForAgent(next);
+  localStorage.setItem("skills-charter-agent", state.agent);
+  localStorage.setItem("skills-charter-local-root", state.localSkillRoot);
+}
+
 const state = {
   route: "dashboard",
   theme: localStorage.getItem("skills-charter-theme") || "dark",
@@ -285,7 +308,12 @@ const state = {
   selectedFile: "skills/skill-creator/SKILL.md",
   editorTab: "edit",
   zen: false,
+  sidebarCollapsed: localStorage.getItem("skills-charter-sidebar-collapsed") === "true",
+  editorPackageCollapsed: localStorage.getItem("skills-charter-editor-package-collapsed") === "true",
+  tutorialOpen: false,
+  tutorialStep: 0,
   search: "",
+  packageSearch: "",
   filtersOpen: false,
   filters: { approved: true, review: true, candidate: true, blocked: true },
   agent: localStorage.getItem("skills-charter-agent") || "codex",
@@ -294,7 +322,7 @@ const state = {
   settingsOpen: false,
   managedRepo: localStorage.getItem("skills-charter-managed-repo") || "Guesswhat-Studio/testSkills",
   managedBranch: localStorage.getItem("skills-charter-managed-branch") || "main",
-  localSkillRoot: localStorage.getItem("skills-charter-local-root") || "~/.codex/skills",
+  localSkillRoot: localStorage.getItem("skills-charter-local-root") || defaultSkillRootForAgent(localStorage.getItem("skills-charter-agent") || "codex"),
   fontSize: Number(localStorage.getItem("skills-charter-font-size") || 13),
   dataStatus: "embedded",
   dataSource: "embedded snapshot",
@@ -443,14 +471,30 @@ const secretPatterns = [
   /\bAIza[0-9A-Za-z_-]{20,}\b/
 ];
 
-function assessPackage(files) {
+function assessPackage(files, pkg = {}) {
+  const issues = [];
   const findings = [];
-  if (files.some((file) => file.kind === "script")) findings.push("script.review-required");
-  if (files.some((file) => file.kind === "asset")) findings.push("asset.review-required");
+  const addIssue = (id, severity = "warning") => {
+    issues.push({ id, severity });
+    findings.push(id);
+  };
+  const status = normalizeStatus(pkg.status || pkg.review_status || "candidate");
+  const governedSource = ["public_import", "generated", "evolved"].includes(pkg.sourceType || pkg.source_type);
+  const hasSkill = files.some((file) => file.path.endsWith("/SKILL.md") || file.path === "SKILL.md");
+
+  if (!hasSkill) addIssue("package.missing-entrypoint", "error");
+  if (pkg.id && !pkg.owner) addIssue("approval.owner-required", "error");
+  if (governedSource && !pkg.source && !pkg.provenance?.source_url) addIssue("provenance.source-required", "error");
+  if (status === "approved" && governedSource && !pkg.evidence) addIssue("approval.evidence-required", "error");
+  if (files.some((file) => file.kind === "script")) addIssue("script.review-required");
+  if (files.some((file) => file.kind === "asset")) addIssue("asset.review-required");
+  if (files.some((file) => /(^|\/)(package(-lock)?\.json|requirements(-lock)?\.txt|pyproject\.toml|poetry\.lock|pnpm-lock\.yaml|yarn\.lock|uv\.lock|Cargo\.toml|go\.mod)$/i.test(file.path))) {
+    addIssue("dependency.review-required");
+  }
   const joined = files.map((file) => file.content || "").join("\n");
-  if (/https?:\/\//i.test(joined)) findings.push("external-url.review-required");
-  if (secretPatterns.some((pattern) => pattern.test(joined))) findings.push("possible-secret.review-required");
-  const risk = findings.some((finding) => finding.includes("secret")) ? "high" : findings.length ? "medium" : "low";
+  if (/https?:\/\//i.test(joined)) addIssue("external-url.review-required");
+  if (secretPatterns.some((pattern) => pattern.test(joined))) addIssue("secret.possible-token", "error");
+  const risk = issues.some((issue) => issue.severity === "error") ? "high" : findings.length ? "medium" : "low";
   return { findings: uniqueList(findings), risk };
 }
 
@@ -607,6 +651,20 @@ function refreshDerivedState(mode = "browser-local") {
   }
 }
 
+function runBrowserPolicy() {
+  let blockerCount = 0;
+  seed.packages.forEach((pkg) => {
+    const assessed = assessPackage(pkg.files, pkg);
+    pkg.risk = assessed.risk;
+    pkg.findings = assessed.findings;
+    pkg.lane = deriveLane(pkg.status);
+    if (pkg.risk === "high") blockerCount += 1;
+  });
+  seed.activity.unshift(["policy", `Policy recalculated for ${seed.packages.length} package${seed.packages.length === 1 ? "" : "s"}`, "just now", "browser-local"]);
+  refreshDerivedState("browser-local");
+  return blockerCount;
+}
+
 function markChanged(path, add = "+0", del = "-0") {
   seed.changedFiles = seed.changedFiles.filter(([changedPath]) => changedPath !== path);
   seed.changedFiles.unshift([path, add, del]);
@@ -722,7 +780,7 @@ async function approveCurrentPackage() {
   pkg.reviewers = uniqueList([...pkg.reviewers, "@platform", "@security"]);
   pkg.install = true;
 
-  const assessed = assessPackage(pkg.files);
+  const assessed = assessPackage(pkg.files, pkg);
   pkg.risk = assessed.risk;
   pkg.findings = assessed.findings;
   seed.activity.unshift(["approve", `${pkg.name} approved with script review evidence`, "just now", "browser-local"]);
@@ -790,7 +848,15 @@ function packageFromRecords(records, rootPath, sourceLabel, sourceType, options 
     if (aEntry !== bEntry) return aEntry ? -1 : 1;
     return a.path.localeCompare(b.path);
   });
-  const assessed = assessPackage(files);
+  const assessed = assessPackage(files, {
+    id: name,
+    owner: meta.owner || "",
+    source: meta.source_url || sourceLabel,
+    sourceType: meta.source_type || sourceType,
+    status: normalizeStatus(meta.review_status || "candidate"),
+    evidence: meta.evidence || "",
+    provenance: { source_url: meta.source_url || sourceLabel }
+  });
 
   return {
     id: name,
@@ -934,111 +1000,6 @@ async function importRemoteSkills(mode) {
   }
 }
 
-function optimizePdfSkillContent(content) {
-  const body = bodyWithoutFrontmatter(content || "# PDF\n\nImported PDF skill.");
-  const optimizedBody = `${body.trim()}\n\n## Skills Charter Optimization\n\nThis package was reviewed as a team-governed PDF runtime skill. The optimized metadata narrows install eligibility to approved use, records owner and provenance, and links review evidence before registry exposure.\n\n### Team Review Notes\n\n- Keep PDF reading, extraction, merging, splitting, form filling, OCR, and PDF generation guidance.\n- Treat helper scripts as reviewed operational tooling, not hidden execution.\n- Require visual verification for generated PDFs and form-filling outputs before user delivery.\n- Route install through the approved-only registry after evidence is attached.\n`;
-
-  return serializeFrontmatter({
-    name: "pdf",
-    description: "Use this governed skill for PDF workflows that need reading, extraction, table parsing, merging, splitting, form filling, OCR, generation, or visual verification. If a user mentions a .pdf file or asks to produce one, use this skill after team approval.",
-    category: "documents/pdf",
-    owner: "@platform",
-    review_status: "approved",
-    source_type: "public_import",
-    source_url: "https://github.com/anthropics/skills/tree/main/skills/pdf",
-    approved_by: "@platform",
-    evidence: "skills/pdf/review-notes/approval.md",
-    license: "Proprietary. LICENSE.txt has complete terms"
-  }, optimizedBody);
-}
-
-function pdfApprovalNote() {
-  return `# PDF Skill Approval\n\n## Source\n\n- Repository: https://github.com/anthropics/skills/tree/main/skills/pdf\n- Import mode: public_import\n- Managed state: browser-local approval handoff\n\n## Optimization\n\n- Added category, owner, source URL, approval status, and evidence pointer to SKILL.md frontmatter.\n- Preserved the original PDF workflow instructions while tightening the trigger description for governed install.\n- Added review notes so approval is tied to a Git-trackable artifact.\n\n## Review Decision\n\nApproved for team registry exposure in this browser-local intake. The package contains PDF helper scripts, so install is allowed only after evidence review and owner assignment. No high-risk finding is present in this intake review.\n\n## Next Steps\n\n1. Commit optimized SKILL.md and this approval note on a review branch.\n2. Open a PR with provenance, risk decision, and reviewer sign-off.\n3. Let CI run strict policy and registry drift checks.\n4. Merge to publish skills.json.\n5. Install with the approved registry command.\n`;
-}
-
-async function runPdfGovernanceIntake() {
-  const repoName = "anthropics/skills";
-  const branch = "main";
-  const rootPath = "skills/pdf";
-  state.busy = "pdf-intake";
-  showToast("Loading anthropics/skills pdf into the governance intake flow...");
-
-  try {
-    const tree = await fetchGithubTree(repoName, branch);
-    const manifestPath = `${rootPath}/SKILL.md`;
-    const manifestResponse = await fetch(githubRawUrl(repoName, branch, manifestPath), { cache: "no-store" });
-    if (!manifestResponse.ok) throw new Error(`Could not load ${manifestPath}: ${manifestResponse.status}`);
-    const manifestContent = await manifestResponse.text();
-    const records = tree
-      .filter((item) => item.path === rootPath || item.path.startsWith(`${rootPath}/`))
-      .map((item) => ({
-        path: item.path,
-        sourcePath: item.path,
-        rawUrl: githubRawUrl(repoName, branch, item.path),
-        size: item.size,
-        content: item.path === manifestPath ? manifestContent : undefined
-      }));
-    const pkg = packageFromRecords(records, rootPath, `https://github.com/${repoName}/tree/${branch}/${rootPath}`, "public_import");
-    if (!pkg) throw new Error("skills/pdf/SKILL.md was not found.");
-
-    const skillFile = entrypointFile(pkg);
-    skillFile.content = optimizePdfSkillContent(manifestContent);
-    skillFile.original = manifestContent;
-    pkg.description = "Use this governed skill for PDF workflows that need reading, extraction, table parsing, merging, splitting, form filling, OCR, generation, or visual verification.";
-    pkg.category = "documents/pdf";
-    pkg.owner = "@platform";
-    pkg.status = "approved";
-    pkg.lane = "ready";
-    pkg.risk = "low";
-    pkg.version = "0.1.0";
-    pkg.evidence = "skills/pdf/review-notes/approval.md";
-    pkg.evidencePaths = [pkg.evidence];
-    pkg.reviewers = ["@platform", "@security"];
-    pkg.install = true;
-    pkg.findings = [];
-    pkg.provenance = {
-      source_type: "public_import",
-      source_url: `https://github.com/${repoName}/tree/${branch}/${rootPath}`,
-      imported_at: new Date().toISOString(),
-      imported_by: "browser-local"
-    };
-    pkg.caseStudy = {
-      title: "Anthropic PDF skill governance intake",
-      steps: [
-        ["Import", "Fetched skills/pdf from anthropics/skills and kept provenance visible."],
-        ["Optimize", "Added owner, category, approval status, source URL, and evidence pointer to SKILL.md."],
-        ["Review", "Checked scripts, license, PDF generation guidance, and visual verification expectations."],
-        ["Approve", "Recorded approval evidence and moved lifecycle to approved."],
-        ["Publish", "Registry now exposes an approved install command; next real step is PR + CI + merge."]
-      ]
-    };
-    pkg.files.push({
-      path: "skills/pdf/review-notes/approval.md",
-      kind: "evidence",
-      content: pdfApprovalNote(),
-      original: ""
-    });
-
-    upsertPackage(pkg, "pdf imported from anthropics/skills and approved for handoff");
-    markChanged("skills/pdf/SKILL.md", "+12", "-2");
-    markChanged("skills/pdf/review-notes/approval.md", "+24", "-0");
-    seed.activity.unshift(["approve", "pdf approved with review evidence", "just now", "browser-local"]);
-    seed.activity.unshift(["optimize", "pdf SKILL.md metadata optimized for governed install", "just now", "browser-local"]);
-    refreshDerivedState();
-    setSelectedPackage("pdf");
-    state.selectedFile = "skills/pdf/SKILL.md";
-    state.route = "review";
-    state.editorTab = "diff";
-    state.intakeOpen = false;
-    state.busy = "";
-    showToast("PDF intake complete: imported, optimized, reviewed, approved, and registry-ready.");
-  } catch (error) {
-    state.busy = "";
-    state.intakeStatus = `PDF intake failed: ${error.message || error}`;
-    showToast(state.intakeStatus);
-  }
-}
-
 function createCandidateFromIntake() {
   const folderInput = document.querySelector("[data-new-skill-folder]")?.value.trim();
   const prompted = folderInput || window.prompt("New skill folder", `new-skill-${seed.packages.length + 1}`);
@@ -1095,7 +1056,7 @@ function syncPackageFromSkillContent(pkg, file) {
   if (meta.source_type) pkg.sourceType = meta.source_type;
   if (meta.source_url) pkg.source = meta.source_url;
   if (meta.evidence) pkg.evidence = meta.evidence;
-  const assessed = assessPackage(pkg.files);
+  const assessed = assessPackage(pkg.files, pkg);
   pkg.risk = assessed.risk;
   pkg.findings = assessed.findings;
 }
@@ -1263,7 +1224,7 @@ async function loadPullRequests(notify = false) {
     if (!prs.some((pr) => String(pr.number) === String(state.selectedPullRequest))) {
       state.selectedPullRequest = prs[0]?.number ? String(prs[0].number) : "";
     }
-    if (notify) showToast(t("toast.prs"));
+    if (notify) showToast(`${t("toast.prs")} ${prs.length} open.`);
     if (state.selectedPullRequest) {
       await loadPullRequestFiles(state.selectedPullRequest, false);
     } else {
@@ -1571,12 +1532,12 @@ function renderSidebar() {
   const groups = navGroups.map((group) => `
     <div class="nav-section">${t(group.label)}</div>
     <nav class="nav-list" aria-label="${esc(t(group.label))}">
-      ${group.items.map(([route, glyph, count, alert]) => {
+      ${group.items.map(([route, icon, count, alert]) => {
         const liveCount = route === "library" ? seed.metrics.total : route === "review" ? seed.metrics.queue : route === "registry" ? seed.metrics.approved : route === "prs" ? state.pullRequests.length : count;
         const liveAlert = route === "review" ? seed.metrics.queue > 0 : alert;
         return `
         <button type="button" class="nav-item ${state.route === route ? "active" : ""}" data-action="route" data-route="${route}">
-          <span class="nav-glyph">${glyph}</span>
+          <span class="nav-glyph">${icons[icon] || icons.dashboard}</span>
           <span class="nav-text">${t(`route.${route}`)}</span>
           ${liveCount != null ? `<span class="nav-count ${liveAlert ? "alert" : ""}">${liveCount}</span>` : ""}
         </button>
@@ -1586,11 +1547,14 @@ function renderSidebar() {
   `).join("");
 
   return `<aside class="sidebar">
-    <a class="brand" href="#" data-action="route" data-route="dashboard" aria-label="Skills Charter dashboard">
-      <span class="brand-mark">SC</span>
-      <span class="brand-title">Skills Charter</span>
+    <div class="brand">
+      <button type="button" class="brand-home" data-action="route" data-route="dashboard" aria-label="Skills Charter dashboard">
+        <span class="brand-mark">SC</span>
+        <span class="brand-title">Skills Charter</span>
+      </button>
       <span class="version-chip">v0.1</span>
-    </a>
+      <button type="button" class="icon-button sidebar-toggle" data-action="toggle-sidebar" aria-label="${state.sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}">${icons.panel}</button>
+    </div>
     <div class="sidebar-scroll">${groups}</div>
     <footer class="sidebar-footer">
       <div class="footer-row"><span>managed repo</span><span class="kbd">${esc(state.managedBranch)}</span></div>
@@ -1682,7 +1646,6 @@ function renderGovernanceLoop() {
       <div><span class="card-eyebrow">${t("loop.title")}</span><p class="page-subtitle">${t("loop.caption")}</p></div>
       <div class="chip-row">
         <button type="button" class="button subtle" data-action="run-checks">${t("action.runPolicy")}</button>
-        <button type="button" class="button primary" data-action="run-pdf-intake" ${state.busy ? "disabled" : ""}>${state.busy === "pdf-intake" ? t("action.running") : t("action.runPdfIntake")}</button>
       </div>
     </div>
     <div class="loop-stage-list">
@@ -1728,7 +1691,7 @@ function renderReviewBoard() {
 
 function renderTicket(pkg) {
   const owner = pkg.owner || "owner missing";
-  return `<button type="button" class="ticket ${state.selectedPackage === pkg.id ? "selected" : ""}" data-action="select-package" data-package="${pkg.id}">
+  return `<button type="button" class="ticket ${state.selectedPackage === pkg.id ? "selected" : ""}" data-action="open-review-package" data-package="${pkg.id}">
     <div class="row-between"><span class="ticket-id">SKL-${pkg.id.slice(0, 3).toUpperCase()}</span>${riskChip(pkg.risk)}</div>
     <div class="ticket-name">${esc(pkg.name)}</div>
     <div class="ticket-meta"><span>${esc(pkg.version)}</span><span>${esc(owner)}</span><span>${pkg.reviewers.length} reviewers</span></div>
@@ -2015,38 +1978,43 @@ function renderMeta(pkg) {
 function renderEditorWorkspace() {
   const pkg = currentPackage();
   const file = currentFile();
-  const body = state.editorTab === "package" ? renderEditorPackage(pkg) : state.editorTab === "preview" ? renderPreview(file) : state.editorTab === "diff" ? renderDiff(file) : renderEditor(file);
+  const body = state.zen ? renderEditor(file) : state.editorTab === "package" ? renderEditorPackage(pkg) : state.editorTab === "preview" ? renderPreview(file) : state.editorTab === "diff" ? renderDiff(file) : renderEditor(file);
   const tabs = [
     ["package", "Package"],
     ["edit", "Edit"],
     ["preview", "Preview"],
     ["diff", "Diff"]
   ];
+  const packageQuery = state.packageSearch.trim().toLowerCase();
+  const visiblePackages = packageQuery
+    ? seed.packages.filter((item) => [item.name, item.category, item.path, item.owner, item.source].some((value) => String(value || "").toLowerCase().includes(packageQuery)))
+    : seed.packages;
 
   return `${pageHead(t("editor.title"), t("editor.subtitle"), `<span>${esc(pkg.name)}</span><span>·</span><span>${esc(file.path)}</span>`)}
     <section class="editor-control-card card">
       <div class="card-head">
         <div class="editor-tabs" role="tablist" aria-label="Editor views">
           ${tabs.map(([tab, label]) => `<button type="button" class="${state.editorTab === tab ? "active" : ""}" data-action="editor-tab" data-tab="${tab}">${label}</button>`).join("")}
+          <button type="button" class="${state.zen ? "active" : ""}" data-action="toggle-zen" aria-pressed="${state.zen ? "true" : "false"}">Zen</button>
         </div>
         <div class="chip-row">
-          <button type="button" class="button subtle ${state.zen ? "active" : ""}" data-action="toggle-zen">Zen</button>
           <button type="button" class="button subtle" data-action="run-checks">${t("action.runPolicy")}</button>
           <button type="button" class="button primary" data-action="route" data-route="review">Review</button>
         </div>
       </div>
     </section>
-    <div class="editor-workspace ${state.zen ? "zen-active" : ""}">
-      <section class="workspace-panel editor-side">
-        <div class="card-head"><h2 class="card-title">Skill package</h2><span class="count-chip">${seed.packages.length}</span></div>
-        <div class="panel-body">
+    <div class="editor-workspace ${state.editorPackageCollapsed ? "package-collapsed" : ""}">
+      <section class="workspace-panel editor-side package-rail ${state.editorPackageCollapsed ? "collapsed" : ""}">
+        <div class="card-head"><h2 class="card-title">Skill package</h2><button type="button" class="icon-button" data-action="toggle-editor-package" aria-label="${state.editorPackageCollapsed ? "Expand package rail" : "Collapse package rail"}">${icons.panel}</button></div>
+        ${state.editorPackageCollapsed ? `<button type="button" class="rail-reopen" data-action="toggle-editor-package"><span>Package</span><strong>${seed.packages.length}</strong></button>` : `<div class="panel-body">
+          <label class="package-search">${icons.search}<input type="search" data-package-search value="${esc(state.packageSearch)}" placeholder="${esc(t("package.search"))}" aria-label="${esc(t("package.search"))}"></label>
           <div class="package-picker">
-            ${seed.packages.map((item) => `
+            ${visiblePackages.length ? visiblePackages.map((item) => `
               <button type="button" class="package-row compact ${pkg.id === item.id ? "selected" : ""}" data-action="select-package" data-package="${item.id}">
                 <span><strong>${esc(item.name)}</strong><span class="package-path">${esc(item.category)}</span></span>
                 ${riskChip(item.risk)}
               </button>
-            `).join("")}
+            `).join("") : `<div class="empty-cell">${t("package.searchEmpty")}</div>`}
           </div>
           <div class="split-head"><h3 class="card-title">Files</h3><span class="count-chip">${pkg.files.length}</span></div>
           <div class="crud-toolbar">
@@ -2055,9 +2023,9 @@ function renderEditorWorkspace() {
             <button type="button" class="button danger" data-action="delete-file">Delete</button>
           </div>
           <div class="file-list">${renderFileList(pkg)}</div>
-        </div>
+        </div>`}
       </section>
-      <section class="workspace-panel editor-main ${state.editorTab === "package" ? "" : "editor-shell"}">${body}</section>
+      <section class="workspace-panel editor-main ${state.editorTab === "package" && !state.zen ? "" : "editor-shell"} ${state.zen ? "zen-active" : ""}">${body}</section>
       <section class="workspace-panel editor-side">
         <div class="card-head"><h2 class="card-title">Governance</h2>${statusChip(pkg.status)}</div>
         <div class="panel-body">
@@ -2068,13 +2036,10 @@ function renderEditorWorkspace() {
           </div>
           ${renderMeta(pkg)}
           ${renderChecks(pkg)}
-          <div class="settings-grid inline-settings">
-            <div class="split-head"><h3 class="card-title">Editor scale</h3><span class="kbd">${state.fontSize}px</span></div>
-            <label class="range-row"><span>Font size</span><input type="range" min="12" max="20" value="${state.fontSize}" data-font-size><span class="kbd">${state.fontSize}px</span></label>
-          </div>
         </div>
       </section>
-    </div>`;
+    </div>
+    ${state.zen ? `<button type="button" class="button primary zen-exit" data-action="toggle-zen">Exit Zen</button>` : ""}`;
 }
 
 function renderEditorPackage(pkg) {
@@ -2195,7 +2160,7 @@ function renderPullRequests() {
     ${error ? `<section class="empty-state">Could not load Pull Requests from ${esc(cleanRepoName())}: ${esc(state.pullRequestError)}. Public repositories work without auth; private repositories need a future GitHub auth flow.</section>` : ""}
     <div class="view-layout pr-layout">
       <section class="card">
-        <div class="card-head"><h2 class="card-title">Open PRs</h2><span class="count-chip">${loading ? "..." : state.pullRequests.length}</span></div>
+        <div class="card-head"><div><h2 class="card-title">Open PRs</h2><span class="tiny">Live GitHub API · ${esc(cleanRepoName())}</span></div><span class="count-chip">${loading ? "..." : state.pullRequests.length}</span></div>
         <div class="package-list">
           ${state.pullRequests.length ? state.pullRequests.map((item) => `
             <button type="button" class="package-row ${String(item.number) === String(state.selectedPullRequest) ? "selected" : ""}" data-action="select-pr" data-pr="${item.number}">
@@ -2233,7 +2198,7 @@ function renderPullRequests() {
               </a>
             `).join("")}
           </div>` : ""}
-        </div>` : `<div class="empty-state">Use Refresh PRs to load GitHub review work for the managed repository.</div>`}
+        </div>` : `<div class="empty-state">Use Refresh GitHub PRs to load live GitHub review work for the managed repository.</div>`}
       </section>
       <section class="card">
         <div class="card-head"><h2 class="card-title">Git handoff</h2><span class="tiny">static Pages boundary</span></div>
@@ -2267,14 +2232,12 @@ function renderRegistry() {
     <div class="view-layout registry-layout">
       <section class="card">
         <div class="card-head"><h2 class="card-title">Install target</h2><span class="status-chip status-approved">${esc(agentLabel)}</span></div>
-        <div class="agent-option-grid">
-          ${agentOptions.map(([id, label]) => `
-            <button type="button" class="agent-option ${state.agent === id ? "selected" : ""}" data-action="set-agent" data-agent="${id}">
-              <strong>${esc(label)}</strong>
-              <span class="tiny">-a ${esc(id)}</span>
-            </button>
-          `).join("")}
-        </div>
+        <label class="input-block"><span class="tiny">Agent provider</span>
+          <select class="select-input" data-agent-select>
+            ${agentOptions.map(([id, label]) => `<option value="${esc(id)}" ${state.agent === id ? "selected" : ""}>${esc(label)} (-a ${esc(id)})</option>`).join("")}
+          </select>
+        </label>
+        <label class="input-block"><span class="tiny">Local skill root</span><input data-local-root-install value="${esc(state.localSkillRoot)}"></label>
         <div class="meta-grid">
           <div class="meta-row"><span class="meta-key">Managed repo</span><span class="meta-value">${esc(state.managedRepo)}</span></div>
           <div class="meta-row"><span class="meta-key">Registry mode</span><span class="meta-value">approved-only</span></div>
@@ -2429,15 +2392,6 @@ function renderIntakeModal() {
           <label class="input-block"><span class="tiny">Skill folder</span><input data-new-skill-folder value="new-governed-skill" aria-label="New skill folder"></label>
           <button type="button" class="button primary" data-action="new-candidate" ${busy ? "disabled" : ""}>Create candidate</button>
         </section>
-        <section class="choice-card scenario-choice">
-          <span class="card-eyebrow">Governance intake</span>
-          <h3>Anthropic PDF review</h3>
-          <p class="page-subtitle">Import <span class="mono">skills/pdf</span>, optimize metadata, attach review evidence, approve, and expose the install path in one browser-local scenario.</p>
-          <div class="mini-step-list">
-            <span>Import</span><span>Optimize</span><span>Review</span><span>Approve</span><span>Install</span>
-          </div>
-          <button type="button" class="button primary" data-action="run-pdf-intake" ${busy ? "disabled" : ""}>${state.busy === "pdf-intake" ? t("action.running") : t("action.runPdfIntake")}</button>
-        </section>
       </div>
       <div class="modal-foot">
         <span class="tiny">${esc(state.intakeStatus || `Target repo: ${state.managedRepo} · ${state.managedBranch}`)}</span>
@@ -2459,16 +2413,9 @@ function renderSettingsModal() {
       <div class="settings-form">
         <label class="input-block"><span class="tiny">Managed skills repo</span><input data-setting="managedRepo" value="${esc(state.managedRepo)}"></label>
         <label class="input-block"><span class="tiny">Default branch</span><input data-setting="managedBranch" value="${esc(state.managedBranch)}"></label>
-        <label class="input-block"><span class="tiny">Local skill root</span><input data-setting="localSkillRoot" value="${esc(state.localSkillRoot)}"></label>
-        <div>
-          <span class="tiny">Default install provider</span>
-          <div class="agent-option-grid">
-            ${agentOptions.map(([id, label]) => `
-              <button type="button" class="agent-option ${state.agent === id ? "selected" : ""}" data-action="set-agent" data-agent="${id}">
-                <strong>${esc(label)}</strong><span class="tiny">-a ${esc(id)}</span>
-              </button>
-            `).join("")}
-          </div>
+        <div class="settings-grid">
+          <div class="split-head"><h3 class="card-title">Editor scale</h3><span class="kbd">${state.fontSize}px</span></div>
+          <label class="range-row"><span>Editor, preview, and diff font size</span><input type="range" min="12" max="20" value="${state.fontSize}" data-font-size><span class="kbd">${state.fontSize}px</span></label>
         </div>
       </div>
       <div class="modal-foot">
@@ -2479,19 +2426,148 @@ function renderSettingsModal() {
   </section>`;
 }
 
+function tutorialSteps() {
+  const zh = state.locale === "zh";
+  return [
+    {
+      route: "dashboard",
+      selector: ".dashboard-grid",
+      title: zh ? "先看仓库健康度" : "Start with repository health",
+      body: zh ? "这里回答：有多少 skills、多少可安装、多少还在审查、风险是否打开。" : "This answers how many skills exist, what is installable, what still needs review, and whether risk is open."
+    },
+    {
+      route: "dashboard",
+      selector: ".governance-loop",
+      title: zh ? "治理链路是主流程" : "The governance loop is the main flow",
+      body: zh ? "Candidate、Provenance、Lint、Evidence、Approval、Registry、Install 是 Skills Charter 的核心顺序。" : "Candidate, provenance, lint, evidence, approval, registry, and install are the product's core order."
+    },
+    {
+      route: "dashboard",
+      selector: "[data-action='open-intake']",
+      title: zh ? "导入只负责进入候选区" : "Intake only creates candidates",
+      body: zh ? "从本地 folder、公开 GitHub repo 或新建 package 开始。审批和安装不在导入步骤里偷跑。" : "Start from a local folder, public GitHub repo, or new package. Approval and install do not happen secretly during intake."
+    },
+    {
+      route: "dashboard",
+      selector: ".review-board",
+      title: zh ? "点击卡片进入审查" : "Click cards to review",
+      body: zh ? "Dashboard 是总览。点击任何 skill 卡片会进入 Review，看到 owner、source、evidence 和阻塞项。" : "The dashboard is an overview. Click any skill card to open Review with owner, source, evidence, and blockers."
+    },
+    {
+      route: "editor",
+      selector: ".editor-control-card",
+      title: zh ? "Editor 是文件工作台" : "Editor is the file workbench",
+      body: zh ? "在这里编辑 SKILL.md 和关联文件。左侧 package 栏可以收起，Zen 会进入真正的全屏编辑。" : "Edit SKILL.md and related files here. The package rail can collapse, and Zen enters a true full-screen editor."
+    },
+    {
+      route: "prs",
+      selector: ".pr-layout",
+      title: zh ? "PR Cockpit 读取真实 GitHub" : "PR Cockpit reads real GitHub data",
+      body: zh ? "Refresh 会从 GitHub API 拉 open PR、changed files 和 check-runs；浏览器不直接 merge，只给 Git handoff。" : "Refresh loads open PRs, changed files, and check-runs from the GitHub API. The browser does not merge; it prepares the Git handoff."
+    }
+  ];
+}
+
+function currentTutorialStep() {
+  const steps = tutorialSteps();
+  return steps[Math.min(state.tutorialStep, steps.length - 1)];
+}
+
+function renderTutorialOverlay() {
+  if (!state.tutorialOpen) return "";
+  const steps = tutorialSteps();
+  const step = currentTutorialStep();
+  const index = Math.min(state.tutorialStep, steps.length - 1);
+  const back = state.locale === "zh" ? "上一步" : "Back";
+  const next = state.locale === "zh" ? "下一步" : "Next";
+  const finish = state.locale === "zh" ? "完成" : "Finish";
+  return `<section class="tutorial-coach" data-tutorial-coach role="dialog" aria-modal="true" aria-labelledby="tutorial-title">
+    <div class="tutorial-scrim" data-action="finish-tutorial"></div>
+    <div class="tutorial-hole" data-tutorial-hole></div>
+    <article class="tutorial-card" data-tutorial-card>
+      <span class="eyebrow">${t("tutorial.eyebrow")} · ${index + 1}/${steps.length}</span>
+      <h2 id="tutorial-title">${esc(step.title)}</h2>
+      <p>${esc(step.body)}</p>
+      <div class="tutorial-actions">
+        <button type="button" class="button subtle" data-action="tutorial-prev" ${index === 0 ? "disabled" : ""}>${back}</button>
+        <button type="button" class="button primary" data-action="${index === steps.length - 1 ? "finish-tutorial" : "tutorial-next"}">${index === steps.length - 1 ? finish : next}</button>
+      </div>
+      ${index === steps.length - 1 ? `<p class="tutorial-foot">${esc(t("tutorial.replay"))}</p>` : ""}
+    </article>
+  </section>`;
+}
+
+function positionTutorialOverlay() {
+  if (!state.tutorialOpen) return;
+  const step = currentTutorialStep();
+  const target = document.querySelector(step.selector);
+  const hole = document.querySelector("[data-tutorial-hole]");
+  const card = document.querySelector("[data-tutorial-card]");
+  if (!target || !hole || !card) return;
+  const rect = target.getBoundingClientRect();
+  const pad = 8;
+  const top = Math.max(8, rect.top - pad);
+  const left = Math.max(8, rect.left - pad);
+  const width = Math.min(window.innerWidth - left - 8, rect.width + pad * 2);
+  const height = Math.min(window.innerHeight - top - 8, rect.height + pad * 2);
+  hole.style.setProperty("--hole-top", `${top}px`);
+  hole.style.setProperty("--hole-left", `${left}px`);
+  hole.style.setProperty("--hole-width", `${width}px`);
+  hole.style.setProperty("--hole-height", `${height}px`);
+
+  const margin = 14;
+  const gap = 16;
+  const cardWidth = card.offsetWidth || 360;
+  const cardHeight = card.offsetHeight || 200;
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+  const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+  const maxLeft = Math.max(margin, viewportWidth - cardWidth - margin);
+  const maxTop = Math.max(margin, viewportHeight - cardHeight - margin);
+  const focusRect = { left, top, right: left + width, bottom: top + height };
+  const overlapArea = (x, y) => {
+    const overlapX = Math.max(0, Math.min(x + cardWidth, focusRect.right) - Math.max(x, focusRect.left));
+    const overlapY = Math.max(0, Math.min(y + cardHeight, focusRect.bottom) - Math.max(y, focusRect.top));
+    return overlapX * overlapY;
+  };
+  const overflowArea = (x, y) => {
+    const overflowX = Math.max(0, margin - x) + Math.max(0, x + cardWidth + margin - viewportWidth);
+    const overflowY = Math.max(0, margin - y) + Math.max(0, y + cardHeight + margin - viewportHeight);
+    return overflowX * cardHeight + overflowY * cardWidth;
+  };
+  const candidates = [
+    { x: focusRect.right + gap, y: clamp(top, margin, maxTop), preference: 0 },
+    { x: focusRect.left - cardWidth - gap, y: clamp(top, margin, maxTop), preference: 1 },
+    { x: clamp(left, margin, maxLeft), y: focusRect.bottom + gap, preference: 2 },
+    { x: clamp(left, margin, maxLeft), y: focusRect.top - cardHeight - gap, preference: 3 },
+    { x: clamp(focusRect.right - cardWidth, margin, maxLeft), y: focusRect.bottom + gap, preference: 4 },
+    { x: clamp(focusRect.right - cardWidth, margin, maxLeft), y: focusRect.top - cardHeight - gap, preference: 5 }
+  ].map((candidate) => {
+    const x = clamp(candidate.x, margin, maxLeft);
+    const y = clamp(candidate.y, margin, maxTop);
+    return {
+      x,
+      y,
+      score: overlapArea(x, y) * 100000 + overflowArea(x, y) * 1000 + candidate.preference
+    };
+  }).sort((a, b) => a.score - b.score);
+
+  card.style.left = `${candidates[0].x}px`;
+  card.style.top = `${candidates[0].y}px`;
+}
+
 function render() {
   root.dataset.theme = state.theme;
   root.dataset.locale = state.locale;
   root.style.setProperty("--editor-font-size", `${state.fontSize}px`);
-  app.innerHTML = `<div class="app">${renderSidebar()}${renderTopbar()}<main class="main">${renderRoute()}</main></div>${renderIntakeModal()}${renderSettingsModal()}${state.toast ? `<div class="toast">${esc(state.toast)}</div>` : ""}`;
-  translateTutorial();
+  const appClasses = [
+    "app",
+    state.sidebarCollapsed ? "sidebar-collapsed" : "",
+    state.zen && state.route === "editor" ? "zen-mode" : ""
+  ].filter(Boolean).join(" ");
+  app.innerHTML = `<div class="${appClasses}">${renderSidebar()}${renderTopbar()}<main class="main">${renderRoute()}</main></div>${renderIntakeModal()}${renderSettingsModal()}${renderTutorialOverlay()}${state.toast ? `<div class="toast">${esc(state.toast)}</div>` : ""}`;
   window.setTimeout(hydrateCurrentFile, 0);
-}
-
-function translateTutorial() {
-  document.querySelectorAll("[data-i18n]").forEach((node) => {
-    node.textContent = t(node.dataset.i18n);
-  });
+  window.setTimeout(positionTutorialOverlay, 0);
 }
 
 function showToast(message) {
@@ -2505,13 +2581,17 @@ function showToast(message) {
 }
 
 function openTutorial() {
-  translateTutorial();
-  document.querySelector("[data-tutorial]").classList.remove("hidden");
+  state.tutorialOpen = true;
+  state.tutorialStep = 0;
+  state.route = currentTutorialStep().route;
+  state.zen = false;
+  render();
 }
 
 function finishTutorial() {
   localStorage.setItem("skills-charter-tutorial-done", "true");
-  document.querySelector("[data-tutorial]").classList.add("hidden");
+  state.tutorialOpen = false;
+  render();
 }
 
 document.addEventListener("click", async (event) => {
@@ -2555,6 +2635,25 @@ document.addEventListener("click", async (event) => {
     return;
   }
 
+  if (action === "tutorial-next" || action === "tutorial-prev") {
+    const steps = tutorialSteps();
+    state.tutorialStep = Math.max(0, Math.min(steps.length - 1, state.tutorialStep + (action === "tutorial-next" ? 1 : -1)));
+    state.route = currentTutorialStep().route;
+    state.zen = false;
+    render();
+    if (state.route === "prs" && state.pullRequestStatus === "idle") {
+      await loadPullRequests(false);
+    }
+    return;
+  }
+
+  if (action === "toggle-sidebar") {
+    state.sidebarCollapsed = !state.sidebarCollapsed;
+    localStorage.setItem("skills-charter-sidebar-collapsed", String(state.sidebarCollapsed));
+    render();
+    return;
+  }
+
   if (action === "open-intake") {
     state.intakeOpen = true;
     state.settingsOpen = false;
@@ -2579,6 +2678,15 @@ document.addEventListener("click", async (event) => {
   if (action === "select-package") {
     const id = actionEl.dataset.package;
     if (id) setSelectedPackage(id);
+    render();
+    return;
+  }
+
+  if (action === "open-review-package") {
+    const id = actionEl.dataset.package;
+    if (id) setSelectedPackage(id);
+    state.route = "review";
+    state.zen = false;
     render();
     return;
   }
@@ -2616,13 +2724,14 @@ document.addEventListener("click", async (event) => {
 
   if (action === "toggle-zen") {
     state.zen = !state.zen;
+    if (state.zen) state.editorTab = "edit";
     render();
     return;
   }
 
-  if (action === "set-agent") {
-    state.agent = actionEl.dataset.agent || "codex";
-    localStorage.setItem("skills-charter-agent", state.agent);
+  if (action === "toggle-editor-package") {
+    state.editorPackageCollapsed = !state.editorPackageCollapsed;
+    localStorage.setItem("skills-charter-editor-package-collapsed", String(state.editorPackageCollapsed));
     render();
     return;
   }
@@ -2661,18 +2770,13 @@ document.addEventListener("click", async (event) => {
   }
 
   if (action === "run-checks") {
-    refreshDerivedState(state.dataStatus === "browser-local" ? "browser-local" : state.dataSource);
-    showToast(t("toast.checks"));
+    const blockers = runBrowserPolicy();
+    showToast(`${t("toast.checks")} ${blockers} package${blockers === 1 ? "" : "s"} blocked.`);
     return;
   }
 
   if (action === "approve-package") {
     await approveCurrentPackage();
-    return;
-  }
-
-  if (action === "run-pdf-intake") {
-    await runPdfGovernanceIntake();
     return;
   }
 
@@ -2719,13 +2823,10 @@ document.addEventListener("click", async (event) => {
   if (action === "save-settings") {
     const managedRepo = document.querySelector('[data-setting="managedRepo"]')?.value.trim();
     const managedBranch = document.querySelector('[data-setting="managedBranch"]')?.value.trim();
-    const localSkillRoot = document.querySelector('[data-setting="localSkillRoot"]')?.value.trim();
     if (managedRepo) state.managedRepo = managedRepo;
     if (managedBranch) state.managedBranch = managedBranch;
-    if (localSkillRoot) state.localSkillRoot = localSkillRoot;
     localStorage.setItem("skills-charter-managed-repo", state.managedRepo);
     localStorage.setItem("skills-charter-managed-branch", state.managedBranch);
-    localStorage.setItem("skills-charter-local-root", state.localSkillRoot);
     state.settingsOpen = false;
     loadRegistryFromGitHub(true);
   }
@@ -2735,6 +2836,17 @@ document.addEventListener("input", (event) => {
   if (event.target.matches("[data-search]")) {
     state.search = event.target.value;
     if (state.route === "library") render();
+    return;
+  }
+
+  if (event.target.matches("[data-package-search]")) {
+    state.packageSearch = event.target.value;
+    render();
+    window.setTimeout(() => {
+      const input = document.querySelector("[data-package-search]");
+      input?.focus();
+      input?.setSelectionRange(input.value.length, input.value.length);
+    }, 0);
     return;
   }
 
@@ -2760,6 +2872,12 @@ document.addEventListener("input", (event) => {
     state.fontSize = Number(event.target.value);
     localStorage.setItem("skills-charter-font-size", String(state.fontSize));
     render();
+    return;
+  }
+
+  if (event.target.matches("[data-local-root-install]")) {
+    state.localSkillRoot = event.target.value;
+    localStorage.setItem("skills-charter-local-root", state.localSkillRoot);
   }
 });
 
@@ -2777,8 +2895,16 @@ document.addEventListener("change", (event) => {
       ? `${state.localFiles.length} local file${state.localFiles.length === 1 ? "" : "s"} selected. Click Stage local candidates.`
       : "No local files selected.";
     render();
+    return;
+  }
+
+  if (event.target.matches("[data-agent-select]")) {
+    setInstallAgent(event.target.value);
+    render();
   }
 });
+
+window.addEventListener("resize", positionTutorialOverlay);
 
 applyRegistryData(embeddedRegistry, "embedded");
 render();

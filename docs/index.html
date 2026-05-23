@@ -13,25 +13,5 @@
   </head>
   <body>
     <div id="app"></div>
-
-    <section class="tutorial-modal hidden" data-tutorial role="dialog" aria-modal="true" aria-labelledby="tutorial-title">
-      <div class="tutorial-backdrop" data-action="finish-tutorial"></div>
-      <article class="tutorial-panel">
-        <button type="button" class="icon-button close" data-action="finish-tutorial" aria-label="Close tutorial">x</button>
-        <span class="eyebrow" data-i18n="tutorial.eyebrow">Guided demo</span>
-        <h2 id="tutorial-title" data-i18n="tutorial.title">Public skill intake review</h2>
-        <p data-i18n="tutorial.body">Turn an Anthropic public skill into a team-approved runtime asset with provenance, evidence, lint, approval, registry output, and install handoff.</p>
-        <ol class="tutorial-steps">
-          <li><strong data-i18n="tutorial.step1">Import</strong><span data-i18n="tutorial.step1Body">Public skills enter as candidates.</span></li>
-          <li><strong data-i18n="tutorial.step2">Review</strong><span data-i18n="tutorial.step2Body">Policy checks explain blockers before install.</span></li>
-          <li><strong data-i18n="tutorial.step3">Approve</strong><span data-i18n="tutorial.step3Body">Git history and registry generation preserve the decision.</span></li>
-        </ol>
-        <div class="tutorial-actions">
-          <button type="button" class="button subtle" data-action="route" data-route="review" data-close-tutorial="true" data-i18n="tutorial.openReview">Open review</button>
-          <button type="button" class="button primary" data-action="finish-tutorial" data-i18n="tutorial.finish">Finish</button>
-        </div>
-        <p class="tutorial-foot" data-i18n="tutorial.replay">You can replay this from the Tutorial button in the top bar.</p>
-      </article>
-    </section>
   </body>
 </html>
