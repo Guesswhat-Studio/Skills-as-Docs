@@ -73,6 +73,8 @@ No user/account chip is shown in the top bar until Skills Charter has authentica
 | `Run policy` | active | Recomputes browser-side package policy state. |
 | `Registry` | active | Navigates to Registry. |
 | install provider buttons | active | Select the agent target used in install snippets. |
+| `Remote raw` | active | Opens the configured repository's raw `skills.json` from GitHub. |
+| `Download current` | active | Downloads the currently rendered registry snapshot, including browser-local staged changes. |
 | history skill chips | active | Filters timeline and versions by package. |
 | commit guide link | active | Opens the commit convention document. |
 

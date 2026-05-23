@@ -1778,6 +1778,8 @@ function renderRegistry() {
     source: { repository: cleanRepoName(), branch: state.managedBranch },
     packages: seed.packages
   };
+  const registryJson = JSON.stringify(registry, null, 2);
+  const registryDownloadHref = `data:application/json;charset=utf-8,${encodeURIComponent(registryJson)}`;
 
   return `${pageHead(t("registry.title"), t("registry.subtitle"))}
     <div class="view-layout registry-layout">
@@ -1806,8 +1808,15 @@ function renderRegistry() {
         </table>
       </section>
       <section class="card">
-        <div class="card-head"><h2 class="card-title">skills.json</h2><span class="tiny">${esc(state.dataSource)}</span></div>
-        <pre class="registry-json">${esc(JSON.stringify(registry, null, 2))}</pre>
+        <div class="card-head">
+          <h2 class="card-title">skills.json</h2>
+          <div class="chip-row">
+            <a class="button subtle" href="${esc(registryUrl())}" target="_blank" rel="noreferrer">Remote raw</a>
+            <a class="button primary" href="${esc(registryDownloadHref)}" download="skills.json">Download current</a>
+            <span class="tiny">${esc(state.dataSource)}</span>
+          </div>
+        </div>
+        <pre class="registry-json">${esc(registryJson)}</pre>
       </section>
     </div>`;
 }
