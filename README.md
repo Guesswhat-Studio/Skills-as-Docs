@@ -30,7 +30,7 @@ Skills Charter is not trying to be another marketplace or registry. It answers t
 Use this repository as the starting point for a team skill library:
 
 ```bash
-git clone https://github.com/Guesswhat-Studio/Skills-Charter.git team-skills
+git clone https://github.com/Guesswhat-Studio/Skills-as-Docs.git team-skills
 cd team-skills
 npm install
 npm run check
@@ -51,7 +51,7 @@ New packages normally start as `candidate`. The quickstart marks the demo packag
 
 `npm run smoke:npx-list` runs a non-mutating compatibility check against the upstream `npx skills add <path> --list` flow.
 
-See [docs/quickstart.md](./docs/quickstart.md) for the daily Git + PR workflow.
+See [docs/quickstart.md](./docs/quickstart.md) for the daily Git + PR workflow, and [docs/commit-conventions.md](./docs/commit-conventions.md) for commit rules that keep skill governance history searchable.
 See [docs/product-design.md](./docs/product-design.md) for the product model behind the dashboard-first manager redesign.
 See [Run a Team Agent Skill Library from GitHub](./docs/guides/run-team-agent-skill-library-from-github.md) for the copyable operating model.
 See [ROADMAP.md](./ROADMAP.md) for the promotion-first roadmap.
@@ -265,7 +265,7 @@ This repository is in early public-surface and core implementation development. 
 The detailed product and technical plan lives in [PLAN.md](./PLAN.md).
 The current manager UI semantics are documented in [docs/manager-semantics.md](./docs/manager-semantics.md).
 The MVP development contract lives in [docs/development.md](./docs/development.md).
-The day-one user workflow lives in [docs/quickstart.md](./docs/quickstart.md).
+The day-one user workflow lives in [docs/quickstart.md](./docs/quickstart.md). Commit naming and governance trailers live in [docs/commit-conventions.md](./docs/commit-conventions.md). The current manager button/action audit lives in [docs/ui-action-audit.md](./docs/ui-action-audit.md).
 The GitHub team-library guide lives in [docs/guides/run-team-agent-skill-library-from-github.md](./docs/guides/run-team-agent-skill-library-from-github.md).
 
 ## Core Thesis

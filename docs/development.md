@@ -249,8 +249,8 @@ Top bar controls:
 - Settings;
 - Theme;
 - GitHub;
-- Run checks;
-- Prepare draft PR.
+- Run policy;
+- prepare Git handoff context for a draft PR.
 
 ### Settings
 
@@ -332,9 +332,9 @@ Private repositories require authentication and are post-prototype.
 
 P0 authenticated write path may use a fine-grained personal access token. A GitHub App or token broker can be added later if needed.
 
-### Draft PR
+### Git Handoff
 
-Before authentication exists, `Prepare draft PR` only prepares local diff context and PR intent.
+Before authentication exists, the manager prepares local diff context, registry previews, and PR intent.
 
 Authenticated PR flow:
 

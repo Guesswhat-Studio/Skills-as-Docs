@@ -102,6 +102,9 @@ const copy = {
     "settings.note": "Configure repository, local skill root, and default install provider.",
     "action.tutorial": "Tutorial",
     "action.manifesto": "Manifesto",
+    "action.runPolicy": "Run policy",
+    "action.runPdfIntake": "Run PDF intake",
+    "action.running": "Running...",
     "search.placeholder": "Find package, finding, or commit...",
     "dashboard.title": "Repository health",
     "dashboard.subtitle": "Managed skills registry loaded from skills.json.",
@@ -153,7 +156,7 @@ const copy = {
     "tutorial.finish": "Finish",
     "tutorial.replay": "You can replay this from the Tutorial button in the top bar.",
     "toast.synced": "Registry reloaded from the configured GitHub repository.",
-    "toast.checks": "Policy checks ran in-browser. CI should enforce the same rules on PRs.",
+    "toast.checks": "Policy checks recalculated from the current staged package state.",
     "toast.intake": "New candidate package created in browser-local state.",
     "toast.settings": "Workspace settings saved in browser-local state."
   },
@@ -174,6 +177,9 @@ const copy = {
     "settings.note": "配置技能仓库、本地 skill 目录和默认安装目标。",
     "action.tutorial": "教程",
     "action.manifesto": "宣言",
+    "action.runPolicy": "运行策略",
+    "action.runPdfIntake": "导入 PDF",
+    "action.running": "运行中...",
     "search.placeholder": "搜索 skill、风险、提交...",
     "dashboard.title": "仓库健康度",
     "dashboard.subtitle": "从 skills.json 加载受治理的 skills registry。",
@@ -225,7 +231,7 @@ const copy = {
     "tutorial.finish": "完成",
     "tutorial.replay": "之后可以从顶部 Tutorial 按钮重新查看。",
     "toast.synced": "已从配置的 GitHub 仓库重新加载 registry。",
-    "toast.checks": "浏览器内策略检查已运行。CI 应在 PR 中执行同样规则。",
+    "toast.checks": "已根据当前 staged package 状态重新计算策略检查。",
     "toast.intake": "已在浏览器本地状态中新建 candidate package。",
     "toast.settings": "工作区设置已保存到浏览器本地状态。"
   }
@@ -789,15 +795,15 @@ function optimizePdfSkillContent(content) {
 }
 
 function pdfApprovalNote() {
-  return `# PDF Skill Approval\n\n## Source\n\n- Repository: https://github.com/anthropics/skills/tree/main/skills/pdf\n- Import mode: public_import\n- Managed state: browser-local mock approval\n\n## Optimization\n\n- Added category, owner, source URL, approval status, and evidence pointer to SKILL.md frontmatter.\n- Preserved the original PDF workflow instructions while tightening the trigger description for governed install.\n- Added review notes so approval is tied to a Git-trackable artifact.\n\n## Review Decision\n\nApproved for team registry exposure in this mock. The package contains PDF helper scripts, so install is allowed only after evidence review and owner assignment. No high-risk finding is present in this simulated review.\n\n## Next Steps\n\n1. Commit optimized SKILL.md and this approval note on a review branch.\n2. Open a PR with provenance, risk decision, and reviewer sign-off.\n3. Let CI run strict policy and registry drift checks.\n4. Merge to publish skills.json.\n5. Install with the approved registry command.\n`;
+  return `# PDF Skill Approval\n\n## Source\n\n- Repository: https://github.com/anthropics/skills/tree/main/skills/pdf\n- Import mode: public_import\n- Managed state: browser-local approval handoff\n\n## Optimization\n\n- Added category, owner, source URL, approval status, and evidence pointer to SKILL.md frontmatter.\n- Preserved the original PDF workflow instructions while tightening the trigger description for governed install.\n- Added review notes so approval is tied to a Git-trackable artifact.\n\n## Review Decision\n\nApproved for team registry exposure in this browser-local intake. The package contains PDF helper scripts, so install is allowed only after evidence review and owner assignment. No high-risk finding is present in this intake review.\n\n## Next Steps\n\n1. Commit optimized SKILL.md and this approval note on a review branch.\n2. Open a PR with provenance, risk decision, and reviewer sign-off.\n3. Let CI run strict policy and registry drift checks.\n4. Merge to publish skills.json.\n5. Install with the approved registry command.\n`;
 }
 
-async function runPdfGovernanceMock() {
+async function runPdfGovernanceIntake() {
   const repoName = "anthropics/skills";
   const branch = "main";
   const rootPath = "skills/pdf";
-  state.busy = "pdf-mock";
-  showToast("Loading anthropics/skills pdf and running governance mock...");
+  state.busy = "pdf-intake";
+  showToast("Loading anthropics/skills pdf into the governance intake flow...");
 
   try {
     const tree = await fetchGithubTree(repoName, branch);
@@ -839,7 +845,7 @@ async function runPdfGovernanceMock() {
       imported_by: "browser-local"
     };
     pkg.caseStudy = {
-      title: "Anthropic PDF skill governance mock",
+      title: "Anthropic PDF skill governance intake",
       steps: [
         ["Import", "Fetched skills/pdf from anthropics/skills and kept provenance visible."],
         ["Optimize", "Added owner, category, approval status, source URL, and evidence pointer to SKILL.md."],
@@ -855,7 +861,7 @@ async function runPdfGovernanceMock() {
       original: ""
     });
 
-    upsertPackage(pkg, "pdf imported from anthropics/skills and approved in mock review");
+    upsertPackage(pkg, "pdf imported from anthropics/skills and approved for handoff");
     markChanged("skills/pdf/SKILL.md", "+12", "-2");
     markChanged("skills/pdf/review-notes/approval.md", "+24", "-0");
     seed.activity.unshift(["approve", "pdf approved with review evidence", "just now", "browser-local"]);
@@ -867,10 +873,10 @@ async function runPdfGovernanceMock() {
     state.editorTab = "diff";
     state.intakeOpen = false;
     state.busy = "";
-    showToast("PDF mock complete: imported, optimized, reviewed, approved, and registry-ready.");
+    showToast("PDF intake complete: imported, optimized, reviewed, approved, and registry-ready.");
   } catch (error) {
     state.busy = "";
-    state.intakeStatus = `PDF mock failed: ${error.message || error}`;
+    state.intakeStatus = `PDF intake failed: ${error.message || error}`;
     showToast(state.intakeStatus);
   }
 }
@@ -1215,7 +1221,6 @@ function renderTopbar() {
       <button type="button" class="icon-button" data-action="locale" aria-label="Switch language">${state.locale === "en" ? "中" : "En"}</button>
       <button type="button" class="icon-button" data-action="theme" aria-label="Toggle theme">${state.theme === "dark" ? icons.sun : icons.moon}</button>
       <a class="icon-button" href="https://github.com/Guesswhat-Studio/Skills-as-Docs" aria-label="GitHub">${icons.github}</a>
-      <span class="user-chip"><span class="avatar">RA</span><span>r.amir</span></span>
       <button type="button" class="button primary" data-action="open-intake">${icons.plus}${t("action.intake")}</button>
     </div>
   </header>`;
@@ -1273,8 +1278,8 @@ function renderGovernanceLoop() {
     <div class="card-head">
       <div><span class="card-eyebrow">${t("loop.title")}</span><p class="page-subtitle">${t("loop.caption")}</p></div>
       <div class="chip-row">
-        <button type="button" class="button subtle" data-action="run-checks">Run policy</button>
-        <button type="button" class="button primary" data-action="run-pdf-mock" ${state.busy ? "disabled" : ""}>${state.busy === "pdf-mock" ? "Running..." : "Run PDF mock"}</button>
+        <button type="button" class="button subtle" data-action="run-checks">${t("action.runPolicy")}</button>
+        <button type="button" class="button primary" data-action="run-pdf-intake" ${state.busy ? "disabled" : ""}>${state.busy === "pdf-intake" ? t("action.running") : t("action.runPdfIntake")}</button>
       </div>
     </div>
     <div class="loop-stage-list">
@@ -1305,7 +1310,7 @@ function renderReviewBoard() {
   return `<section class="card review-board">
     <div class="card-head">
       <div><span class="card-eyebrow">${t("board.title")}</span><p class="page-subtitle">${t("board.caption")}</p></div>
-      <div class="chip-row"><span class="chip">All</span><span class="chip">Assigned to me</span><span class="chip">External</span><span class="chip">Risk >= med</span></div>
+      <span class="tiny">Grouped by lifecycle lane</span>
     </div>
     <div class="lane-grid">
       ${lanes.map(([lane, label, color]) => `
@@ -1373,7 +1378,7 @@ function renderRegistryReadiness() {
 function renderFindings() {
   const findings = seed.packages.flatMap((pkg) => pkg.findings.map((finding) => [pkg, finding]));
   return `<section class="card">
-    <div class="card-head"><h2 class="card-title">${t("panel.findings")}</h2><button type="button" class="button subtle" data-action="run-checks">${icons.check}Run checks</button></div>
+    <div class="card-head"><h2 class="card-title">${t("panel.findings")}</h2><button type="button" class="button subtle" data-action="run-checks">${icons.check}${t("action.runPolicy")}</button></div>
     <div class="finding-list">
       ${findings.length ? findings.map(([pkg, finding]) => `
         <div class="finding-item">
@@ -1513,7 +1518,7 @@ function renderChecks(pkg) {
 function renderCaseStudy(pkg) {
   if (!pkg.caseStudy) return "";
   return `<section class="case-study-card">
-    <div class="split-head"><h3 class="card-title">${esc(pkg.caseStudy.title)}</h3><span class="status-chip status-approved">mock</span></div>
+    <div class="split-head"><h3 class="card-title">${esc(pkg.caseStudy.title)}</h3><span class="status-chip status-approved">intake</span></div>
     <div class="case-step-list">
       ${pkg.caseStudy.steps.map(([label, detail], index) => `
         <div class="case-step">
@@ -1556,7 +1561,7 @@ function renderReview() {
           <p class="page-subtitle">${canInstall ? "This package can be written to the approved registry and installed downstream." : "Approval is blocked. Resolve policy findings, owner, provenance, or evidence before exposing install snippets."}</p>
           <div class="chip-row">
             <button type="button" class="button subtle" data-action="route" data-route="editor">Open editor</button>
-            <button type="button" class="button subtle" data-action="run-checks">Run checks</button>
+            <button type="button" class="button subtle" data-action="run-checks">${t("action.runPolicy")}</button>
             <button type="button" class="button ${canInstall ? "primary" : "subtle"}" data-action="route" data-route="registry">Registry</button>
           </div>
           ${renderCaseStudy(pkg)}
@@ -1604,7 +1609,7 @@ function renderEditorWorkspace() {
         </div>
         <div class="chip-row">
           <button type="button" class="button subtle ${state.zen ? "active" : ""}" data-action="toggle-zen">Zen</button>
-          <button type="button" class="button subtle" data-action="run-checks">Run checks</button>
+          <button type="button" class="button subtle" data-action="run-checks">${t("action.runPolicy")}</button>
           <button type="button" class="button primary" data-action="route" data-route="review">Review</button>
         </div>
       </div>
@@ -1871,6 +1876,18 @@ function renderHistory() {
         <div class="meta-row"><span class="meta-key">UI</span><span class="meta-value">GitHub Pages static manager</span></div>
         <div class="meta-row"><span class="meta-key">Install</span><span class="meta-value">npx skills consumes approved registry</span></div>
       </div>
+    </section>
+    <section class="card">
+      <div class="card-head"><h2 class="card-title">Commit rules</h2><a class="button subtle" href="./commit-conventions.html">Open guide</a></div>
+      <p class="page-subtitle">Each commit should explain the governance step it represents, so history can answer what changed, why it changed, and whether approval evidence exists.</p>
+      <table class="registry-table">
+        <thead><tr><th>Pattern</th><th>Meaning</th><th>Evidence expectation</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">intake(pdf): import public package</td><td>Candidate enters the repo</td><td>Source URL and owner pending</td></tr>
+          <tr><td class="mono">review(pdf): add approval evidence</td><td>Reviewer records findings</td><td>review-notes, reports, evals, or trigger samples</td></tr>
+          <tr><td class="mono">approve(pdf): expose install snippet</td><td>Package becomes installable</td><td>Approved metadata plus regenerated skills.json</td></tr>
+        </tbody>
+      </table>
     </section>`;
 }
 
@@ -1921,13 +1938,13 @@ function renderIntakeModal() {
           <button type="button" class="button primary" data-action="new-candidate" ${busy ? "disabled" : ""}>Create candidate</button>
         </section>
         <section class="choice-card scenario-choice">
-          <span class="card-eyebrow">Governance mock</span>
+          <span class="card-eyebrow">Governance intake</span>
           <h3>Anthropic PDF review</h3>
           <p class="page-subtitle">Import <span class="mono">skills/pdf</span>, optimize metadata, attach review evidence, approve, and expose the install path in one browser-local scenario.</p>
           <div class="mini-step-list">
             <span>Import</span><span>Optimize</span><span>Review</span><span>Approve</span><span>Install</span>
           </div>
-          <button type="button" class="button primary" data-action="run-pdf-mock" ${busy ? "disabled" : ""}>${state.busy === "pdf-mock" ? "Running mock..." : "Run PDF mock"}</button>
+          <button type="button" class="button primary" data-action="run-pdf-intake" ${busy ? "disabled" : ""}>${state.busy === "pdf-intake" ? t("action.running") : t("action.runPdfIntake")}</button>
         </section>
       </div>
       <div class="modal-foot">
@@ -2131,12 +2148,13 @@ document.addEventListener("click", async (event) => {
   }
 
   if (action === "run-checks") {
+    refreshDerivedState(state.dataStatus === "browser-local" ? "browser-local" : state.dataSource);
     showToast(t("toast.checks"));
     return;
   }
 
-  if (action === "run-pdf-mock") {
-    await runPdfGovernanceMock();
+  if (action === "run-pdf-intake") {
+    await runPdfGovernanceIntake();
     return;
   }
 
@@ -2224,6 +2242,13 @@ document.addEventListener("input", (event) => {
     state.fontSize = Number(event.target.value);
     localStorage.setItem("skills-charter-font-size", String(state.fontSize));
     render();
+  }
+});
+
+document.addEventListener("keydown", (event) => {
+  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+    event.preventDefault();
+    document.querySelector("[data-search]")?.focus();
   }
 });
 

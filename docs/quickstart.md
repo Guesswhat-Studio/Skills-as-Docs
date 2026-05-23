@@ -13,7 +13,7 @@ fork or clone repo -> add skills under skills/<name>/ -> lint + generate registr
 Use this repository as a starting point:
 
 ```bash
-git clone https://github.com/Guesswhat-Studio/Skills-Charter.git team-skills
+git clone https://github.com/Guesswhat-Studio/Skills-as-Docs.git team-skills
 cd team-skills
 npm install
 npm run check
@@ -110,11 +110,11 @@ node packages/cli/dist/index.js lint --root . --policy strict
 node packages/cli/dist/index.js generate registry --root . --source org/team-skills --out skills.json
 npm run check
 git add skills skills.json
-git commit -m "Update literature review skill"
+git commit -m "edit(literature-review): refine review rubric"
 git push
 ```
 
-Open a PR. CI should check build/test, package lint, and registry drift.
+Open a PR. CI should check build/test, package lint, and registry drift. Use [commit conventions](./commit-conventions.md) so the Git history stays readable as a governance record.
 
 After merge, developers install the approved package from GitHub:
 

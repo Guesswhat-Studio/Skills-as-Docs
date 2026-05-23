@@ -9,10 +9,12 @@ The header is split into five roles:
 - **Product identity**: `Skills Charter` and the short product role, so users know this is a skill package manager rather than a generic code editor.
 - **Workspace context**: repository, branch, registry preview, and the current browser workspace status. Status belongs here because it answers "what state is this workspace in?", not "what action can I take?"
 - **Reference entries**: `Tutorial` toggles the embedded public-import walkthrough as a coachmark overlay, while `Manifesto` links to the concept and market argument. The tutorial is a guided product demo; the manifesto is reading material.
-- **Workflow actions**: `Import skills`, `Run checks`, and `Prepare draft PR`. These are ordered from setup to validation to handoff, matching the review loop.
+- **Workflow actions**: `Import skills`, `Run policy`, and package-specific handoff actions. These are ordered from setup to validation to install/PR handoff, matching the review loop.
 - **Global utilities**: language, workspace settings, theme, and GitHub. These affect the page or destination, not the selected skill package.
 
 The initial status label is **No local edits** / **无本地改动**. It used to read `Clean`, but that was too ambiguous: it could mean visual cleanliness, lint health, Git cleanliness, or sync state. The clearer label makes the status observable without pretending the static prototype is fully synced to GitHub.
+
+The static manager does not show a user avatar, username, assignee, or account menu. Those controls belong only after authenticated GitHub write flow exists.
 
 ## Accessibility And Editing Comfort
 
@@ -151,15 +153,15 @@ Risk is derived from package lint issues:
 
 The `Registry` tab renders a browser-side `skills.json` preview with the same schema id, package records, lifecycle values, provenance, evidence, risk values, file lists, and approved-only `npx skills` install snippets as the CLI contract. CI remains the final source of truth for committed `skills.json`.
 
-## Run Checks
+## Run Policy
 
-`Run checks` recomputes the browser lint list for the currently selected package and file. It does not contact GitHub or run CI yet.
+`Run policy` recomputes the browser lint list for the currently staged package state. It does not contact GitHub or run CI yet.
 
 In the real P0 implementation, CI should run equivalent checks plus link validation, generated registry drift, script review gates, asset size and hash checks, and secret scanning.
 
-## Prepare Draft PR
+## Git Handoff
 
-`Prepare draft PR` currently means the browser has enough staged edits and diff context to prepare a local Git handoff. It does not create a GitHub PR without authentication.
+The static manager prepares staged file context, review notes, registry preview, install snippets, and PR intent. It does not create a GitHub PR without authentication.
 
 The prototype generates:
 
@@ -176,7 +178,7 @@ The intended implementation path is:
 4. Open a draft PR.
 5. Let CI validate the package before merge.
 
-Until that authentication path exists, the UI must say "prepare" rather than "open" or "sync".
+Until that authentication path exists, the UI must describe this as a Git handoff rather than a direct PR write.
 
 ## Install Command
 

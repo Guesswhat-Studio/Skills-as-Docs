@@ -642,7 +642,7 @@ svg .arrow {
   font-weight: 500;
 }
 
-.manager-mock {
+.manager-preview {
   display: grid;
   grid-template-columns: 1.05fr 1.9fr 1.25fr;
   grid-template-rows: 54px 260px;
@@ -653,7 +653,7 @@ svg .arrow {
   box-shadow: var(--shadow);
 }
 
-.manager-mock header {
+.manager-preview header {
   grid-column: 1 / -1;
   display: grid;
   grid-template-columns: 34px 170px 160px 78px 170px 1fr 86px;
@@ -663,12 +663,12 @@ svg .arrow {
   border-bottom: 1px solid var(--line);
 }
 
-.manager-mock header strong {
+.manager-preview header strong {
   font-size: 14px;
 }
 
-.manager-mock header em,
-.manager-mock header b {
+.manager-preview header em,
+.manager-preview header b {
   display: inline-flex;
   align-items: center;
   min-height: 30px;
@@ -682,7 +682,7 @@ svg .arrow {
   font-weight: 600;
 }
 
-.manager-mock header b {
+.manager-preview header b {
   grid-column: 7;
   justify-content: center;
   border-color: var(--accent);
@@ -690,22 +690,22 @@ svg .arrow {
   color: var(--accent);
 }
 
-.manager-mock aside,
-.manager-mock section {
+.manager-preview aside,
+.manager-preview section {
   padding: 24px;
   border-right: 1px solid var(--line);
   background: var(--panel-2);
 }
 
-.manager-mock section {
+.manager-preview section {
   background: var(--panel);
 }
 
-.manager-mock aside:last-child {
+.manager-preview aside:last-child {
   border-right: 0;
 }
 
-.manager-mock small {
+.manager-preview small {
   display: block;
   margin-bottom: 20px;
   color: var(--muted);
@@ -713,8 +713,8 @@ svg .arrow {
   font-weight: 700;
 }
 
-.manager-mock code,
-.manager-mock pre {
+.manager-preview code,
+.manager-preview pre {
   color: var(--soft);
   font-family: var(--mono);
   font-size: 12px;
@@ -722,18 +722,18 @@ svg .arrow {
   white-space: pre-wrap;
 }
 
-.manager-mock pre {
+.manager-preview pre {
   margin: 0;
 }
 
-.manager-mock p {
+.manager-preview p {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   margin-bottom: 20px;
 }
 
-.manager-mock p span {
+.manager-preview p span {
   padding: 7px 10px;
   border: 1px solid var(--accent);
   background: var(--accent-soft);
@@ -743,7 +743,7 @@ svg .arrow {
   font-weight: 700;
 }
 
-.manager-mock p span.warn {
+.manager-preview p span.warn {
   border-color: var(--warn);
   background: var(--warn-soft);
   color: var(--warn);

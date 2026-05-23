@@ -20,6 +20,12 @@ Source URL / upstream / generator:
 
 Evidence files added or updated:
 
+## Commit trail
+
+- [ ] Commit messages follow `type(scope): summary`.
+- [ ] Package-affecting commits include useful trailers such as `Skill:`, `Lifecycle:`, `Risk:`, `Evidence:`, or `Registry:`.
+- [ ] Approval commits include evidence and regenerated registry output when package files changed.
+
 ## Risk decision
 
 - [ ] I ran `node packages/cli/dist/index.js lint --root . --policy strict`.

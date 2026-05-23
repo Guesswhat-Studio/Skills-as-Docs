@@ -57,7 +57,7 @@ The full repository is large enough to make the review problem visible. A local 
      - `source_type: public_import`
      - `owner: @research-ops`
      - `source_url: https://github.com/anthropics/skills/tree/main/skills/skill-creator`
-   - Run checks.
+   - Run policy.
    - Say: "Candidate packages are readable, but install is blocked until the team adds evidence and approval."
 
 5. **Show risk as review work, not fear**
@@ -70,7 +70,7 @@ The full repository is large enough to make the review problem visible. A local 
 
 7. **Prepare the Git handoff**
    - Open the diff view.
-   - Click **Prepare draft PR**.
+   - Use the changed-file list, review notes, and generated install command as the PR handoff.
    - Say: "The browser prepares the change; GitHub and CI are the trust boundary."
 
 8. **Show install after approval**

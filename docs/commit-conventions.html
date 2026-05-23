@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Commit Conventions · Skills Charter</title>
+    <meta name="description" content="Commit rules for Skills Charter governance history.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="./assets/site.css">
+  </head>
+  <body class="article-page">
+    <header class="article-topbar">
+      <a class="brand" href="./">
+        <span class="brand-mark">SC</span>
+        <span>
+          <strong>Skills Charter</strong>
+          <small>Commit conventions</small>
+        </span>
+      </a>
+      <nav>
+        <a class="text-button" href="./">Open manager</a>
+        <a class="text-button" href="./commit-conventions.md">Markdown</a>
+        <a class="text-button" href="https://github.com/Guesswhat-Studio/Skills-as-Docs">GitHub</a>
+      </nav>
+    </header>
+
+    <main class="article-shell">
+      <article class="article-body">
+        <p class="article-kicker">Git-backed governance</p>
+        <h1>Every commit should read like part of the skill audit trail.</h1>
+        <p class="article-lede">Skills Charter uses Git history as the durable record for intake, review, approval, registry generation, and rollback. Commit names should make that history searchable.</p>
+
+        <section>
+          <h2>Format</h2>
+          <pre><code>type(scope): short imperative summary</code></pre>
+          <p>Use a small type vocabulary: <code>intake</code>, <code>review</code>, <code>approve</code>, <code>edit</code>, <code>policy</code>, <code>registry</code>, <code>ui</code>, <code>docs</code>, <code>ci</code>, or <code>chore</code>.</p>
+        </section>
+
+        <section>
+          <h2>Examples</h2>
+          <pre><code>intake(pdf): import anthropic public package
+review(pdf): add approval evidence and script notes
+approve(pdf): expose codex install snippet
+policy(strict): require evidence for public imports
+registry: regenerate approved install registry
+ui(editor): add package file handoff actions</code></pre>
+        </section>
+
+        <section>
+          <h2>Governance Trailers</h2>
+          <p>For package-affecting commits, add body trailers when they help a reviewer reconstruct the decision.</p>
+          <pre><code>Skill: pdf
+Lifecycle: candidate -> approved
+Risk: medium
+Evidence: skills/pdf/review-notes/approval.md
+Registry: skills.json regenerated
+Install: npx skills add Guesswhat-Studio/testSkills --skill pdf -g -a codex</code></pre>
+        </section>
+
+        <section>
+          <h2>Rules</h2>
+          <ul>
+            <li>Keep one governance decision per commit when possible.</li>
+            <li>Commit evidence before or with approval metadata.</li>
+            <li>Regenerate <code>skills.json</code> in the same commit when package metadata or files change.</li>
+            <li>Never approve a public, generated, or evolved skill without owner, provenance, evidence, and policy results.</li>
+            <li>Avoid <code>wip</code>, <code>fix stuff</code>, or <code>update</code> commits in review branches unless they are squashed before merge.</li>
+          </ul>
+        </section>
+      </article>
+    </main>
+  </body>
+</html>

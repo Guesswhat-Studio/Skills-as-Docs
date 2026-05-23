@@ -59,7 +59,7 @@ She opens the Skills Charter manager and imports `anthropics/skills`. The tree s
    - Review references, scripts, assets, agents, and eval viewer files.
    - Check that the trigger description is specific enough for internal use.
 
-3. **Run checks**
+3. **Run policy**
    - Flag scripts for human review.
    - Flag external URLs for provenance review.
    - Require review evidence before approval.

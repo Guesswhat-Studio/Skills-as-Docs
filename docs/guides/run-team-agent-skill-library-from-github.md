@@ -11,7 +11,7 @@ The flagship scenario:
 Start from this repository or from `templates/team-skill-library/`.
 
 ```bash
-git clone https://github.com/Guesswhat-Studio/Skills-Charter.git team-skills
+git clone https://github.com/Guesswhat-Studio/Skills-as-Docs.git team-skills
 cd team-skills
 npm install
 npm run build
