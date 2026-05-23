@@ -210,6 +210,7 @@ const copy = {
     "action.sync": "sync",
     "action.intake": "Intake",
     "action.settings": "Settings",
+    "settings.note": "Configure repository, local skill root, and default install provider.",
     "action.tutorial": "Tutorial",
     "action.manifesto": "Manifesto",
     "search.placeholder": "Find package, finding, or commit...",
@@ -281,6 +282,7 @@ const copy = {
     "action.sync": "同步",
     "action.intake": "导入",
     "action.settings": "设置",
+    "settings.note": "配置技能仓库、本地 skill 目录和默认安装目标。",
     "action.tutorial": "教程",
     "action.manifesto": "宣言",
     "search.placeholder": "搜索 skill、风险、提交...",
@@ -380,7 +382,7 @@ const state = {
   historySkill: "all",
   intakeOpen: false,
   settingsOpen: false,
-  managedRepo: localStorage.getItem("skills-charter-managed-repo") || "Guesswhat-Studio/team-skills",
+  managedRepo: localStorage.getItem("skills-charter-managed-repo") || "Guesswhat-Studio/testSkills",
   managedBranch: localStorage.getItem("skills-charter-managed-branch") || "main",
   localSkillRoot: localStorage.getItem("skills-charter-local-root") || "~/.codex/skills",
   fontSize: Number(localStorage.getItem("skills-charter-font-size") || 13),
@@ -494,12 +496,13 @@ function renderSidebar() {
     </a>
     <div class="sidebar-scroll">${groups}</div>
     <footer class="sidebar-footer">
-      <button type="button" class="sidebar-settings" data-action="open-settings">
-        <span>S</span><strong>${t("action.settings")}</strong>
-      </button>
       <div class="footer-row"><span>managed repo</span><span class="kbd">${esc(state.managedBranch)}</span></div>
       <div class="footer-row"><span>${esc(state.managedRepo)}</span><span>${seed.metrics.changed} Δ</span></div>
       <div class="footer-row"><span>install target</span><span>${esc(state.agent)}</span></div>
+      <p class="sidebar-settings-note">${t("settings.note")}</p>
+      <button type="button" class="sidebar-settings" data-action="open-settings">
+        <span>S</span><strong>${t("action.settings")}</strong>
+      </button>
     </footer>
   </aside>`;
 }

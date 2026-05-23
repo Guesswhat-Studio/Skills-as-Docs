@@ -346,6 +346,12 @@ textarea,
   text-align: left;
 }
 
+.sidebar-settings-note {
+  margin: 2px 0 0;
+  color: var(--faint);
+  line-height: 1.45;
+}
+
 .sidebar-settings span {
   display: grid;
   width: 22px;
