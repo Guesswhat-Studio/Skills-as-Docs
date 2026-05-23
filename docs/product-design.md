@@ -178,15 +178,13 @@ The `charter` branch implementation follows the latest `redesign/` dashboard dir
 The current static manager should expose:
 
 - **Dashboard**: repository health, governance loop, review queue, registry readiness
+- **Intake modal**: local folder upload, public GitHub repo import, specific skill import, and new candidate creation
 - **Library**: package inventory by category, owner, review status, risk, and install readiness
+- **Editor**: selected package structure, file picker, edit, preview, diff, live lint, metadata, and Zen mode
 - **Review**: selected-package policy gate, provenance, evidence, blockers, and approval decision
-- **Package**: selected package structure, category, package graph
-- **Edit**: selected file editor
-- **Preview**: markdown or text preview
-- **Diff**: browser-local Git handoff
-- **Registry**: generated `skills.json`
-- **History**: Git audit model, local changed files, and database boundary
-- **Zen**: focused editor mode
+- **Registry**: generated `skills.json` and default install agent selection for Codex, Claude Code, or Antigravity
+- **History**: Git audit model, skill/version filtering, local changed files, and database boundary
+- **Settings**: managed skills repository, default branch, local skill root, and default install provider
 
 ## Non-Goals For P0
 

@@ -203,16 +203,13 @@ const copy = {
     "route.dashboard": "Dashboard",
     "route.intake": "Intake",
     "route.library": "Library",
+    "route.editor": "Editor",
     "route.review": "Review",
-    "route.package": "Package",
-    "route.edit": "Edit",
-    "route.preview": "Preview",
-    "route.diff": "Diff",
     "route.registry": "Registry",
     "route.history": "History",
-    "route.zen": "Zen mode",
     "action.sync": "sync",
     "action.intake": "Intake",
+    "action.settings": "Settings",
     "action.tutorial": "Tutorial",
     "action.manifesto": "Manifesto",
     "search.placeholder": "Find package, finding, or commit...",
@@ -240,6 +237,8 @@ const copy = {
     "library.subtitle": "Inspect the corpus by package, category, lifecycle, risk, owner, and install readiness.",
     "review.title": "Review before install",
     "review.subtitle": "Policy checks become review work. Approval stays durable in Git.",
+    "editor.title": "Skill editor",
+    "editor.subtitle": "Choose a governed package, inspect its structure, edit files, preview, diff, and switch into Zen without leaving the editor.",
     "package.title": "Package workspace",
     "package.subtitle": "A skill is a governed package, not only a markdown file.",
     "edit.title": "Editor",
@@ -265,7 +264,8 @@ const copy = {
     "tutorial.replay": "You can replay this from the Tutorial button in the top bar.",
     "toast.synced": "Local demo state refreshed. Durable sync belongs to Git and CI.",
     "toast.checks": "Policy checks ran in-browser. CI should enforce the same rules on PRs.",
-    "toast.intake": "New candidate package created in browser-local state."
+    "toast.intake": "New candidate package created in browser-local state.",
+    "toast.settings": "Workspace settings saved in browser-local state."
   },
   zh: {
     "nav.workspace": "工作区",
@@ -274,16 +274,13 @@ const copy = {
     "route.dashboard": "总览",
     "route.intake": "导入",
     "route.library": "库",
+    "route.editor": "编辑器",
     "route.review": "审查",
-    "route.package": "包",
-    "route.edit": "编辑",
-    "route.preview": "预览",
-    "route.diff": "差异",
     "route.registry": "注册表",
     "route.history": "历史",
-    "route.zen": "专注",
     "action.sync": "同步",
     "action.intake": "导入",
+    "action.settings": "设置",
     "action.tutorial": "教程",
     "action.manifesto": "宣言",
     "search.placeholder": "搜索 skill、风险、提交...",
@@ -311,6 +308,8 @@ const copy = {
     "library.subtitle": "按包、分类、生命周期、风险、owner 和可安装状态查看。",
     "review.title": "先审查，后安装",
     "review.subtitle": "策略检查会变成审查任务，审批结论保留在 Git 中。",
+    "editor.title": "Skill 编辑器",
+    "editor.subtitle": "选择受治理的 package，查看结构、编辑文件、预览、diff，并在同一个编辑器里进入专注模式。",
     "package.title": "Package 工作台",
     "package.subtitle": "Skill 是一个受治理的 package，不只是一个 markdown 文件。",
     "edit.title": "编辑器",
@@ -336,7 +335,8 @@ const copy = {
     "tutorial.replay": "之后可以从顶部 Tutorial 按钮重新查看。",
     "toast.synced": "本地 demo 状态已刷新。真正持久同步交给 Git 和 CI。",
     "toast.checks": "浏览器内策略检查已运行。CI 应在 PR 中执行同样规则。",
-    "toast.intake": "已在浏览器本地状态中新建 candidate package。"
+    "toast.intake": "已在浏览器本地状态中新建 candidate package。",
+    "toast.settings": "工作区设置已保存到浏览器本地状态。"
   }
 };
 
@@ -345,28 +345,24 @@ const navGroups = [
     label: "nav.workspace",
     items: [
       ["dashboard", "D", null],
-      ["intake", "+", null],
       ["library", "L", 47],
+      ["editor", "E", null],
       ["review", "R", 12, true]
-    ]
-  },
-  {
-    label: "nav.package",
-    items: [
-      ["package", "P", null],
-      ["edit", "E", null],
-      ["preview", "V", null],
-      ["diff", "Δ", 3]
     ]
   },
   {
     label: "nav.release",
     items: [
       ["registry", "S", null],
-      ["history", "H", null],
-      ["zen", "Z", null]
+      ["history", "H", null]
     ]
   }
+];
+
+const agentOptions = [
+  ["codex", "Codex"],
+  ["claude-code", "Claude Code"],
+  ["antigravity", "Antigravity"]
 ];
 
 const state = {
@@ -375,9 +371,18 @@ const state = {
   locale: localStorage.getItem("skills-charter-locale") || "en",
   selectedPackage: "skill-creator",
   selectedFile: "skills/skill-creator/SKILL.md",
+  editorTab: "edit",
+  zen: false,
   search: "",
   filtersOpen: false,
   filters: { approved: true, review: true, candidate: true, blocked: true },
+  agent: localStorage.getItem("skills-charter-agent") || "codex",
+  historySkill: "all",
+  intakeOpen: false,
+  settingsOpen: false,
+  managedRepo: localStorage.getItem("skills-charter-managed-repo") || "Guesswhat-Studio/team-skills",
+  managedBranch: localStorage.getItem("skills-charter-managed-branch") || "main",
+  localSkillRoot: localStorage.getItem("skills-charter-local-root") || "~/.codex/skills",
   fontSize: Number(localStorage.getItem("skills-charter-font-size") || 13),
   toast: ""
 };
@@ -489,9 +494,12 @@ function renderSidebar() {
     </a>
     <div class="sidebar-scroll">${groups}</div>
     <footer class="sidebar-footer">
-      <div class="footer-row"><span>local working dir</span><span class="kbd">git</span></div>
-      <div class="footer-row"><span>~/org/team-skills</span><span>3 Δ</span></div>
-      <div class="footer-row"><span>runtime</span><span>Codex · Claude · Antigravity</span></div>
+      <button type="button" class="sidebar-settings" data-action="open-settings">
+        <span>S</span><strong>${t("action.settings")}</strong>
+      </button>
+      <div class="footer-row"><span>managed repo</span><span class="kbd">${esc(state.managedBranch)}</span></div>
+      <div class="footer-row"><span>${esc(state.managedRepo)}</span><span>${seed.metrics.changed} Δ</span></div>
+      <div class="footer-row"><span>install target</span><span>${esc(state.agent)}</span></div>
     </footer>
   </aside>`;
 }
@@ -516,7 +524,7 @@ function renderTopbar() {
       <button type="button" class="icon-button" data-action="theme" aria-label="Toggle theme">${state.theme === "dark" ? icons.sun : icons.moon}</button>
       <a class="icon-button" href="https://github.com/Guesswhat-Studio/Skills-as-Docs" aria-label="GitHub">${icons.github}</a>
       <span class="user-chip"><span class="avatar">RA</span><span>r.amir</span></span>
-      <button type="button" class="button primary" data-action="route" data-route="intake">${icons.plus}${t("action.intake")}</button>
+      <button type="button" class="button primary" data-action="open-intake">${icons.plus}${t("action.intake")}</button>
     </div>
   </header>`;
 }
@@ -715,23 +723,6 @@ function renderDashboard() {
     ${renderInventoryTable()}`;
 }
 
-function renderIntake() {
-  return `${pageHead(t("intake.title"), t("intake.subtitle"))}
-    <section class="intake-grid">
-      ${[
-        ["Public GitHub repo", "Import public skills as candidate packages. Provenance stays attached to every review decision.", "anthropics/skills"],
-        ["Local agent folder", "Select .claude/skills, .codex/skills, or .agents/skills and review before team install.", "~/.codex/skills"],
-        ["New governed package", "Start from a required SKILL.md template with owner, source, category, and review status.", "skills/new-skill"]
-      ].map(([title, body, placeholder], index) => `
-        <article class="card intake-card">
-          <div><span class="card-eyebrow">Input ${index + 1}</span><h2 class="card-title">${esc(title)}</h2><p class="page-subtitle">${esc(body)}</p></div>
-          <label class="input-block"><span class="tiny">Source</span><input value="${esc(placeholder)}" aria-label="${esc(title)}"></label>
-          <button type="button" class="button ${index === 0 ? "primary" : "subtle"}" data-action="${index === 2 ? "new-candidate" : "run-checks"}">${index === 2 ? "Create candidate" : "Capture provenance"}</button>
-        </article>
-      `).join("")}
-    </section>`;
-}
-
 function filteredPackages() {
   const query = state.search.trim().toLowerCase();
   return seed.packages.filter((pkg) => {
@@ -743,7 +734,7 @@ function filteredPackages() {
 
 function renderLibrary() {
   const packages = filteredPackages();
-  const categories = Object.groupBy ? Object.groupBy(seed.packages, (pkg) => pkg.category.split("/")[0]) : seed.packages.reduce((acc, pkg) => {
+  const categories = Object.groupBy ? Object.groupBy(packages, (pkg) => pkg.category.split("/")[0]) : packages.reduce((acc, pkg) => {
     const key = pkg.category.split("/")[0];
     acc[key] = acc[key] || [];
     acc[key].push(pkg);
@@ -751,8 +742,8 @@ function renderLibrary() {
   }, {});
 
   return `${pageHead(t("library.title"), t("library.subtitle"))}
-    <div class="view-layout two-column">
-      <section class="card">
+    <div class="view-layout library-layout">
+      <section class="card library-filter-card">
         <div class="card-head">
           <h2 class="card-title">Category hierarchy</h2>
           <button type="button" class="icon-button" data-action="toggle-filters" aria-label="Filter">${icons.filter}</button>
@@ -762,20 +753,27 @@ function renderLibrary() {
           ${Object.entries(categories).map(([category, pkgs]) => `
             <div class="category-row">
               <strong>${esc(category)}</strong>
-              <div class="category-track">${pkgs.map((pkg) => `<button type="button" class="category-pill" data-action="select-package" data-package="${pkg.id}">${esc(pkg.category)} / ${esc(pkg.name)}</button>`).join("")}</div>
+              <div class="category-track">${pkgs.map((pkg) => `<button type="button" class="category-pill" data-action="open-editor-package" data-package="${pkg.id}">${esc(pkg.category)} / ${esc(pkg.name)}</button>`).join("")}</div>
               <span class="count-chip">${pkgs.length}</span>
             </div>
           `).join("")}
         </div>
       </section>
       <section class="card">
-        <div class="card-head"><h2 class="card-title">Packages</h2><span class="tiny">${packages.length} visible</span></div>
-        <div class="package-list">
-          ${packages.map((pkg) => `
-            <button type="button" class="package-row ${state.selectedPackage === pkg.id ? "selected" : ""}" data-action="select-package" data-package="${pkg.id}">
-              <span><strong>${esc(pkg.name)}</strong><span class="package-path">${esc(pkg.category)} · ${esc(pkg.source)}</span></span>
-              <span class="chip-row">${statusChip(pkg.status)}${riskChip(pkg.risk)}<span class="chip">${pkg.files.length} files</span></span>
-            </button>
+        <div class="card-head"><h2 class="card-title">Packages by category</h2><span class="tiny">${packages.length} visible</span></div>
+        <div class="category-package-list">
+          ${Object.entries(categories).map(([category, pkgs]) => `
+            <section class="category-package-group">
+              <div class="category-package-head"><strong>${esc(category)}</strong><span class="count-chip">${pkgs.length}</span></div>
+              <div class="package-list">
+                ${pkgs.map((pkg) => `
+                  <button type="button" class="package-row ${state.selectedPackage === pkg.id ? "selected" : ""}" data-action="open-editor-package" data-package="${pkg.id}">
+                    <span><strong>${esc(pkg.name)}</strong><span class="package-path">${esc(pkg.category)} · ${esc(pkg.source)}</span></span>
+                    <span class="chip-row">${statusChip(pkg.status)}${riskChip(pkg.risk)}<span class="chip">${pkg.files.length} files</span></span>
+                  </button>
+                `).join("")}
+              </div>
+            </section>
           `).join("")}
         </div>
       </section>
@@ -833,36 +831,11 @@ function renderReview() {
         <div class="panel-body">
           <p class="page-subtitle">${canInstall ? "This package can be written to the approved registry and installed downstream." : "Approval is blocked. Resolve policy findings, owner, provenance, or evidence before exposing install snippets."}</p>
           <div class="chip-row">
-            <button type="button" class="button subtle" data-action="route" data-route="edit">Open editor</button>
+            <button type="button" class="button subtle" data-action="route" data-route="editor">Open editor</button>
             <button type="button" class="button subtle" data-action="run-checks">Run checks</button>
             <button type="button" class="button ${canInstall ? "primary" : "subtle"}" data-action="route" data-route="registry">Registry</button>
           </div>
         </div>
-      </section>
-    </div>`;
-}
-
-function renderPackage() {
-  const pkg = currentPackage();
-  return `${pageHead(t("package.title"), t("package.subtitle"))}
-    <div class="workspace-grid">
-      <section class="workspace-panel">
-        <div class="card-head"><h2 class="card-title">Package graph</h2><span class="count-chip">${pkg.files.length}</span></div>
-        <div class="panel-body">
-          <div class="graph">
-            <div class="graph-node"><span class="node-mark">PKG</span><strong>${esc(pkg.name)}</strong>${statusChip(pkg.status)}</div>
-            <div class="graph-node"><span class="node-mark">CAT</span><span>${esc(pkg.category)}</span>${riskChip(pkg.risk)}</div>
-            ${pkg.files.map((file) => `<div class="graph-node"><span class="node-mark">${file.kind.slice(0, 3).toUpperCase()}</span><span class="file-path">${esc(file.path)}</span><span class="chip">${esc(file.kind)}</span></div>`).join("")}
-          </div>
-        </div>
-      </section>
-      <section class="workspace-panel">
-        <div class="card-head"><h2 class="card-title">Package files</h2><button type="button" class="button subtle" data-action="route" data-route="edit">Edit selected</button></div>
-        <div class="panel-body"><div class="file-list">${renderFileList(pkg)}</div></div>
-      </section>
-      <section class="workspace-panel">
-        <div class="card-head"><h2 class="card-title">Metadata</h2><span class="tiny">from SKILL.md</span></div>
-        <div class="panel-body">${renderMeta(pkg)}</div>
       </section>
     </div>`;
 }
@@ -887,24 +860,79 @@ function renderMeta(pkg) {
   </div>`;
 }
 
-function renderEditorPage(kind) {
+function renderEditorWorkspace() {
   const pkg = currentPackage();
   const file = currentFile();
-  const titleKey = kind === "preview" ? "preview.title" : kind === "diff" ? "diff.title" : "edit.title";
-  const body = kind === "preview" ? renderPreview(file) : kind === "diff" ? renderDiff(file) : renderEditor(file);
+  const body = state.editorTab === "package" ? renderEditorPackage(pkg) : state.editorTab === "preview" ? renderPreview(file) : state.editorTab === "diff" ? renderDiff(file) : renderEditor(file);
+  const tabs = [
+    ["package", "Package"],
+    ["edit", "Edit"],
+    ["preview", "Preview"],
+    ["diff", "Diff"]
+  ];
 
-  return `${pageHead(t(titleKey), `${pkg.name} · ${file.path}`)}
-    <div class="workspace-grid">
-      <section class="workspace-panel">
-        <div class="card-head"><h2 class="card-title">Files</h2><span class="count-chip">${pkg.files.length}</span></div>
-        <div class="panel-body"><div class="file-list">${renderFileList(pkg)}</div></div>
+  return `${pageHead(t("editor.title"), t("editor.subtitle"), `<span>${esc(pkg.name)}</span><span>·</span><span>${esc(file.path)}</span>`)}
+    <section class="editor-control-card card">
+      <div class="card-head">
+        <div class="editor-tabs" role="tablist" aria-label="Editor views">
+          ${tabs.map(([tab, label]) => `<button type="button" class="${state.editorTab === tab ? "active" : ""}" data-action="editor-tab" data-tab="${tab}">${label}</button>`).join("")}
+        </div>
+        <div class="chip-row">
+          <button type="button" class="button subtle ${state.zen ? "active" : ""}" data-action="toggle-zen">Zen</button>
+          <button type="button" class="button subtle" data-action="run-checks">Run checks</button>
+          <button type="button" class="button primary" data-action="route" data-route="review">Review</button>
+        </div>
+      </div>
+    </section>
+    <div class="editor-workspace ${state.zen ? "zen-active" : ""}">
+      <section class="workspace-panel editor-side">
+        <div class="card-head"><h2 class="card-title">Skill package</h2><span class="count-chip">${seed.packages.length}</span></div>
+        <div class="panel-body">
+          <div class="package-picker">
+            ${seed.packages.map((item) => `
+              <button type="button" class="package-row compact ${pkg.id === item.id ? "selected" : ""}" data-action="select-package" data-package="${item.id}">
+                <span><strong>${esc(item.name)}</strong><span class="package-path">${esc(item.category)}</span></span>
+                ${riskChip(item.risk)}
+              </button>
+            `).join("")}
+          </div>
+          <div class="split-head"><h3 class="card-title">Files</h3><span class="count-chip">${pkg.files.length}</span></div>
+          <div class="file-list">${renderFileList(pkg)}</div>
+        </div>
       </section>
-      <section class="workspace-panel editor-shell">${body}</section>
-      <section class="workspace-panel">
-        <div class="card-head"><h2 class="card-title">Live checks</h2><button type="button" class="button subtle" data-action="run-checks">Run</button></div>
-        <div class="panel-body">${renderChecks(pkg)}</div>
+      <section class="workspace-panel editor-main ${state.editorTab === "package" ? "" : "editor-shell"}">${body}</section>
+      <section class="workspace-panel editor-side">
+        <div class="card-head"><h2 class="card-title">Governance</h2>${statusChip(pkg.status)}</div>
+        <div class="panel-body">
+          ${renderMeta(pkg)}
+          ${renderChecks(pkg)}
+          <div class="settings-grid inline-settings">
+            <div class="split-head"><h3 class="card-title">Editor scale</h3><span class="kbd">${state.fontSize}px</span></div>
+            <label class="range-row"><span>Font size</span><input type="range" min="12" max="20" value="${state.fontSize}" data-font-size><span class="kbd">${state.fontSize}px</span></label>
+          </div>
+        </div>
       </section>
     </div>`;
+}
+
+function renderEditorPackage(pkg) {
+  return `<div class="panel-body editor-package-tab">
+    <div class="editor-package-grid">
+      <section>
+        <div class="split-head"><h2 class="card-title">Package graph</h2><span class="count-chip">${pkg.files.length}</span></div>
+        <div class="graph">
+          <div class="graph-node"><span class="node-mark">PKG</span><strong>${esc(pkg.name)}</strong>${statusChip(pkg.status)}</div>
+          <div class="graph-node"><span class="node-mark">CAT</span><span>${esc(pkg.category)}</span>${riskChip(pkg.risk)}</div>
+          ${pkg.files.map((file) => `<div class="graph-node"><span class="node-mark">${file.kind.slice(0, 3).toUpperCase()}</span><span class="file-path">${esc(file.path)}</span><span class="chip">${esc(file.kind)}</span></div>`).join("")}
+        </div>
+      </section>
+      <section>
+        <div class="split-head"><h2 class="card-title">Package metadata</h2><span class="tiny">SKILL.md frontmatter</span></div>
+        ${renderMeta(pkg)}
+        <div class="chip-row"><button type="button" class="button subtle" data-action="editor-tab" data-tab="edit">Edit SKILL.md</button><button type="button" class="button subtle" data-action="editor-tab" data-tab="diff">View diff</button></div>
+      </section>
+    </div>
+  </div>`;
 }
 
 function lineNumbers(content) {
@@ -914,7 +942,7 @@ function lineNumbers(content) {
 function renderEditor(file) {
   return `<div class="editor-toolbar">
     <div><h2>${esc(file.path)}</h2><span class="tiny">${esc(file.kind)} · browser-local edits</span></div>
-    <div class="chip-row"><button type="button" class="button subtle" data-action="route" data-route="preview">Preview</button><button type="button" class="button subtle" data-action="route" data-route="diff">Diff</button></div>
+    <div class="chip-row"><button type="button" class="button subtle" data-action="editor-tab" data-tab="preview">Preview</button><button type="button" class="button subtle" data-action="editor-tab" data-tab="diff">Diff</button></div>
   </div>
   <div class="editor-surface">
     <pre class="line-numbers">${lineNumbers(file.content)}</pre>
@@ -927,7 +955,7 @@ function renderPreview(file) {
   const html = isMarkdown ? markdownPreview(file.content) : highlightCode(file.content);
   return `<div class="editor-toolbar">
     <div><h2>${esc(file.path)}</h2><span class="tiny">syntax-aware preview</span></div>
-    <div class="chip-row"><button type="button" class="button subtle" data-action="route" data-route="edit">Edit</button><button type="button" class="button subtle" data-action="route" data-route="diff">Diff</button></div>
+    <div class="chip-row"><button type="button" class="button subtle" data-action="editor-tab" data-tab="edit">Edit</button><button type="button" class="button subtle" data-action="editor-tab" data-tab="diff">Diff</button></div>
   </div>
   <div class="${isMarkdown ? "preview-doc" : "code-preview"}">${html}</div>`;
 }
@@ -968,34 +996,51 @@ function renderDiff(file) {
   }
   return `<div class="editor-toolbar">
     <div><h2>${esc(file.path)}</h2><span class="tiny">browser-local diff against imported package</span></div>
-    <div class="chip-row"><button type="button" class="button subtle" data-action="route" data-route="edit">Edit</button><button type="button" class="button subtle" data-action="route" data-route="preview">Preview</button></div>
+    <div class="chip-row"><button type="button" class="button subtle" data-action="editor-tab" data-tab="edit">Edit</button><button type="button" class="button subtle" data-action="editor-tab" data-tab="preview">Preview</button></div>
   </div>
   <div class="diff-view">${lines.map(([type, mark, text]) => `<div class="diff-line ${type}"><span>${mark}</span><span>${esc(text)}</span></div>`).join("")}</div>`;
 }
 
 function renderRegistry() {
   const approved = seed.packages.filter(packageIsInstallable);
+  const agentLabel = agentOptions.find(([id]) => id === state.agent)?.[1] || state.agent;
   const registry = {
     name: "team-skills",
     generatedFrom: seed.sha,
     installPolicy: "approved-only",
+    defaultAgent: state.agent,
     skills: approved.map((pkg) => ({
       name: pkg.name,
       category: pkg.category,
       version: pkg.version,
       path: `skills/${pkg.name}`,
-      install: `npx skills add org/team-skills --skill ${pkg.name} -g -a codex`
+      install: `npx skills add ${state.managedRepo} --skill ${pkg.name} -g -a ${state.agent}`
     }))
   };
 
   return `${pageHead(t("registry.title"), t("registry.subtitle"))}
-    <div class="view-layout two-column">
+    <div class="view-layout registry-layout">
+      <section class="card">
+        <div class="card-head"><h2 class="card-title">Install target</h2><span class="status-chip status-approved">${esc(agentLabel)}</span></div>
+        <div class="agent-option-grid">
+          ${agentOptions.map(([id, label]) => `
+            <button type="button" class="agent-option ${state.agent === id ? "selected" : ""}" data-action="set-agent" data-agent="${id}">
+              <strong>${esc(label)}</strong>
+              <span class="tiny">-a ${esc(id)}</span>
+            </button>
+          `).join("")}
+        </div>
+        <div class="meta-grid">
+          <div class="meta-row"><span class="meta-key">Managed repo</span><span class="meta-value">${esc(state.managedRepo)}</span></div>
+          <div class="meta-row"><span class="meta-key">Registry mode</span><span class="meta-value">approved-only</span></div>
+        </div>
+      </section>
       <section class="card">
         <div class="card-head"><h2 class="card-title">Install snippets</h2><span class="count-chip">${approved.length}</span></div>
         <table class="registry-table">
           <thead><tr><th>Skill</th><th>Status</th><th>Command</th></tr></thead>
           <tbody>${approved.map((pkg) => `
-            <tr><td>${esc(pkg.name)}</td><td>${statusChip(pkg.status)}</td><td class="mono">npx skills add org/team-skills --skill ${esc(pkg.name)} -g -a codex</td></tr>
+            <tr><td>${esc(pkg.name)}</td><td>${statusChip(pkg.status)}</td><td class="mono">npx skills add ${esc(state.managedRepo)} --skill ${esc(pkg.name)} -g -a ${esc(state.agent)}</td></tr>
           `).join("")}</tbody>
         </table>
       </section>
@@ -1007,67 +1052,141 @@ function renderRegistry() {
 }
 
 function renderHistory() {
+  const selected = state.historySkill === "all" ? null : packageById(state.historySkill);
+  const visiblePackages = selected ? [selected] : seed.packages;
   const items = [
-    ["PR #284", "Approve skill-creator after evidence review", "a1f9d20"],
-    ["Action", "skilldocs lint --policy strict passed", "CI"],
-    ["Registry", "Generated approved-only skills.json", "artifact"],
-    ["Tag", "skills-charter-demo-0.1.0", "release"]
+    ["skill-creator", "v0.4.0", "PR #284", "Approve after evidence review", "a1f9d20"],
+    ["frontend-design", "v0.2.0", "PR #281", "Imported from anthropics/skills for design review", "74b3aa9"],
+    ["canvas-design", "v0.8.0", "Action", "Asset review requested for font bundle", "d2f9087"],
+    ["web-fetch-archive", "v0.3.0", "Action", "Blocked by provenance policy", "8c20e1b"],
+    ["brand-guidelines", "v1.1.0", "Tag", "Approved internal brand package", "019cbf2"]
   ];
+  const visibleItems = items.filter(([pkg]) => !selected || pkg === selected.name);
+
   return `${pageHead(t("history.title"), t("history.subtitle"))}
+    <section class="card history-filter-card">
+      <div class="card-head"><h2 class="card-title">Skill filter</h2><span class="tiny">version-aware audit</span></div>
+      <div class="history-filter-row">
+        <button type="button" class="chip ${state.historySkill === "all" ? "selected" : ""}" data-action="history-filter" data-package="all">All skills</button>
+        ${seed.packages.map((pkg) => `<button type="button" class="chip ${state.historySkill === pkg.id ? "selected" : ""}" data-action="history-filter" data-package="${pkg.id}">${esc(pkg.name)}</button>`).join("")}
+      </div>
+    </section>
     <div class="view-layout two-column">
       <section class="card">
         <div class="card-head"><h2 class="card-title">Audit timeline</h2><span class="tiny">Git-backed</span></div>
-        <div class="timeline">${items.map(([kind, text, ref]) => `
-          <div class="timeline-item"><div class="row-between"><strong>${esc(kind)}</strong><span class="tiny">${esc(ref)}</span></div><span class="page-subtitle">${esc(text)}</span></div>
+        <div class="timeline">${visibleItems.map(([pkg, version, kind, text, ref]) => `
+          <div class="timeline-item"><div class="row-between"><strong>${esc(pkg)} · ${esc(version)}</strong><span class="tiny">${esc(ref)}</span></div><span class="page-subtitle">${esc(kind)} · ${esc(text)}</span></div>
         `).join("")}</div>
       </section>
       <section class="card">
-        <div class="card-head"><h2 class="card-title">Database boundary</h2><span class="tiny">P0</span></div>
-        <p class="page-subtitle">Skills Charter can stay static while Git remains the durable backend. Add a database only for hosted multi-repo aggregation, accounts, analytics, or SaaS collaboration.</p>
-        <div class="meta-grid">
-          <div class="meta-row"><span class="meta-key">State</span><span class="meta-value">Git repo, PRs, Actions, tags</span></div>
-          <div class="meta-row"><span class="meta-key">UI</span><span class="meta-value">GitHub Pages static manager</span></div>
-          <div class="meta-row"><span class="meta-key">Install</span><span class="meta-value">npx skills consumes approved registry</span></div>
-        </div>
+        <div class="card-head"><h2 class="card-title">Versions</h2><span class="tiny">${visiblePackages.length} packages</span></div>
+        <table class="registry-table">
+          <thead><tr><th>Skill</th><th>Current</th><th>Status</th><th>Rollback point</th></tr></thead>
+          <tbody>${visiblePackages.map((pkg) => `
+            <tr><td>${esc(pkg.name)}</td><td class="mono">${esc(pkg.version)}</td><td>${statusChip(pkg.status)}</td><td class="mono">${esc(pkg.name)}@${esc(pkg.version)}</td></tr>
+          `).join("")}</tbody>
+        </table>
       </section>
-    </div>`;
-}
-
-function renderZen() {
-  const file = currentFile();
-  return `${pageHead(t("zen.title"), t("zen.subtitle"))}
-    <div class="zen-layout">
-      <section class="workspace-panel editor-shell">${renderEditor(file)}</section>
-      <aside class="card settings-grid">
-        <div class="card-head"><h2 class="card-title">Settings</h2><span class="tiny">editor · preview · diff</span></div>
-        <label class="range-row"><span>Font size</span><input type="range" min="12" max="20" value="${state.fontSize}" data-font-size><span class="kbd">${state.fontSize}px</span></label>
-        <button type="button" class="button subtle" data-action="route" data-route="preview">Preview</button>
-        <button type="button" class="button subtle" data-action="route" data-route="diff">Diff</button>
-        <button type="button" class="button primary" data-action="route" data-route="review">Back to review</button>
-      </aside>
-    </div>`;
+    </div>
+    <section class="card">
+      <div class="card-head"><h2 class="card-title">Database boundary</h2><span class="tiny">P0</span></div>
+      <p class="page-subtitle">Skills Charter can stay static while Git remains the durable backend. Add a database only for hosted multi-repo aggregation, accounts, analytics, or SaaS collaboration.</p>
+      <div class="meta-grid">
+        <div class="meta-row"><span class="meta-key">State</span><span class="meta-value">Git repo, PRs, Actions, tags</span></div>
+        <div class="meta-row"><span class="meta-key">UI</span><span class="meta-value">GitHub Pages static manager</span></div>
+        <div class="meta-row"><span class="meta-key">Install</span><span class="meta-value">npx skills consumes approved registry</span></div>
+      </div>
+    </section>`;
 }
 
 function renderRoute() {
   if (state.route === "dashboard") return renderDashboard();
-  if (state.route === "intake") return renderIntake();
   if (state.route === "library") return renderLibrary();
+  if (state.route === "editor") return renderEditorWorkspace();
   if (state.route === "review") return renderReview();
-  if (state.route === "package") return renderPackage();
-  if (state.route === "edit") return renderEditorPage("edit");
-  if (state.route === "preview") return renderEditorPage("preview");
-  if (state.route === "diff") return renderEditorPage("diff");
   if (state.route === "registry") return renderRegistry();
   if (state.route === "history") return renderHistory();
-  if (state.route === "zen") return renderZen();
   return renderDashboard();
+}
+
+function renderIntakeModal() {
+  if (!state.intakeOpen) return "";
+  return `<section class="modal-shell" role="dialog" aria-modal="true" aria-label="Intake skills">
+    <button type="button" class="modal-backdrop" data-action="close-modal" aria-label="Close intake"></button>
+    <article class="modal-panel wide-modal">
+      <div class="modal-head">
+        <div><span class="eyebrow">${t("action.intake")}</span><h2>Import or create skills</h2><p class="page-subtitle">Bring local folders or public GitHub skills into the managed repo as candidates. Configure the managed repo in Settings.</p></div>
+        <button type="button" class="icon-button" data-action="close-modal" aria-label="Close intake">x</button>
+      </div>
+      <div class="modal-grid">
+        <section class="choice-card">
+          <span class="card-eyebrow">Local folder</span>
+          <h3>Select existing skills</h3>
+          <p class="page-subtitle">Upload a local .claude/skills, .codex/skills, or .agents/skills folder for browser-side review.</p>
+          <label class="input-block"><span class="tiny">Folder picker</span><input type="file" webkitdirectory multiple></label>
+          <button type="button" class="button subtle" data-action="run-checks">Stage local candidates</button>
+        </section>
+        <section class="choice-card">
+          <span class="card-eyebrow">Remote GitHub</span>
+          <h3>Import public repo</h3>
+          <p class="page-subtitle">Import all skills or a specific skill path from a public repository. Public imports stay candidates.</p>
+          <label class="input-block"><span class="tiny">Repository</span><input value="anthropics/skills" aria-label="GitHub repository"></label>
+          <label class="input-block"><span class="tiny">Skill filter</span><input value="skills/skill-creator" aria-label="Specific skill path"></label>
+          <div class="chip-row"><button type="button" class="button primary" data-action="run-checks">Import selected</button><button type="button" class="button subtle" data-action="run-checks">Import all</button></div>
+        </section>
+        <section class="choice-card">
+          <span class="card-eyebrow">New package</span>
+          <h3>Create governed skill</h3>
+          <p class="page-subtitle">Start from a SKILL.md template with required metadata, owner, source, category, and review status.</p>
+          <label class="input-block"><span class="tiny">Skill folder</span><input value="new-governed-skill" aria-label="New skill folder"></label>
+          <button type="button" class="button primary" data-action="new-candidate">Create candidate</button>
+        </section>
+      </div>
+      <div class="modal-foot">
+        <span class="tiny">Target repo: ${esc(state.managedRepo)} · ${esc(state.managedBranch)}</span>
+        <button type="button" class="button subtle" data-action="open-settings">Open settings</button>
+      </div>
+    </article>
+  </section>`;
+}
+
+function renderSettingsModal() {
+  if (!state.settingsOpen) return "";
+  return `<section class="modal-shell" role="dialog" aria-modal="true" aria-label="Settings">
+    <button type="button" class="modal-backdrop" data-action="close-modal" aria-label="Close settings"></button>
+    <article class="modal-panel">
+      <div class="modal-head">
+        <div><span class="eyebrow">${t("action.settings")}</span><h2>Workspace settings</h2><p class="page-subtitle">Configure the Git-backed skill library this static manager is reviewing.</p></div>
+        <button type="button" class="icon-button" data-action="close-modal" aria-label="Close settings">x</button>
+      </div>
+      <div class="settings-form">
+        <label class="input-block"><span class="tiny">Managed skills repo</span><input data-setting="managedRepo" value="${esc(state.managedRepo)}"></label>
+        <label class="input-block"><span class="tiny">Default branch</span><input data-setting="managedBranch" value="${esc(state.managedBranch)}"></label>
+        <label class="input-block"><span class="tiny">Local skill root</span><input data-setting="localSkillRoot" value="${esc(state.localSkillRoot)}"></label>
+        <div>
+          <span class="tiny">Default install provider</span>
+          <div class="agent-option-grid">
+            ${agentOptions.map(([id, label]) => `
+              <button type="button" class="agent-option ${state.agent === id ? "selected" : ""}" data-action="set-agent" data-agent="${id}">
+                <strong>${esc(label)}</strong><span class="tiny">-a ${esc(id)}</span>
+              </button>
+            `).join("")}
+          </div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <span class="tiny">Saved locally for this GitHub Pages demo.</span>
+        <button type="button" class="button primary" data-action="save-settings">Save settings</button>
+      </div>
+    </article>
+  </section>`;
 }
 
 function render() {
   root.dataset.theme = state.theme;
   root.dataset.locale = state.locale;
   root.style.setProperty("--editor-font-size", `${state.fontSize}px`);
-  app.innerHTML = `<div class="app">${renderSidebar()}${renderTopbar()}<main class="main">${renderRoute()}</main></div>${state.toast ? `<div class="toast">${esc(state.toast)}</div>` : ""}`;
+  app.innerHTML = `<div class="app">${renderSidebar()}${renderTopbar()}<main class="main">${renderRoute()}</main></div>${renderIntakeModal()}${renderSettingsModal()}${state.toast ? `<div class="toast">${esc(state.toast)}</div>` : ""}`;
   translateTutorial();
 }
 
@@ -1105,6 +1224,7 @@ document.addEventListener("click", (event) => {
   if (action === "route") {
     event.preventDefault();
     state.route = actionEl.dataset.route || "dashboard";
+    state.zen = false;
     if (actionEl.dataset.closeTutorial) finishTutorial();
     render();
     return;
@@ -1134,6 +1254,27 @@ document.addEventListener("click", (event) => {
     return;
   }
 
+  if (action === "open-intake") {
+    state.intakeOpen = true;
+    state.settingsOpen = false;
+    render();
+    return;
+  }
+
+  if (action === "open-settings") {
+    state.settingsOpen = true;
+    state.intakeOpen = false;
+    render();
+    return;
+  }
+
+  if (action === "close-modal") {
+    state.intakeOpen = false;
+    state.settingsOpen = false;
+    render();
+    return;
+  }
+
   if (action === "select-package") {
     const id = actionEl.dataset.package;
     if (id) setSelectedPackage(id);
@@ -1141,8 +1282,43 @@ document.addEventListener("click", (event) => {
     return;
   }
 
+  if (action === "open-editor-package") {
+    const id = actionEl.dataset.package;
+    if (id) setSelectedPackage(id);
+    state.route = "editor";
+    state.editorTab = "edit";
+    state.zen = false;
+    render();
+    return;
+  }
+
   if (action === "select-file") {
     state.selectedFile = actionEl.dataset.file;
+    render();
+    return;
+  }
+
+  if (action === "editor-tab") {
+    state.editorTab = actionEl.dataset.tab || "edit";
+    render();
+    return;
+  }
+
+  if (action === "toggle-zen") {
+    state.zen = !state.zen;
+    render();
+    return;
+  }
+
+  if (action === "set-agent") {
+    state.agent = actionEl.dataset.agent || "codex";
+    localStorage.setItem("skills-charter-agent", state.agent);
+    render();
+    return;
+  }
+
+  if (action === "history-filter") {
+    state.historySkill = actionEl.dataset.package || "all";
     render();
     return;
   }
@@ -1190,8 +1366,25 @@ document.addEventListener("click", (event) => {
       files: [{ path: `skills/${id}/SKILL.md`, kind: "entrypoint", content: `---\nname: ${id}\ndescription: Describe when this skill should be used.\ncategory: draft/general\nreview_status: candidate\nsource_type: new\n---\n\n# ${id}\n\nWrite the skill instructions here.` }]
     });
     setSelectedPackage(id);
-    state.route = "edit";
+    state.route = "editor";
+    state.editorTab = "edit";
+    state.intakeOpen = false;
     showToast(t("toast.intake"));
+    return;
+  }
+
+  if (action === "save-settings") {
+    const managedRepo = document.querySelector('[data-setting="managedRepo"]')?.value.trim();
+    const managedBranch = document.querySelector('[data-setting="managedBranch"]')?.value.trim();
+    const localSkillRoot = document.querySelector('[data-setting="localSkillRoot"]')?.value.trim();
+    if (managedRepo) state.managedRepo = managedRepo;
+    if (managedBranch) state.managedBranch = managedBranch;
+    if (localSkillRoot) state.localSkillRoot = localSkillRoot;
+    localStorage.setItem("skills-charter-managed-repo", state.managedRepo);
+    localStorage.setItem("skills-charter-managed-branch", state.managedBranch);
+    localStorage.setItem("skills-charter-local-root", state.localSkillRoot);
+    state.settingsOpen = false;
+    showToast(t("toast.settings"));
   }
 });
 
