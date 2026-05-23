@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Skills Charter · Team Skill Governance Pitch</title>
+    <meta name="description" content="A Reveal.js pitch deck for Skills Charter and the Skills Charter maintenance paradigm.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <link rel="stylesheet" href="./pitch.css?v=icons-20260519b">
+  </head>
+  <body>
+    <svg class="icon-sprite" aria-hidden="true">
+      <symbol id="icon-docs" viewBox="0 0 24 24">
+        <path d="M6 4.5h8.5L18 8v11.5H6z"></path>
+        <path d="M14.5 4.5V8H18"></path>
+        <path d="M9 12h6M9 15h6M9 18h3"></path>
+      </symbol>
+      <symbol id="icon-git" viewBox="0 0 24 24">
+        <path d="M7 7a2 2 0 1 0 0 .1M7 7v6a4 4 0 0 0 4 4h6"></path>
+        <path d="M17 14l3 3-3 3"></path>
+      </symbol>
+      <symbol id="icon-skill" viewBox="0 0 24 24">
+        <path d="M8 8l-3.5 4L8 16M16 8l3.5 4L16 16"></path>
+        <path d="M13.5 6.5l-3 11"></path>
+      </symbol>
+      <symbol id="icon-agent" viewBox="0 0 24 24">
+        <path d="M12 5V3"></path>
+        <rect x="6" y="7" width="12" height="10" rx="2"></rect>
+        <path d="M9 11h.1M15 11h.1M9.5 15h5"></path>
+        <path d="M4 12H2M22 12h-2"></path>
+      </symbol>
+      <symbol id="icon-edit" viewBox="0 0 24 24">
+        <path d="M5 19l4.2-1 9.3-9.3a2 2 0 0 0-2.8-2.8L6.4 15.2z"></path>
+        <path d="M14.5 7.1l2.4 2.4"></path>
+      </symbol>
+      <symbol id="icon-import" viewBox="0 0 24 24">
+        <path d="M12 4v10"></path>
+        <path d="M8 10l4 4 4-4"></path>
+        <path d="M5 18.5h14"></path>
+      </symbol>
+      <symbol id="icon-review" viewBox="0 0 24 24">
+        <path d="M5 5h14v11H8l-3 3z"></path>
+        <path d="M9 9h6M9 12h4"></path>
+      </symbol>
+      <symbol id="icon-shield" viewBox="0 0 24 24">
+        <path d="M12 3.5l7 2.8v5.2c0 4.3-2.8 7.4-7 9-4.2-1.6-7-4.7-7-9V6.3z"></path>
+        <path d="M8.5 12.2l2.3 2.3 4.8-5"></path>
+      </symbol>
+      <symbol id="icon-registry" viewBox="0 0 24 24">
+        <path d="M5 6.5c0-1.4 3.1-2.5 7-2.5s7 1.1 7 2.5S15.9 9 12 9 5 7.9 5 6.5z"></path>
+        <path d="M5 6.5v5c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5v-5"></path>
+        <path d="M5 11.5v5c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5v-5"></path>
+      </symbol>
+    </svg>
+    <div class="reveal">
+      <div class="slides">
+        <section class="slide hero-slide" data-section="Strategy">
+          <div class="chrome">
+            <div class="brand"><span>SC</span><strong>Skills Charter</strong><small>Team skill governance</small></div>
+            <nav><b>Strategy</b><span>Loop</span><span>Governance</span><span>Roadmap</span></nav>
+          </div>
+          <main class="hero-grid">
+            <div class="hero-copy">
+              <p class="eyeline">Skills Charter</p>
+              <h1>Make Agent Skills team-owned, reviewable, and safe to install.</h1>
+              <p class="lead">Every Agent Skill needs a charter before runtime. Distribute approved packages through Git and the existing agent install path.</p>
+              <div class="hero-actions">
+                <a href="../index.html">Open manager</a>
+                <a class="secondary" href="../../README.md">Read README</a>
+              </div>
+            </div>
+            <div class="hero-loop" aria-label="Skills Charter loop preview">
+              <div class="loop-title">The Skill Charter Loop</div>
+              <div class="loop-card docs"><span class="icon-tile"><svg><use href="#icon-docs"></use></svg></span><strong>Docs UI</strong><span>Edit and review skills.</span></div>
+              <div class="loop-card git"><span class="icon-tile"><svg><use href="#icon-git"></use></svg></span><strong>Git sync</strong><span>PR, hooks, CI.</span></div>
+              <div class="loop-card skill"><span class="icon-tile"><svg><use href="#icon-skill"></use></svg></span><strong>SKILL.md</strong><span>Registry package.</span></div>
+              <div class="loop-card agents"><span class="icon-tile"><svg><use href="#icon-agent"></use></svg></span><strong>Agents</strong><span>Install and execute.</span></div>
+              <div class="loop-card patch"><span class="icon-tile"><svg><use href="#icon-edit"></use></svg></span><strong>Improve docs</strong><span>Patch the shared skill.</span></div>
+              <svg viewBox="0 0 500 390" role="img" aria-hidden="true">
+                <path class="dash" d="M40 82H460V306H40Z"></path>
+                <path class="line" d="M180 160h42M322 160h42M396 216v42M218 306H178"></path>
+                <path class="arrow" d="M218 154l14 6-14 6M360 154l14 6-14 6M390 252l6 14 6-14M190 300l-14 6 14 6"></path>
+              </svg>
+            </div>
+          </main>
+        </section>
+
+        <section class="slide problem-slide" data-section="Problem">
+          <div class="chrome compact">
+            <div class="brand"><span>SC</span><strong>Skills Charter</strong><small>Why it matters</small></div>
+            <nav><b>Problem</b><span>Security</span><span>Loop</span></nav>
+          </div>
+          <main>
+            <div class="section-head">
+              <p class="eyeline">The team-scale breakage</p>
+              <h2>The current maintenance model breaks once skills leave one person's machine.</h2>
+              <p>Teams have useful instructions everywhere. The issue is that those instructions are not governed as shared operational assets.</p>
+            </div>
+            <div class="breakage-map">
+              <article>
+                <span>Local config folders</span>
+                <code>~/.claude/skills<br>.agents/skills<br>project copies</code>
+              </article>
+              <article>
+                <span>Chat corrections</span>
+                <p>Useful fixes disappear into conversation history.</p>
+              </article>
+              <article>
+                <span>Public skills</span>
+                <p>Downloaded, copied, rarely reviewed, often stale.</p>
+              </article>
+              <article class="accent">
+                <span>Team workflow docs</span>
+                <p>Already maintained by humans, but not installable by agents.</p>
+              </article>
+            </div>
+            <div class="risk-strip">
+              <strong>No source of truth</strong>
+              <strong>No owner or review path</strong>
+              <strong>No reliable install/update loop</strong>
+            </div>
+          </main>
+        </section>
+
+        <section class="slide timing-slide" data-section="Why now">
+          <div class="chrome compact">
+            <div class="brand"><span>SC</span><strong>Skills Charter</strong><small>Market timing</small></div>
+            <nav><b>Why now</b><span>Skills</span><span>Teams</span></nav>
+          </div>
+          <main>
+            <div class="section-head wide">
+              <p class="eyeline">Why now</p>
+              <h2>Agent Skills are becoming procedural memory, not one-off prompts.</h2>
+              <p>The stack is moving from chat instructions toward portable packages agents can select, install, and reuse.</p>
+            </div>
+            <div class="timeline">
+              <article><i>01</i><strong>Prompt snippets</strong><span>Personal instructions live in chats and docs.</span></article>
+              <article><i>02</i><strong>Rules and agents</strong><span>Projects add conventions, tools, and local memory.</span></article>
+              <article><i>03</i><strong>Skill packages</strong><span>SKILL.md becomes the procedural entrypoint.</span></article>
+              <article class="active"><i>04</i><strong>Team libraries</strong><span>The next need is ownership, review, and reuse.</span></article>
+            </div>
+            <p class="center-claim">If skills are memory, teams need memory management.</p>
+          </main>
+        </section>
+
+        <section class="slide security-slide" data-section="Security">
+          <div class="chrome compact">
+            <div class="brand"><span>SC</span><strong>Skills Charter</strong><small>Trust gate</small></div>
+            <nav><b>Security</b><span>Review</span><span>Install</span></nav>
+          </div>
+          <main>
+            <div class="section-head">
+              <p class="eyeline">Security case</p>
+              <h2>Public skills should be treated as imports that need review.</h2>
+              <p>A skill can guide tool use, reference files, call scripts, or steer an agent toward unsafe behavior.</p>
+            </div>
+            <div class="trust-flow">
+              <article><span class="icon-tile"><svg><use href="#icon-import"></use></svg></span><strong>Public skill</strong><span>Unknown source, unknown intent.</span></article>
+              <article class="warn"><span class="icon-tile"><svg><use href="#icon-review"></use></svg></span><strong>Human review</strong><span>Read SKILL.md, scripts, assets, links.</span></article>
+              <article class="ok"><span class="icon-tile"><svg><use href="#icon-shield"></use></svg></span><strong>Trusted repo</strong><span>Owner, status, provenance, diff.</span></article>
+              <article class="blue"><span class="icon-tile"><svg><use href="#icon-agent"></use></svg></span><strong>Agent install</strong><span>Approved package enters runtime.</span></article>
+            </div>
+            <div class="controls-row">
+              <span>review</span><span>provenance</span><span>lint</span><span>CI</span><span>rollback</span>
+              <b>Every skill visible and accountable before execution.</b>
+            </div>
+          </main>
+        </section>
+
+        <section class="slide product-slide" data-section="Product">
+          <div class="chrome compact">
+            <div class="brand"><span>SC</span><strong>Skills Charter</strong><small>Proof shell</small></div>
+            <nav><b>Product</b><span>Manager</span><span>Registry</span></nav>
+          </div>
+          <main>
+            <div class="section-head wide">
+              <p class="eyeline">Current proof surface</p>
+              <h2>GitHub Pages is the first proof shell, not the whole product.</h2>
+              <p>The shell makes the workflow visible today: package tree, editor, lint, registry preview, install snippets, and Git handoff.</p>
+            </div>
+            <div class="manager-preview">
+              <header><span class="logo">SC</span><strong>Skills Charter</strong><em>anthropics/skills</em><em>main</em><em>skills.json preview</em><b>Clean</b></header>
+              <aside>
+                <small>Repository tree</small>
+                <code>skills/<br>&nbsp;&nbsp;frontend-design/<br>&nbsp;&nbsp;skill-creator/<br>&nbsp;&nbsp;&nbsp;&nbsp;SKILL.md<br>&nbsp;&nbsp;&nbsp;&nbsp;references/<br>&nbsp;&nbsp;&nbsp;&nbsp;scripts/</code>
+              </aside>
+              <section>
+                <small>skills/skill-creator/SKILL.md</small>
+                <pre>---
+name: skill-creator
+owner: @team
+review_status: approved
+---
+
+# Skill Creator
+Use this skill when...</pre>
+              </section>
+              <aside>
+                <small>Inspector</small>
+                <p><span>frontmatter</span><span>lint pass</span><span class="warn">scripts present</span></p>
+                <code>npx skills add org/team-skills --skill skill-creator -g -a codex</code>
+              </aside>
+            </div>
+          </main>
+        </section>
+
+        <section class="slide loop-slide" data-section="Loop">
+          <div class="chrome compact">
+            <div class="brand"><span>SC</span><strong>Skills Charter</strong><small>Operating model</small></div>
+            <nav><b>Loop</b><span>Review</span><span>Runtime</span></nav>
+          </div>
+          <main>
+            <div class="section-head wide">
+              <p class="eyeline">Operating model</p>
+              <h2>The Skill Charter Loop makes every useful correction durable.</h2>
+              <p>A failed run should become a reviewed skill patch, not another lost chat message.</p>
+            </div>
+            <div class="big-loop" aria-label="Skills Charter operating loop">
+              <div class="loop-box docs"><span class="icon-tile"><svg><use href="#icon-docs"></use></svg></span><strong>Docs UI</strong><span>Humans edit skills in a familiar surface.</span></div>
+              <div class="loop-box pr"><span class="icon-tile"><svg><use href="#icon-git"></use></svg></span><strong>Branch + PR</strong><span>Ownership, discussion, review.</span></div>
+              <div class="loop-box ci"><span class="icon-tile"><svg><use href="#icon-shield"></use></svg></span><strong>CI + lint</strong><span>Metadata, links, scripts, registry drift.</span></div>
+              <div class="loop-box registry"><span class="icon-tile"><svg><use href="#icon-registry"></use></svg></span><strong>Registry</strong><span>skills.json and install snippets.</span></div>
+              <div class="loop-box agents"><span class="icon-tile"><svg><use href="#icon-agent"></use></svg></span><strong>Agents</strong><span>Approved packages enter runtime.</span></div>
+              <div class="loop-box improve"><span class="icon-tile"><svg><use href="#icon-edit"></use></svg></span><strong>Improve the docs</strong><span>Corrections become patches.</span></div>
+              <svg viewBox="0 0 1120 390" aria-hidden="true">
+                <path class="rail" d="M70 78H1050V258H70Z"></path>
+                <path class="line" d="M246 168h76M498 168h76M750 168h76M956 128v-58M890 64H794M570 258v60M570 318H230M230 318v-60"></path>
+                <path class="arrow" d="M318 160l18 8-18 8M570 160l18 8-18 8M822 160l18 8-18 8M950 82l6-18 6 18M804 58l-18 6 18 6M244 312l-18 6 18 6"></path>
+              </svg>
+              <p>failures and corrections become the next skill patch</p>
+            </div>
+          </main>
+        </section>
+
+        <section class="slide wedge-slide" data-section="Wedge">
+          <div class="chrome compact">
+            <div class="brand"><span>SC</span><strong>Skills Charter</strong><small>Positioning</small></div>
+            <nav><b>Governance</b><span>Install</span><span>Runtime</span></nav>
+          </div>
+          <main>
+            <div class="section-head">
+              <p class="eyeline">Positioning</p>
+              <h2>Skills Charter owns the human governance layer.</h2>
+              <p>We are not the standard, marketplace, installer, or runtime. We are the reviewable source of truth before those layers consume a skill.</p>
+            </div>
+            <div class="layer-stack">
+              <article><strong>Runtime layer</strong><span>Agent clients select and execute installed skills.</span><em>Claude Code / Codex / Cursor / Antigravity</em></article>
+              <article><strong>Install layer</strong><span>Existing tools materialize approved packages locally.</span><em>npx skills</em></article>
+              <article class="active"><strong>Governance layer</strong><span>Humans author, review, lint, version, and roll back.</span><em>Skills Charter</em></article>
+              <article><strong>Authoring layer</strong><span>Teams write in docs surfaces they already trust.</span><em>GitHub / GitBook / VitePress / Obsidian / Feishu</em></article>
+            </div>
+          </main>
+        </section>
+
+        <section class="slide market-slide" data-section="Market">
+          <div class="chrome compact">
+            <div class="brand"><span>SC</span><strong>Skills Charter</strong><small>Market map</small></div>
+            <nav><b>Market</b><span>Wedge</span><span>Focus</span></nav>
+          </div>
+          <main>
+            <div class="section-head wide">
+              <p class="eyeline">Market map</p>
+              <h2>Adjacent systems validate the market, but leave our wedge open.</h2>
+              <p>Search, routing, and orchestration are crowded. The open space is private team governance before runtime consumption.</p>
+            </div>
+            <div class="market-map">
+              <span class="axis x"></span><span class="axis y"></span>
+              <small class="tl">private / team-owned</small><small class="tr">governance</small><small class="br">public ecosystem</small><small class="bl">runtime</small>
+              <b class="skills-charter">Skills Charter</b>
+              <b class="docs">GitBook / docs surfaces</b>
+              <b class="skillnet">SkillNet</b>
+              <b class="agentos">AgentSkillOS</b>
+              <b class="router">SkillRouter</b>
+              <b class="marketplaces">marketplaces</b>
+            </div>
+            <p class="center-claim">Do not compete on public skill count. Win the maintenance workflow.</p>
+          </main>
+        </section>
+
+        <section class="slide roadmap-slide" data-section="Roadmap">
+          <div class="chrome compact">
+            <div class="brand"><span>SC</span><strong>Skills Charter</strong><small>Promotion first</small></div>
+            <nav><b>Roadmap</b><span>Templates</span><span>Community</span></nav>
+          </div>
+          <main>
+            <div class="section-head wide">
+              <p class="eyeline">Roadmap logic</p>
+              <h2>The roadmap is promotion-first: make the pattern travel.</h2>
+              <p>Software matters, but adoption starts with language, templates, examples, and community proof.</p>
+            </div>
+            <div class="roadmap">
+              <article class="hot"><i>0</i><strong>Clarify thesis</strong><span>A story people can repeat</span></article>
+              <article class="hot"><i>1</i><strong>Publish pattern</strong><span>README, Pages, essays, quickstart</span></article>
+              <article><i>2</i><strong>Template expansion</strong><span>GitBook, VitePress, Obsidian, Feishu, Yuque</span></article>
+              <article><i>3</i><strong>Proof examples</strong><span>Real libraries and failure-to-patch cases</span></article>
+              <article><i>4</i><strong>Community seeding</strong><span>External repos and adapter requests</span></article>
+              <article><i>5</i><strong>Tool hardening</strong><span>Lint, CI, PR flow, risk review</span></article>
+            </div>
+          </main>
+        </section>
+
+        <section class="slide close-slide" data-section="Ask">
+          <div class="chrome compact">
+            <div class="brand"><span>SC</span><strong>Skills Charter</strong><small>Call to action</small></div>
+            <nav><b>Ask</b><span>Try</span><span>Share</span></nav>
+          </div>
+          <main>
+            <div class="section-head wide">
+              <p class="eyeline">What we need next</p>
+              <h2>Help make team skill maintenance obvious.</h2>
+              <p>We need real workflows, real objections, and real examples more than another feature list.</p>
+            </div>
+            <div class="ask-grid">
+              <article><i>01</i><strong>Try it</strong><span>Fork the repo and run one team skill through the loop.</span></article>
+              <article><i>02</i><strong>Share pain</strong><span>Show how you currently maintain or copy skills.</span></article>
+              <article><i>03</i><strong>Bring a workflow</strong><span>Turn one repeated agent correction into a skill patch.</span></article>
+              <article><i>04</i><strong>Pick a template</strong><span>Vote for GitBook, VitePress, Obsidian, Feishu, or Yuque next.</span></article>
+            </div>
+            <p class="final-line">If the paradigm lands, the software can follow demand instead of guessing it.</p>
+          </main>
+        </section>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script src="./pitch.js"></script>
+  </body>
+</html>

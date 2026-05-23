@@ -6,8 +6,10 @@ import {
   generateInstallSnippets,
   generateRegistry,
   lintRepository,
-  scanSkillRepository
-} from "@skilldocs/core";
+  scanSkillRepository,
+  shouldFailLint
+} from "@skills-charter/core";
+import type { SkillPolicy } from "@skills-charter/core";
 
 interface ParsedArgs {
   command: string[];
@@ -52,18 +54,20 @@ async function main(): Promise<void> {
 
   if (primary === "lint") {
     const repo = await scanSkillRepository(args.root);
-    const result = lintRepository(repo);
+    const policy = await loadPolicy(args);
+    const result = lintRepository(repo, policy);
     if (args.options.json) {
       writeJson(result);
     } else {
       printLint(result);
     }
-    process.exitCode = result.risk === "high" ? 1 : 0;
+    process.exitCode = shouldFailLint(result, policy) ? 1 : 0;
     return;
   }
 
   if (primary === "generate" && secondary === "registry") {
     const repo = await scanSkillRepository(args.root);
+    const policy = await loadPolicy(args);
     const generatedAt = stringOption(args, "generated-at")
       ?? (args.options.check ? await readExistingGeneratedAt(args) : undefined);
     const source = stringOption(args, "source") ?? stringOption(args, "repo");
@@ -74,7 +78,9 @@ async function main(): Promise<void> {
         commit: stringOption(args, "commit")
       },
       installSource: stringOption(args, "install-source") ?? source,
-      generatedAt
+      generatedAt,
+      approvedOnly: Boolean(args.options["approved-only"]),
+      policy
     });
     if (args.options.check) {
       await checkOutput(args, registry);
@@ -86,17 +92,21 @@ async function main(): Promise<void> {
 
   if (primary === "generate" && secondary === "install-snippets") {
     const repo = await scanSkillRepository(args.root);
+    const policy = await loadPolicy(args);
     const source = stringOption(args, "source") ?? ".";
     const agents = stringOption(args, "agents")?.split(",").map((agent) => agent.trim()).filter(Boolean);
-    const snippets = generateInstallSnippets(repo.packages, { source, agents });
+    const snippets = generateInstallSnippets(repo.packages, { source, agents, includeUnapproved: Boolean(args.options.all), policy });
     await writeOutput(args, snippets);
     return;
   }
 
   if (primary === "doctor") {
     const repo = await scanSkillRepository(args.root);
-    const lint = lintRepository(repo);
+    const policy = await loadPolicy(args);
+    const lint = lintRepository(repo, policy);
     const source = stringOption(args, "source") ?? ".";
+    const snippets = generateInstallSnippets(repo.packages, { source, policy });
+    const firstInstallable = Object.entries(snippets)[0];
     writeJson({
       rootDir: repo.rootDir,
       packages: repo.packages.length,
@@ -104,18 +114,18 @@ async function main(): Promise<void> {
       risk: lint.risk,
       issues: lint.issues,
       listCommand: `npx skills add ${source} --list`,
-      installExample: repo.packages[0]
-        ? `npx skills add ${source} --skill ${repo.packages[0].name} -g -a codex`
+      installExample: firstInstallable
+        ? firstInstallable[1][0]
         : undefined,
-      installExamples: repo.packages[0]
+      installExamples: firstInstallable
         ? {
-            codex: `npx skills add ${source} --skill ${repo.packages[0].name} -g -a codex`,
-            claudeCode: `npx skills add ${source} --skill ${repo.packages[0].name} -g -a claude-code`,
-            antigravity: `npx skills add ${source} --skill ${repo.packages[0].name} -g -a antigravity`
+            codex: firstInstallable[1].find((command) => command.endsWith("-a codex")),
+            claudeCode: firstInstallable[1].find((command) => command.endsWith("-a claude-code")),
+            antigravity: firstInstallable[1].find((command) => command.endsWith("-a antigravity"))
           }
         : undefined
     });
-    process.exitCode = lint.risk === "high" ? 1 : 0;
+    process.exitCode = shouldFailLint(lint, policy) ? 1 : 0;
     return;
   }
 
@@ -139,13 +149,13 @@ async function initSkillLibrary(args: ParsedArgs): Promise<void> {
     });
     await fs.writeFile(registryPath, `${JSON.stringify(registry, null, 2)}\n`, "utf8");
   }
-  console.log(`Initialized SkillDocs library at ${args.root}`);
-  console.log("Next: skilldocs new literature-review --description \"Use this skill when...\"");
+  console.log(`Initialized Skills Charter library at ${args.root}`);
+  console.log("Next: skills-charter new literature-review --description \"Use this skill when...\"");
 }
 
 async function createSkillPackage(args: ParsedArgs): Promise<void> {
   const rawName = args.command[1];
-  if (!rawName) throw new Error("Usage: skilldocs new <skill-name>");
+  if (!rawName) throw new Error("Usage: skills-charter new <skill-name>");
   const name = slugifySkillName(rawName);
   const skillRoot = path.join(args.root, "skills", name);
   const skillPath = path.join(skillRoot, "SKILL.md");
@@ -153,9 +163,21 @@ async function createSkillPackage(args: ParsedArgs): Promise<void> {
     ?? "Use this skill when the user needs a clear, repeatable workflow for a specific task.";
   const category = stringOption(args, "category") ?? "workflow";
   const owner = stringOption(args, "owner") ?? "";
+  const reviewStatus = stringOption(args, "review-status") ?? "candidate";
+  const sourceType = stringOption(args, "source-type") ?? "manual";
 
   await fs.mkdir(skillRoot, { recursive: true });
-  await writeFileIfAllowed(skillPath, newSkillTemplate({ name, description, category, owner }), Boolean(args.options.force));
+  await writeFileIfAllowed(skillPath, newSkillTemplate({
+    name,
+    description,
+    category,
+    owner,
+    reviewStatus,
+    sourceType,
+    sourceUrl: stringOption(args, "source-url"),
+    generator: stringOption(args, "generator"),
+    upstream: stringOption(args, "upstream")
+  }), Boolean(args.options.force));
   await refreshRegistryIfPresent(args);
 
   console.log(`Created skills/${name}/SKILL.md`);
@@ -197,6 +219,39 @@ function stringOption(args: ParsedArgs, key: string): string | undefined {
   return typeof value === "string" ? value : undefined;
 }
 
+async function loadPolicy(args: ParsedArgs): Promise<SkillPolicy | undefined> {
+  const policyOption = stringOption(args, "policy");
+  const policyFileOption = stringOption(args, "policy-file");
+  let policy: SkillPolicy | undefined;
+  let policyPath: string | undefined;
+  const explicitMode = policyOption === "strict" || policyOption === "advisory";
+
+  if (explicitMode) {
+    policy = { mode: policyOption };
+  } else if (policyOption) {
+    policyPath = policyOption;
+  }
+
+  if (policyFileOption) policyPath = policyFileOption;
+  if (!policyPath && !explicitMode) {
+    const defaultPolicyPath = path.join(args.root, "skills-charter.policy.json");
+    if (await exists(defaultPolicyPath)) policyPath = defaultPolicyPath;
+  }
+
+  if (policyPath) {
+    const loaded = JSON.parse(await fs.readFile(path.resolve(args.root, policyPath), "utf8")) as SkillPolicy;
+    policy = { ...loaded, ...policy };
+  }
+
+  const failOn = stringOption(args, "fail-on");
+  if (failOn) {
+    if (!["low", "medium", "high"].includes(failOn)) throw new Error("--fail-on must be low, medium, or high");
+    policy = { ...policy, failOnRisk: failOn as SkillPolicy["failOnRisk"] };
+  }
+
+  return policy;
+}
+
 async function writeOutput(args: ParsedArgs, value: unknown): Promise<void> {
   const out = stringOption(args, "out");
   if (!out) {
@@ -221,7 +276,7 @@ async function checkOutput(args: ParsedArgs, value: unknown): Promise<void> {
     throw new Error(`${target} does not exist. Run the generate command without --check.`);
   }
   if (normalizeNewlines(current) !== normalizeNewlines(expected)) {
-    throw new Error(`${target} is out of date. Regenerate it with skilldocs generate registry.`);
+    throw new Error(`${target} is out of date. Regenerate it with skills-charter generate registry.`);
   }
   console.log(`${target} is up to date.`);
 }
@@ -289,8 +344,27 @@ function slugifySkillName(value: string): string {
   return slug;
 }
 
-function newSkillTemplate(input: { name: string; description: string; category: string; owner: string }): string {
-  return `---\nname: ${yamlString(input.name)}\ndescription: ${yamlString(input.description)}\ncategory: ${yamlString(input.category)}\nversion: ${yamlString("0.1.0")}\nowner: ${yamlString(input.owner)}\nreview_status: ${yamlString("draft")}\n---\n\n# ${input.name}\n\nUse this skill when the user needs help with...\n\n## Workflow\n\n1. Clarify the user's goal and constraints.\n2. Gather the minimum required context.\n3. Execute the workflow in small, reviewable steps.\n4. Verify the output before responding.\n\n## Notes\n\nAdd references, templates, examples, scripts, or assets as separate files when the skill grows beyond this entrypoint.\n`;
+function newSkillTemplate(input: {
+  name: string;
+  description: string;
+  category: string;
+  owner: string;
+  reviewStatus: string;
+  sourceType: string;
+  sourceUrl?: string;
+  generator?: string;
+  upstream?: string;
+}): string {
+  const optional = [
+    ["source_url", input.sourceUrl],
+    ["generator", input.generator],
+    ["upstream", input.upstream]
+  ]
+    .filter(([, value]) => value)
+    .map(([key, value]) => `${key}: ${yamlString(value ?? "")}`)
+    .join("\n");
+  const optionalBlock = optional ? `\n${optional}` : "";
+  return `---\nname: ${yamlString(input.name)}\ndescription: ${yamlString(input.description)}\ncategory: ${yamlString(input.category)}\nversion: ${yamlString("0.1.0")}\nowner: ${yamlString(input.owner)}\nreview_status: ${yamlString(input.reviewStatus)}\nsource_type: ${yamlString(input.sourceType)}${optionalBlock}\n---\n\n# ${input.name}\n\nUse this skill when the user needs help with...\n\n## Workflow\n\n1. Clarify the user's goal and constraints.\n2. Gather the minimum required context.\n3. Execute the workflow in small, reviewable steps.\n4. Verify the output before responding.\n\n## Evidence\n\nAdd evals, reports, review notes, or trigger samples before approving generated, public, or evolved skills.\n\n## Notes\n\nAdd references, templates, examples, scripts, or assets as separate files when the skill grows beyond this entrypoint.\n`;
 }
 
 function yamlString(value: string): string {
@@ -313,19 +387,19 @@ function printLint(result: ReturnType<typeof lintRepository>): void {
 }
 
 function printHelp(): void {
-  console.log(`skilldocs
+  console.log(`skills-charter
 
 Git-backed management tools for Agent Skill packages.
 
 Commands:
-  skilldocs init [--root .] [--source owner/repo] [--force]
-  skilldocs new <skill-name> [--root .] [--description "..."] [--category workflow] [--owner @team]
-  skilldocs scan [--root .]
-  skilldocs lint [--root .] [--json]
-  skilldocs generate registry [--root .] [--source owner/repo] [--out skills.json]
-  skilldocs generate registry [--root .] [--source owner/repo] [--install-source owner/repo] [--out skills.json] --check
-  skilldocs generate install-snippets [--root .] [--source owner/repo] [--agents codex,claude-code]
-  skilldocs doctor [--root .] [--source owner/repo]
+  skills-charter init [--root .] [--source owner/repo] [--force]
+  skills-charter new <skill-name> [--root .] [--description "..."] [--category workflow] [--owner @team] [--review-status candidate] [--source-type manual]
+  skills-charter scan [--root .]
+  skills-charter lint [--root .] [--policy strict|advisory|skills-charter.policy.json] [--fail-on high|medium|low] [--json]
+  skills-charter generate registry [--root .] [--source owner/repo] [--out skills.json] [--approved-only]
+  skills-charter generate registry [--root .] [--source owner/repo] [--install-source owner/repo] [--out skills.json] --check
+  skills-charter generate install-snippets [--root .] [--source owner/repo] [--agents codex,claude-code] [--all] [--policy strict]
+  skills-charter doctor [--root .] [--source owner/repo] [--policy strict]
 `);
 }
 

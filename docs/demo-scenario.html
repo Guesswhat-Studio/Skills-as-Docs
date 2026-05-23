@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Public Skill Intake Review · Skills Charter</title>
+    <meta name="description" content="A flagship demo scenario for reviewing a public Anthropic skill through Git-backed governance.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="./assets/site.css">
+  </head>
+  <body class="article-page">
+    <header class="article-topbar">
+      <a class="brand" href="./">
+        <span class="brand-mark">SC</span>
+        <span>
+          <strong>Skills Charter</strong>
+          <small>Flagship demo</small>
+        </span>
+      </a>
+      <nav>
+        <a class="text-button" href="./">Open manager</a>
+        <a class="text-button" href="https://github.com/Guesswhat-Studio/Skills-as-Docs/blob/main/case-studies/public-skill-to-approved.md">Case study</a>
+        <a class="text-button" href="https://github.com/Guesswhat-Studio/Skills-as-Docs">GitHub</a>
+      </nav>
+    </header>
+
+    <main class="article-shell">
+      <article class="article-body">
+        <p class="article-kicker">Public Skill Intake Review</p>
+        <h1>Use Git as the trust layer between public skill discovery and team installs.</h1>
+        <p class="article-lede">A research operations team wants Anthropic's public <code>skill-creator</code>, but shared installs are blocked until the package has provenance, evidence, review, CI, and a Git history.</p>
+
+        <section>
+          <h2>Scenario</h2>
+          <p>Maya owns the team's shared skill library. Analysts use Codex, Claude Code, and Antigravity for repeated research workflows, and they want <code>skill-creator</code> to help turn those workflows into reusable internal skills.</p>
+          <blockquote>Public skills are allowed as inputs, but approved installs must come from the team's Git repository.</blockquote>
+        </section>
+
+        <section>
+          <h2>Live Source</h2>
+          <p>Load <code>anthropics/skills</code> in the manager. A local Skills Charter scan on 2026-05-20 found 17 packages, including multi-file packages such as <code>skill-creator</code>, <code>docx</code>, <code>pptx</code>, <code>xlsx</code>, and <code>canvas-design</code>.</p>
+          <p>The point is not that the upstream repo is unsafe. The point is that real skill packages include enough routing, scripts, assets, links, and supporting material to deserve review before internal approval.</p>
+        </section>
+
+        <section>
+          <h2>Demo Script</h2>
+          <ul>
+            <li>Open the manager and say: this is the Git-backed review surface, not the runtime.</li>
+            <li>Import <code>anthropics/skills</code> from Workspace settings.</li>
+            <li>Select <code>skills/skill-creator/SKILL.md</code> and show its package scope.</li>
+            <li>Mark it as <code>candidate</code> and <code>public_import</code>, with owner and source URL.</li>
+            <li>Run policy and explain that warnings create review work in Git.</li>
+            <li>Show the evidence note and prepare the PR handoff.</li>
+            <li>Show install snippets only after approval.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Install After Approval</h2>
+          <pre><code>npx skills add org/research-skills --skill skill-creator -g -a codex
+npx skills add org/research-skills --skill skill-creator -g -a claude-code
+npx skills add org/research-skills --skill skill-creator -g -a antigravity</code></pre>
+        </section>
+
+        <section>
+          <h2>Claim</h2>
+          <p>Skills Charter does not replace public repositories or <code>npx skills</code>. It gives teams a Git-backed path to internalize public skills without turning installation into blind trust.</p>
+        </section>
+      </article>
+    </main>
+  </body>
+</html>

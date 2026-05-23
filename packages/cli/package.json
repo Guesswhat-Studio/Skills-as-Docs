@@ -1,12 +1,12 @@
 {
-  "name": "@skilldocs/cli",
+  "name": "@skills-charter/cli",
   "version": "0.1.0",
   "type": "module",
   "bin": {
-    "skilldocs": "./dist/index.js"
+    "skills-charter": "./dist/index.js"
   },
   "dependencies": {
-    "@skilldocs/core": "file:../core"
+    "@skills-charter/core": "file:../core"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json"

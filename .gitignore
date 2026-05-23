@@ -1,4 +1,5 @@
 redesign/
+outputs/
 node_modules/
 packages/*/dist/
 *.tsbuildinfo

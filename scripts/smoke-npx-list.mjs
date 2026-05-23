@@ -6,7 +6,7 @@ import path from "node:path";
 
 const root = process.cwd();
 const cli = path.join(root, "packages", "cli", "dist", "index.js");
-const tmp = mkdtempSync(path.join(tmpdir(), "skilldocs-npx-list-"));
+const tmp = mkdtempSync(path.join(tmpdir(), "skills-charter-npx-list-"));
 
 function runNode(args) {
   return execFileSync(process.execPath, [cli, ...args], {

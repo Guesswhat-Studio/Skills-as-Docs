@@ -48,8 +48,16 @@ export function detectFileKind(repoPath: string): SkillFileKind {
   if (repoPath.endsWith("/SKILL.md")) return "entrypoint";
   if (repoPath.includes("/scripts/")) return "script";
   if (
+    repoPath.includes("/evals/")
+    || repoPath.includes("/reports/")
+    || repoPath.includes("/review-notes/")
+    || repoPath.includes("/trigger-samples/")
+  ) {
+    return "evidence";
+  }
+  if (
     repoPath.includes("/assets/")
-    || /\.(png|jpe?g|gif|webp|pdf|xlsx?|pptx?|docx?|zip|gz|tar|ico)$/i.test(repoPath)
+    || /\.(png|jpe?g|gif|webp|pdf|xlsx?|pptx?|docx?|zip|gz|tar|ico|ttf|otf|woff2?)$/i.test(repoPath)
   ) {
     return "asset";
   }
@@ -62,12 +70,14 @@ async function collectPackageFiles(rootDir: string, packageRootAbs: string): Pro
     const stat = await fs.stat(absolutePath);
     if (!stat.isFile()) return;
     const repoPath = toRepoPath(path.relative(rootDir, absolutePath));
+    const metadata = await readFileMetadata(absolutePath, repoPath, stat.size);
     files.push({
       path: repoPath,
       absolutePath,
       kind: detectFileKind(repoPath),
-      size: stat.size,
-      changed: false
+      size: metadata.size,
+      changed: false,
+      content: metadata.content
     });
   });
   return files.sort((a, b) => {
@@ -75,6 +85,24 @@ async function collectPackageFiles(rootDir: string, packageRootAbs: string): Pro
     if (b.kind === "entrypoint") return 1;
     return a.path.localeCompare(b.path);
   });
+}
+
+async function readFileMetadata(absolutePath: string, repoPath: string, size: number): Promise<{ size: number; content?: string }> {
+  if (isLikelyBinary(repoPath)) return { size };
+  try {
+    const content = await fs.readFile(absolutePath, "utf8");
+    const normalizedSize = Buffer.byteLength(content.replace(/\r\n/g, "\n"), "utf8");
+    return {
+      size: normalizedSize,
+      content: size > 256 * 1024 ? undefined : content
+    };
+  } catch {
+    return { size };
+  }
+}
+
+function isLikelyBinary(repoPath: string): boolean {
+  return /\.(png|jpe?g|gif|webp|pdf|xlsx?|pptx?|docx?|zip|gz|tar|ico|ttf|otf|woff2?)$/i.test(repoPath);
 }
 
 async function walk(dir: string, visit: (absolutePath: string) => Promise<void>): Promise<void> {
