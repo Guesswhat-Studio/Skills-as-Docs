@@ -1199,9 +1199,7 @@ async function loadRegistryFromGitHub(notify = false) {
   if (notify) render();
 
   try {
-    const response = await fetch(`${registryUrl()}?ts=${Date.now()}`, { cache: "no-store" });
-    if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
-    const registry = await response.json();
+    const registry = await fetchRegistryFromGitHubContents();
     applyRegistryData(registry, "remote");
     if (notify) {
       showToast(`Loaded ${seed.metrics.total} package${seed.metrics.total === 1 ? "" : "s"} from ${cleanRepoName()}/skills.json.`);
@@ -1301,6 +1299,18 @@ async function loadPullRequestFiles(number, notify = true) {
     state.pullRequestFiles = [];
     render();
   }
+}
+
+async function fetchRegistryFromGitHubContents() {
+  const response = await fetch(`${githubApiUrl(`contents/skills.json?ref=${encodeURIComponent(state.managedBranch)}`)}&ts=${Date.now()}`, {
+    cache: "no-store"
+  });
+  if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+  const data = await response.json();
+  if (!data.content) throw new Error("GitHub contents API returned no skills.json content.");
+  const binary = atob(String(data.content).replace(/\s/g, ""));
+  const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+  return JSON.parse(new TextDecoder().decode(bytes));
 }
 
 function currentPullRequest() {
