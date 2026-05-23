@@ -18,7 +18,8 @@ const icons = {
   filter: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16l-6 7v5l-4 2v-7L4 5Z"></path></svg>',
   plus: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>',
   check: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m20 6-11 11-5-5"></path></svg>',
-  warn: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9v4m0 4h.01M10.3 4.7 2.5 18a2 2 0 0 0 1.7 3h15.6a2 2 0 0 0 1.7-3L13.7 4.7a2 2 0 0 0-3.4 0Z"></path></svg>'
+  warn: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9v4m0 4h.01M10.3 4.7 2.5 18a2 2 0 0 0 1.7 3h15.6a2 2 0 0 0 1.7-3L13.7 4.7a2 2 0 0 0-3.4 0Z"></path></svg>',
+  maximize: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M8 21H3v-5m18 0v5h-5M3 3l6 6m6-6-6 6m-6 6 6-6m6 6 6-6"></path></svg>'
 };
 
 const seed = {
@@ -156,7 +157,7 @@ const copy = {
     "history.title": "Git audit trail",
     "history.subtitle": "Commits, PRs, tags, Actions, and registry drift checks are the database for P0.",
     "zen.title": "Zen editor",
-    "zen.subtitle": "Focused editing with the same preview and diff font scale.",
+    "zen.subtitle": "Focused text editing with the configured editor font and size.",
     "tutorial.eyebrow": "Guided demo",
     "tutorial.title": "Public skill intake review",
     "tutorial.body": "Turn an Anthropic public skill into a team-approved runtime asset with provenance, evidence, lint, approval, registry output, and install handoff.",
@@ -239,7 +240,7 @@ const copy = {
     "history.title": "Git 审计路径",
     "history.subtitle": "提交、PR、tag、Actions 和 registry drift check 是 P0 的数据库。",
     "zen.title": "专注编辑",
-    "zen.subtitle": "编辑、预览和 diff 使用同一字号。",
+    "zen.subtitle": "使用当前编辑器字体和字号的专注文本编辑。",
     "tutorial.eyebrow": "引导教程",
     "tutorial.title": "公开 Skill 导入审查",
     "tutorial.body": "把 Anthropic 的公开 skill 变成团队 approved runtime asset，并保留来源、证据、lint、审批、registry 和安装交接。",
@@ -286,6 +287,14 @@ const agentOptions = [
   ["antigravity", "Antigravity"]
 ];
 
+const editorFontOptions = [
+  ["ibm-plex-mono", "IBM Plex Mono", '"IBM Plex Mono", ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace'],
+  ["jetbrains-mono", "JetBrains Mono", '"JetBrains Mono", "IBM Plex Mono", ui-monospace, Consolas, Menlo, monospace'],
+  ["fira-code", "Fira Code", '"Fira Code", "IBM Plex Mono", ui-monospace, Consolas, Menlo, monospace'],
+  ["source-code-pro", "Source Code Pro", '"Source Code Pro", "IBM Plex Mono", ui-monospace, Consolas, Menlo, monospace'],
+  ["system-mono", "System monospace", 'ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace']
+];
+
 function defaultSkillRootForAgent(agent) {
   if (agent === "claude-code") return "~/.claude/skills";
   if (agent === "antigravity") return "~/.agents/skills";
@@ -298,6 +307,16 @@ function setInstallAgent(agent) {
   state.localSkillRoot = defaultSkillRootForAgent(next);
   localStorage.setItem("skills-charter-agent", state.agent);
   localStorage.setItem("skills-charter-local-root", state.localSkillRoot);
+}
+
+function editorFontStack() {
+  return editorFontOptions.find(([id]) => id === state.editorFont)?.[2] || editorFontOptions[0][2];
+}
+
+function normalizeEditorFontSize(value) {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return state.fontSize || 13;
+  return Math.max(11, Math.min(24, Math.round(parsed)));
 }
 
 const state = {
@@ -324,6 +343,7 @@ const state = {
   managedBranch: localStorage.getItem("skills-charter-managed-branch") || "main",
   localSkillRoot: localStorage.getItem("skills-charter-local-root") || defaultSkillRootForAgent(localStorage.getItem("skills-charter-agent") || "codex"),
   fontSize: Number(localStorage.getItem("skills-charter-font-size") || 13),
+  editorFont: localStorage.getItem("skills-charter-editor-font") || "ibm-plex-mono",
   dataStatus: "embedded",
   dataSource: "embedded snapshot",
   loadError: "",
@@ -1995,7 +2015,6 @@ function renderEditorWorkspace() {
       <div class="card-head">
         <div class="editor-tabs" role="tablist" aria-label="Editor views">
           ${tabs.map(([tab, label]) => `<button type="button" class="${state.editorTab === tab ? "active" : ""}" data-action="editor-tab" data-tab="${tab}">${label}</button>`).join("")}
-          <button type="button" class="${state.zen ? "active" : ""}" data-action="toggle-zen" aria-pressed="${state.zen ? "true" : "false"}">Zen</button>
         </div>
         <div class="chip-row">
           <button type="button" class="button subtle" data-action="run-checks">${t("action.runPolicy")}</button>
@@ -2085,7 +2104,7 @@ function renderEditor(file) {
   const content = fileText(file);
   return `<div class="editor-toolbar">
     <div><h2>${esc(file.path)}</h2><span class="tiny">${esc(file.kind)} · browser-local edits</span></div>
-    <div class="chip-row"><button type="button" class="button subtle" data-action="editor-tab" data-tab="preview">Preview</button><button type="button" class="button subtle" data-action="editor-tab" data-tab="diff">Diff</button></div>
+    <div class="chip-row"><button type="button" class="button subtle" data-action="editor-tab" data-tab="preview">Preview</button><button type="button" class="button subtle" data-action="editor-tab" data-tab="diff">Diff</button><button type="button" class="icon-button zen-toolbar-button ${state.zen ? "active" : ""}" data-action="toggle-zen" aria-label="${state.zen ? "Exit Zen editor" : "Open Zen editor"}" aria-pressed="${state.zen ? "true" : "false"}" title="${state.zen ? "Exit Zen" : "Zen"}">${icons.maximize}</button></div>
   </div>
   <div class="editor-surface">
     <pre class="line-numbers">${lineNumbers(content)}</pre>
@@ -2414,8 +2433,13 @@ function renderSettingsModal() {
         <label class="input-block"><span class="tiny">Managed skills repo</span><input data-setting="managedRepo" value="${esc(state.managedRepo)}"></label>
         <label class="input-block"><span class="tiny">Default branch</span><input data-setting="managedBranch" value="${esc(state.managedBranch)}"></label>
         <div class="settings-grid">
-          <div class="split-head"><h3 class="card-title">Editor scale</h3><span class="kbd">${state.fontSize}px</span></div>
-          <label class="range-row"><span>Editor, preview, and diff font size</span><input type="range" min="12" max="20" value="${state.fontSize}" data-font-size><span class="kbd">${state.fontSize}px</span></label>
+          <div class="split-head"><h3 class="card-title">Editor preferences</h3></div>
+          <label class="input-block"><span class="tiny">Editor font size</span><input type="number" min="11" max="24" step="1" value="${state.fontSize}" data-font-size></label>
+          <label class="input-block"><span class="tiny">Editor font</span>
+            <select class="select-input" data-editor-font>
+              ${editorFontOptions.map(([id, label]) => `<option value="${esc(id)}" ${state.editorFont === id ? "selected" : ""}>${esc(label)}</option>`).join("")}
+            </select>
+          </label>
         </div>
       </div>
       <div class="modal-foot">
@@ -2457,7 +2481,7 @@ function tutorialSteps() {
       route: "editor",
       selector: ".editor-control-card",
       title: zh ? "Editor 是文件工作台" : "Editor is the file workbench",
-      body: zh ? "在这里编辑 SKILL.md 和关联文件。左侧 package 栏可以收起，Zen 会进入真正的全屏编辑。" : "Edit SKILL.md and related files here. The package rail can collapse, and Zen enters a true full-screen editor."
+      body: zh ? "在这里编辑 SKILL.md 和关联文件。左侧 package 栏可以收起，Zen 会只放大文本编辑器本身。" : "Edit SKILL.md and related files here. The package rail can collapse, and Zen expands only the text editor itself."
     },
     {
       route: "prs",
@@ -2560,6 +2584,7 @@ function render() {
   root.dataset.theme = state.theme;
   root.dataset.locale = state.locale;
   root.style.setProperty("--editor-font-size", `${state.fontSize}px`);
+  root.style.setProperty("--editor-font-family", editorFontStack());
   const appClasses = [
     "app",
     state.sidebarCollapsed ? "sidebar-collapsed" : "",
@@ -2869,9 +2894,12 @@ document.addEventListener("input", (event) => {
   }
 
   if (event.target.matches("[data-font-size]")) {
-    state.fontSize = Number(event.target.value);
+    if (!event.target.value) return;
+    const parsed = Number(event.target.value);
+    if (!Number.isFinite(parsed)) return;
+    state.fontSize = Math.max(11, Math.min(24, parsed));
     localStorage.setItem("skills-charter-font-size", String(state.fontSize));
-    render();
+    root.style.setProperty("--editor-font-size", `${state.fontSize}px`);
     return;
   }
 
@@ -2901,6 +2929,21 @@ document.addEventListener("change", (event) => {
   if (event.target.matches("[data-agent-select]")) {
     setInstallAgent(event.target.value);
     render();
+    return;
+  }
+
+  if (event.target.matches("[data-editor-font]")) {
+    state.editorFont = editorFontOptions.some(([id]) => id === event.target.value) ? event.target.value : "ibm-plex-mono";
+    localStorage.setItem("skills-charter-editor-font", state.editorFont);
+    root.style.setProperty("--editor-font-family", editorFontStack());
+    return;
+  }
+
+  if (event.target.matches("[data-font-size]")) {
+    state.fontSize = normalizeEditorFontSize(event.target.value);
+    event.target.value = String(state.fontSize);
+    localStorage.setItem("skills-charter-font-size", String(state.fontSize));
+    root.style.setProperty("--editor-font-size", `${state.fontSize}px`);
   }
 });
 
