@@ -193,12 +193,12 @@ The current static manager should expose:
 - **Dashboard**: repository health, governance loop, review queue, registry readiness
 - **Intake modal**: local folder upload, public GitHub repo import, specific skill import, and new candidate creation
 - **Library**: package inventory by category, owner, review status, risk, and install readiness
-- **Editor**: selected package structure, file picker, edit, preview, diff, live lint, metadata, and Zen mode
+- **Editor**: selected package structure, collapsible package/file rail, edit, preview, diff, live lint, metadata, and full-screen Zen mode
 - **Review**: selected-package policy gate, provenance, evidence, blockers, and approval decision
 - **Pull Requests**: open GitHub PR inbox, branch context, changed skills/files, GitHub check-run status, review impact, and Git handoff commands
-- **Registry**: generated `skills.json` and default install agent selection for Codex, Claude Code, or Antigravity
+- **Registry**: generated `skills.json`, install target dropdown, local skill root, and approved install snippets for Codex, Claude Code, or Antigravity
 - **History**: Git audit model, skill/version filtering, local changed files, and database boundary
-- **Settings**: managed skills repository, default branch, local skill root, and default install provider
+- **Settings**: managed skills repository, default branch, and editor preferences
 
 ## Non-Goals For P0
 

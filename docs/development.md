@@ -246,10 +246,8 @@ Top bar controls:
 - repo context;
 - sync state;
 - Import skills;
-- Settings;
 - Theme;
 - GitHub;
-- Run policy;
 - prepare Git handoff context for a draft PR.
 
 ### Settings
@@ -259,15 +257,11 @@ Settings owns workspace setup and local reading preferences.
 Workspace setup:
 
 - public GitHub repo input;
-- local folder import;
-- new package creation.
+- default branch input.
 
 Reading preferences:
 
-- font family;
 - text size;
-- line height;
-- soft wrap.
 
 Reading preferences are stored in browser `localStorage` and apply to edit, preview, and diff surfaces.
 
@@ -298,7 +292,8 @@ Rules:
 - Markdown preview strips frontmatter.
 - Code-like files show highlighted code preview.
 - Diff preview is local/staged until authenticated GitHub write support exists.
-- Zen mode hides tree and inspector.
+- The package/file rail can collapse independently.
+- Zen mode is full-screen and hides chrome, package rail, and inspector.
 
 ### Inspector
 

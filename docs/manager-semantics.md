@@ -29,7 +29,7 @@ Current color decisions:
 
 Current editing comfort:
 
-- The editor uses a 14px mono baseline with a generous line height and local reading controls for font, size, line height, and soft wrap.
+- The editor uses a 14px mono baseline with a generous line height and a local font-size control in Settings.
 - Metadata fields mirror `SKILL.md` frontmatter so people can edit structured fields without hand-editing YAML every time.
 - Preview, diff, registry preview, review gates, provenance, evidence, and install commands are visible in the same workspace because human review is the product wedge.
 
@@ -74,12 +74,11 @@ Editor settings are local workspace preferences stored in browser `localStorage`
 
 The current settings control:
 
-- editor font family
 - editor font size
-- editor line height
-- soft wrapping for long lines
 
 The same typography settings apply to edit, preview, and diff surfaces, so script files, fenced code blocks, and diff rows remain visually consistent.
+
+Install provider and local skill root belong to the `Registry` install target panel, not global Settings. Selecting Codex, Claude Code, or Antigravity updates the suggested local root (`~/.codex/skills`, `~/.claude/skills`, or `~/.agents/skills`) because that choice affects downstream installation rather than repository configuration.
 
 ## Metadata
 
@@ -157,7 +156,7 @@ The `Registry` tab renders a browser-side `skills.json` preview with the same sc
 
 ## Run Policy
 
-`Run policy` recomputes the browser lint list for the currently staged package state. It does not contact GitHub or run CI yet.
+`Run policy` recomputes browser-side package findings and risk from the current package metadata and files. It checks entrypoints, owner, provenance, approved evidence, scripts, dependency manifests, assets, external URLs, and possible secrets. It does not contact GitHub or run CI; GitHub Actions remains the merge gate.
 
 In the real P0 implementation, CI should run equivalent checks plus link validation, generated registry drift, script review gates, asset size and hash checks, and secret scanning.
 
