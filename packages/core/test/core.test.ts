@@ -37,7 +37,8 @@ test("scans a git-style skills repository and lints package risk", async () => {
       skill: `---\nname: literature-review\ndescription: Use this skill when a user needs a structured literature review workflow with evidence extraction.\ncategory: research\nversion: 0.1.0\nreview_status: draft\n---\n\n# Literature Review\n`,
       files: {
         "references/rubric.md": "# Rubric\n",
-        "scripts/extract.py": "print('extract')\n"
+        "scripts/extract.py": "print('extract')\n",
+        "assets/brand.ttf": "fake-font"
       }
     });
     await mkdir(path.join(root, "skills", "missing-entrypoint"), { recursive: true });
@@ -45,7 +46,8 @@ test("scans a git-style skills repository and lints package risk", async () => {
 
     const repo = await scanSkillRepository(root);
     assert.equal(repo.packages.length, 1);
-    assert.equal(repo.packages[0]?.files.length, 3);
+    assert.equal(repo.packages[0]?.files.length, 4);
+    assert.equal(repo.packages[0]?.files.find((file) => file.path.endsWith("brand.ttf"))?.kind, "asset");
     assert.deepEqual(repo.ignoredSkillDirs, ["skills/missing-entrypoint"]);
 
     const lint = lintRepository(repo);

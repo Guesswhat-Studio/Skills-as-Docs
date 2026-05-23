@@ -58,9 +58,9 @@ The default strict policy is intentionally small:
 When developing against this monorepo, run it locally before opening a PR:
 
 ```bash
-node packages/cli/dist/index.js lint --root . --policy strict
+node packages/cli/dist/index.js lint --root . --policy skills-charter.policy.json
 node packages/cli/dist/index.js generate registry --root . --source org/team-skills --out skills.json
-node packages/cli/dist/index.js generate registry --root . --source org/team-skills --out skills.json --check --policy strict
+node packages/cli/dist/index.js generate registry --root . --source org/team-skills --out skills.json --check --policy skills-charter.policy.json
 ```
 
 Use `--fail-on medium` only if your team wants warnings to block CI. The default strict mode blocks governance errors while still allowing reviewers to inspect script, asset, dependency, and URL warnings.
@@ -112,9 +112,9 @@ The example in `examples/public-import-governance-demo/review-notes/skill-creato
 The template workflow should run on every pull request. It checks out the team skill library and the Skills Charter tooling repo, builds the CLI, then runs:
 
 ```bash
-node ../skills-charter/packages/cli/dist/index.js lint --root . --policy strict
-node ../skills-charter/packages/cli/dist/index.js generate registry --root . --source "$GITHUB_REPOSITORY" --out skills.json --check --policy strict
-node ../skills-charter/packages/cli/dist/index.js generate registry --root . --source "$GITHUB_REPOSITORY" --approved-only --out "$RUNNER_TEMP/skills.approved.json" --policy strict
+node ../skills-charter/packages/cli/dist/index.js lint --root . --policy skills-charter.policy.json
+node ../skills-charter/packages/cli/dist/index.js generate registry --root . --source "$GITHUB_REPOSITORY" --out skills.json --check --policy skills-charter.policy.json
+node ../skills-charter/packages/cli/dist/index.js generate registry --root . --source "$GITHUB_REPOSITORY" --approved-only --out "$RUNNER_TEMP/skills.approved.json" --policy skills-charter.policy.json
 ```
 
 This proves three things:

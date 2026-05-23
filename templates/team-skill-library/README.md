@@ -6,7 +6,7 @@ Use this folder as the starting point for a governed team skill repository. The 
 
 1. New or imported skills start as `review_status: candidate`.
 2. Maintainers add provenance, ownership, and review evidence.
-3. CI runs `skills-charter lint --policy strict` and checks registry drift.
+3. CI runs `skills-charter lint --policy skills-charter.policy.json` and checks registry drift.
 4. Reviewers approve the pull request and mark the skill `approved`.
 5. CI publishes `skills.json`.
 6. Team members install only approved packages with `npx skills`.

@@ -28,7 +28,7 @@ Evidence files added or updated:
 
 ## Risk decision
 
-- [ ] I ran `node packages/cli/dist/index.js lint --root . --policy strict`.
+- [ ] I ran `node packages/cli/dist/index.js lint --root . --policy skills-charter.policy.json`.
 - [ ] I regenerated `skills.json` when package metadata or files changed.
 - [ ] Scripts, dependency manifests, assets, external URLs, and possible secrets were reviewed.
 - [ ] Approved public/generated/evolved skills have Git-tracked evidence.

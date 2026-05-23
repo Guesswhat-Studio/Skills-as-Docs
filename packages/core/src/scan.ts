@@ -57,7 +57,7 @@ export function detectFileKind(repoPath: string): SkillFileKind {
   }
   if (
     repoPath.includes("/assets/")
-    || /\.(png|jpe?g|gif|webp|pdf|xlsx?|pptx?|docx?|zip|gz|tar|ico)$/i.test(repoPath)
+    || /\.(png|jpe?g|gif|webp|pdf|xlsx?|pptx?|docx?|zip|gz|tar|ico|ttf|otf|woff2?)$/i.test(repoPath)
   ) {
     return "asset";
   }

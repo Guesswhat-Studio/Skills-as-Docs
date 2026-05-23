@@ -90,9 +90,9 @@ skills/literature-review/assets/
 
 ```bash
 npm run check
-node packages/cli/dist/index.js lint --root . --policy strict
+node packages/cli/dist/index.js lint --root . --policy skills-charter.policy.json
 node packages/cli/dist/index.js generate registry --root . --source org/team-skills --out skills.json
-node packages/cli/dist/index.js generate registry --root . --source org/team-skills --out skills.json --check --policy strict
+node packages/cli/dist/index.js generate registry --root . --source org/team-skills --out skills.json --check --policy skills-charter.policy.json
 ```
 
 The important idea: the PR should prove that `skills/` and `skills.json` agree.
@@ -128,7 +128,7 @@ For a normal skill change:
 ```bash
 git checkout -b skill/literature-review-rubric
 $EDITOR skills/literature-review/SKILL.md
-node packages/cli/dist/index.js lint --root . --policy strict
+node packages/cli/dist/index.js lint --root . --policy skills-charter.policy.json
 node packages/cli/dist/index.js generate registry --root . --source org/team-skills --out skills.json
 npm run check
 git add skills skills.json
@@ -165,7 +165,7 @@ Then run:
 
 ```bash
 node packages/cli/dist/index.js scan --root .
-node packages/cli/dist/index.js lint --root . --policy strict
+node packages/cli/dist/index.js lint --root . --policy skills-charter.policy.json
 node packages/cli/dist/index.js generate registry --root . --source org/team-skills --out skills.json
 ```
 

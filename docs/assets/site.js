@@ -1343,7 +1343,7 @@ async function loadPullRequestChecks(pr, notify = true) {
   }
 
   try {
-    const response = await fetch(`${githubApiUrlForRepo(pr.headRepo || cleanRepoName(), `commits/${pr.headSha}/check-runs?per_page=50`)}&ts=${Date.now()}`, {
+    const response = await fetch(`${githubApiUrlForRepo(pr.baseRepo || cleanRepoName(), `commits/${pr.headSha}/check-runs?per_page=50`)}&ts=${Date.now()}`, {
       cache: "no-store",
       headers: { Accept: "application/vnd.github+json" }
     });
@@ -1442,7 +1442,7 @@ function mergeCommand(pr) {
   if (!pr) return "";
   return `gh pr checkout ${pr.number}
 npm run check
-npm run skills-charter -- generate registry --approved-only --source ${cleanRepoName()} --branch ${pr.headRef || state.managedBranch} --out skills.json --policy strict
+npm run skills-charter -- generate registry --approved-only --source ${cleanRepoName()} --branch ${pr.headRef || state.managedBranch} --out skills.json --policy skills-charter.policy.json
 git add skills skills.json
 git commit -m "review(${changedSkillsFromFiles(state.pullRequestFiles)[0] || "skills"}): address governance findings"
 git push

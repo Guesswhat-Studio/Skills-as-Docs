@@ -42,12 +42,12 @@ jobs:
 
       - name: Enforce skill policy
         working-directory: library
-        run: node ../skills-charter/packages/cli/dist/index.js lint --root . --policy strict
+        run: node ../skills-charter/packages/cli/dist/index.js lint --root . --policy skills-charter.policy.json
 
       - name: Check registry drift
         working-directory: library
-        run: node ../skills-charter/packages/cli/dist/index.js generate registry --root . --source "$GITHUB_REPOSITORY" --out skills.json --check --policy strict
+        run: node ../skills-charter/packages/cli/dist/index.js generate registry --root . --source "$GITHUB_REPOSITORY" --out skills.json --check --policy skills-charter.policy.json
 
       - name: Smoke approved-only registry
         working-directory: library
-        run: node ../skills-charter/packages/cli/dist/index.js generate registry --root . --source "$GITHUB_REPOSITORY" --approved-only --out "$RUNNER_TEMP/skills.approved.json" --policy strict
+        run: node ../skills-charter/packages/cli/dist/index.js generate registry --root . --source "$GITHUB_REPOSITORY" --approved-only --out "$RUNNER_TEMP/skills.approved.json" --policy skills-charter.policy.json

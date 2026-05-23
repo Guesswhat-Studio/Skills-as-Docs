@@ -31,10 +31,10 @@ jobs:
         run: npm run check
 
       - name: Enforce Skills Charter policy
-        run: node packages/cli/dist/index.js lint --root . --policy strict
+        run: node packages/cli/dist/index.js lint --root . --policy skills-charter.policy.json
 
       - name: Check skills registry drift
-        run: node packages/cli/dist/index.js generate registry --root . --source "$GITHUB_REPOSITORY" --out skills.json --check --policy strict
+        run: node packages/cli/dist/index.js generate registry --root . --source "$GITHUB_REPOSITORY" --out skills.json --check --policy skills-charter.policy.json
 
       - name: Smoke approved-only registry
-        run: node packages/cli/dist/index.js generate registry --root . --source "$GITHUB_REPOSITORY" --approved-only --out "$RUNNER_TEMP/skills.approved.json" --policy strict
+        run: node packages/cli/dist/index.js generate registry --root . --source "$GITHUB_REPOSITORY" --approved-only --out "$RUNNER_TEMP/skills.approved.json" --policy skills-charter.policy.json
