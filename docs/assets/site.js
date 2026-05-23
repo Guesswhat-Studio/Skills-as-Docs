@@ -106,6 +106,7 @@ const copy = {
     "action.runPolicy": "Run policy",
     "action.refreshPrs": "Refresh PRs",
     "action.runPdfIntake": "Run PDF intake",
+    "action.browseFindings": "Browse all",
     "action.running": "Running...",
     "search.placeholder": "Find package, finding, or commit...",
     "dashboard.title": "Repository health",
@@ -124,6 +125,7 @@ const copy = {
     "panel.activity": "Activity",
     "panel.registry": "Registry readiness",
     "panel.findings": "Live policy findings",
+    "findings.summary": "Showing top {shown} of {total}, sorted by severity and review impact.",
     "panel.changes": "Changed files",
     "panel.inventory": "Library snapshot",
     "intake.title": "Bring skills into a governed repo",
@@ -186,6 +188,7 @@ const copy = {
     "action.runPolicy": "运行策略",
     "action.refreshPrs": "刷新 PR",
     "action.runPdfIntake": "导入 PDF",
+    "action.browseFindings": "浏览全部",
     "action.running": "运行中...",
     "search.placeholder": "搜索 skill、风险、提交...",
     "dashboard.title": "仓库健康度",
@@ -204,6 +207,7 @@ const copy = {
     "panel.activity": "活动",
     "panel.registry": "Registry 状态",
     "panel.findings": "实时策略发现",
+    "findings.summary": "显示前 {shown} / 共 {total} 条，按严重程度和审查影响排序。",
     "panel.changes": "变更文件",
     "panel.inventory": "库快照",
     "intake.title": "把 Skills 纳入治理仓库",
@@ -298,8 +302,10 @@ const state = {
   pullRequests: [],
   selectedPullRequest: "",
   pullRequestFiles: [],
+  pullRequestChecks: [],
   pullRequestStatus: "idle",
   pullRequestFilesStatus: "idle",
+  pullRequestChecksStatus: "idle",
   pullRequestError: "",
   intakeStatus: "",
   localFiles: [],
@@ -355,6 +361,10 @@ function githubRawUrl(repo, branch, path) {
 
 function githubApiUrl(path) {
   return `https://api.github.com/repos/${cleanRepoName()}/${path.replace(/^\/+/, "")}`;
+}
+
+function githubApiUrlForRepo(repo, path) {
+  return `https://api.github.com/repos/${cleanRepoName(repo)}/${path.replace(/^\/+/, "")}`;
 }
 
 function formatDateTime(value) {
@@ -1258,14 +1268,18 @@ async function loadPullRequests(notify = false) {
       await loadPullRequestFiles(state.selectedPullRequest, false);
     } else {
       state.pullRequestFiles = [];
+      state.pullRequestChecks = [];
       state.pullRequestFilesStatus = "ready";
+      state.pullRequestChecksStatus = "ready";
       render();
     }
   } catch (error) {
     state.pullRequestStatus = "error";
     state.pullRequestError = error.message || String(error);
     state.pullRequestFiles = [];
+    state.pullRequestChecks = [];
     state.pullRequestFilesStatus = "idle";
+    state.pullRequestChecksStatus = "idle";
     render();
   }
 }
@@ -1273,6 +1287,8 @@ async function loadPullRequests(notify = false) {
 async function loadPullRequestFiles(number, notify = true) {
   if (!number) return;
   state.pullRequestFilesStatus = "loading";
+  state.pullRequestChecks = [];
+  state.pullRequestChecksStatus = "idle";
   if (notify || state.route === "prs") render();
 
   try {
@@ -1292,11 +1308,54 @@ async function loadPullRequestFiles(number, notify = true) {
     const pr = state.pullRequests.find((item) => String(item.number) === String(number));
     if (pr) pr.changedFiles = state.pullRequestFiles.length;
     state.pullRequestFilesStatus = "ready";
-    render();
+    await loadPullRequestChecks(pr, false);
   } catch (error) {
     state.pullRequestFilesStatus = "error";
     state.pullRequestError = error.message || String(error);
     state.pullRequestFiles = [];
+    state.pullRequestChecks = [];
+    state.pullRequestChecksStatus = "idle";
+    render();
+  }
+}
+
+function normalizeCheckRun(run) {
+  return {
+    name: run.name || "GitHub check",
+    status: run.status || "unknown",
+    conclusion: run.conclusion || "",
+    htmlUrl: run.html_url || "",
+    startedAt: run.started_at || "",
+    completedAt: run.completed_at || "",
+    app: run.app?.slug || run.app?.name || "github"
+  };
+}
+
+async function loadPullRequestChecks(pr, notify = true) {
+  state.pullRequestChecksStatus = "loading";
+  state.pullRequestChecks = [];
+  if (notify || state.route === "prs") render();
+
+  if (!pr?.headSha) {
+    state.pullRequestChecksStatus = "ready";
+    render();
+    return;
+  }
+
+  try {
+    const response = await fetch(`${githubApiUrlForRepo(pr.headRepo || cleanRepoName(), `commits/${pr.headSha}/check-runs?per_page=50`)}&ts=${Date.now()}`, {
+      cache: "no-store",
+      headers: { Accept: "application/vnd.github+json" }
+    });
+    if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+    const data = await response.json();
+    state.pullRequestChecks = (data.check_runs || []).map(normalizeCheckRun);
+    state.pullRequestChecksStatus = "ready";
+    render();
+  } catch (error) {
+    state.pullRequestChecksStatus = "error";
+    state.pullRequestError = error.message || String(error);
+    state.pullRequestChecks = [];
     render();
   }
 }
@@ -1343,6 +1402,40 @@ function pullRequestPolicyChecks(pr, files) {
     ["Registry drift visible", registryChanged, registryChanged ? "skills.json is updated in this PR." : "Run generate registry before merge if approval changed."],
     ["Local checkout path", Boolean(pr), pr ? `gh pr checkout ${pr.number}` : "Select an open pull request."]
   ];
+}
+
+function pullRequestChecksSummary() {
+  const checkRuns = state.pullRequestChecks || [];
+  if (state.pullRequestChecksStatus === "loading") {
+    return ["GitHub checks", false, "Loading Actions check runs for the PR head SHA.", "pending", "status-review"];
+  }
+  if (state.pullRequestChecksStatus === "error") {
+    return ["GitHub checks", false, `Could not load check runs: ${state.pullRequestError || "unknown error"}.`, "unavailable", "status-candidate"];
+  }
+  if (!checkRuns.length) {
+    return ["GitHub checks", false, "No GitHub check runs were found for this PR. Add Skills Charter CI before merge.", "no checks", "status-review"];
+  }
+
+  const pending = checkRuns.filter((check) => ["queued", "in_progress", "requested", "waiting", "pending"].includes(check.status));
+  const failed = checkRuns.filter((check) => ["failure", "timed_out", "cancelled", "action_required"].includes(check.conclusion));
+  const passed = checkRuns.filter((check) => ["success", "skipped", "neutral"].includes(check.conclusion));
+  if (failed.length) {
+    return ["GitHub checks", false, `${failed.length} check run${failed.length === 1 ? "" : "s"} require attention.`, "failed", "status-blocked"];
+  }
+  if (pending.length) {
+    return ["GitHub checks", false, `${pending.length} check run${pending.length === 1 ? "" : "s"} still running.`, "pending", "status-review"];
+  }
+  if (passed.length === checkRuns.length) {
+    return ["GitHub checks", true, `${passed.length} check run${passed.length === 1 ? "" : "s"} passed for this PR head.`, "passed", "status-approved"];
+  }
+  return ["GitHub checks", false, "Some check runs have an unknown conclusion. Confirm in GitHub before merge.", "unknown", "status-candidate"];
+}
+
+function checkRunChipClass(check) {
+  if (["success", "skipped", "neutral"].includes(check.conclusion)) return "status-approved";
+  if (["failure", "timed_out", "cancelled", "action_required"].includes(check.conclusion)) return "status-blocked";
+  if (["queued", "in_progress", "requested", "waiting", "pending"].includes(check.status)) return "status-review";
+  return "status-candidate";
 }
 
 function mergeCommand(pr) {
@@ -1409,6 +1502,28 @@ function statusChip(status) {
 
 function riskChip(risk) {
   return `<span class="risk-chip ${riskClass(risk)}">${esc(risk || "unknown")}</span>`;
+}
+
+function findingRank(pkg, finding) {
+  const value = String(finding || "").toLowerCase();
+  if (pkg.risk === "high" || value.includes("secret") || value.includes("high-risk")) return 0;
+  if (value.includes("script") || value.includes("owner") || value.includes("evidence")) return 1;
+  if (value.includes("dependency") || value.includes("external-url") || value.includes("asset")) return 2;
+  if (pkg.risk === "medium") return 3;
+  return 4;
+}
+
+function sortedPolicyFindings() {
+  const riskOrder = { high: 0, medium: 1, unknown: 2, low: 3 };
+  return seed.packages
+    .flatMap((pkg) => pkg.findings.map((finding) => ({ pkg, finding })))
+    .sort((a, b) => (
+      findingRank(a.pkg, a.finding) - findingRank(b.pkg, b.finding)
+      || (riskOrder[a.pkg.risk] ?? 4) - (riskOrder[b.pkg.risk] ?? 4)
+      || b.pkg.files.length - a.pkg.files.length
+      || a.pkg.name.localeCompare(b.pkg.name)
+      || String(a.finding).localeCompare(String(b.finding))
+    ));
 }
 
 function policyChecks(pkg) {
@@ -1664,16 +1779,27 @@ function renderRegistryReadiness() {
 }
 
 function renderFindings() {
-  const findings = seed.packages.flatMap((pkg) => pkg.findings.map((finding) => [pkg, finding]));
+  const findings = sortedPolicyFindings();
+  const visibleFindings = findings.slice(0, 5);
+  const summary = t("findings.summary")
+    .replace("{shown}", String(visibleFindings.length))
+    .replace("{total}", String(findings.length));
   return `<section class="card">
-    <div class="card-head"><h2 class="card-title">${t("panel.findings")}</h2><button type="button" class="button subtle" data-action="run-checks">${icons.check}${t("action.runPolicy")}</button></div>
+    <div class="card-head">
+      <h2 class="card-title">${t("panel.findings")}</h2>
+      <span class="card-actions"><span class="count-chip">${findings.length}</span><button type="button" class="button subtle" data-action="run-checks">${icons.check}${t("action.runPolicy")}</button></span>
+    </div>
     <div class="finding-list">
-      ${findings.length ? findings.map(([pkg, finding]) => `
+      ${findings.length ? visibleFindings.map(({ pkg, finding }) => `
         <div class="finding-item">
           <div class="row-between"><strong>${esc(finding)}</strong>${riskChip(pkg.risk)}</div>
           <span class="tiny">${esc(pkg.name)} · ${esc(pkg.category)}</span>
         </div>
       `).join("") : `<div class="empty-state">No policy findings are present in the loaded registry.</div>`}
+      ${findings.length > visibleFindings.length ? `<div class="finding-more">
+        <span class="tiny">${esc(summary)}</span>
+        <button type="button" class="button subtle" data-action="route" data-route="review">${t("action.browseFindings")}</button>
+      </div>` : ""}
     </div>
   </section>`;
 }
@@ -2059,8 +2185,9 @@ function renderPullRequests() {
   const pr = currentPullRequest();
   const files = state.pullRequestFiles || [];
   const changedSkills = changedSkillsFromFiles(files);
-  const checks = pullRequestPolicyChecks(pr, files);
-  const loading = state.pullRequestStatus === "loading" || state.pullRequestFilesStatus === "loading";
+  const checks = [pullRequestChecksSummary(), ...pullRequestPolicyChecks(pr, files)];
+  const checkRuns = state.pullRequestChecks || [];
+  const loading = state.pullRequestStatus === "loading" || state.pullRequestFilesStatus === "loading" || state.pullRequestChecksStatus === "loading";
   const error = state.pullRequestStatus === "error" || state.pullRequestFilesStatus === "error";
   const meta = `<button type="button" class="button subtle" data-action="refresh-prs">${icons.sync}${t("action.refreshPrs")}</button>`;
 
@@ -2091,13 +2218,21 @@ function renderPullRequests() {
             <div class="meta-row"><span class="meta-key">Impact</span><span class="meta-value">${changedSkills.length ? changedSkills.map(esc).join(", ") : "No skills/* package files detected yet"}</span></div>
           </div>
           <div class="check-list">
-            ${checks.map(([label, ok, detail]) => `
+            ${checks.map(([label, ok, detail, status = ok ? "ready" : "needs work", className = ok ? "status-approved" : "status-blocked"]) => `
               <div class="check-item">
-                <div class="row-between"><strong>${ok ? icons.check : icons.warn}${esc(label)}</strong><span class="status-chip ${ok ? "status-approved" : "status-blocked"}">${ok ? "ready" : "needs work"}</span></div>
+                <div class="row-between"><strong>${ok ? icons.check : icons.warn}${esc(label)}</strong><span class="status-chip ${esc(className)}">${esc(status)}</span></div>
                 <span class="tiny">${esc(detail)}</span>
               </div>
             `).join("")}
           </div>
+          ${checkRuns.length ? `<div class="check-run-list">
+            ${checkRuns.map((check) => `
+              <a class="check-run-row" href="${esc(check.htmlUrl || pr.htmlUrl)}" target="_blank" rel="noreferrer">
+                <span><strong>${esc(check.name)}</strong><span class="tiny">${esc(check.app)} · ${esc(formatDateTime(check.completedAt || check.startedAt))}</span></span>
+                <span class="status-chip ${checkRunChipClass(check)}">${esc(check.conclusion || check.status)}</span>
+              </a>
+            `).join("")}
+          </div>` : ""}
         </div>` : `<div class="empty-state">Use Refresh PRs to load GitHub review work for the managed repository.</div>`}
       </section>
       <section class="card">

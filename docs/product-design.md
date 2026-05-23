@@ -110,6 +110,7 @@ Git is the durable workflow, so the manager needs a PR cockpit before it needs a
 - source and target branches
 - changed skills and changed files
 - evidence, script, registry, and manifest impact
+- GitHub Actions check-run status for the PR head SHA
 - checkout, policy, fix, push, and merge handoff commands
 - a direct link back to GitHub for review, checks, and merge
 
@@ -194,7 +195,7 @@ The current static manager should expose:
 - **Library**: package inventory by category, owner, review status, risk, and install readiness
 - **Editor**: selected package structure, file picker, edit, preview, diff, live lint, metadata, and Zen mode
 - **Review**: selected-package policy gate, provenance, evidence, blockers, and approval decision
-- **Pull Requests**: open GitHub PR inbox, branch context, changed skills/files, review impact, and Git handoff commands
+- **Pull Requests**: open GitHub PR inbox, branch context, changed skills/files, GitHub check-run status, review impact, and Git handoff commands
 - **Registry**: generated `skills.json` and default install agent selection for Codex, Claude Code, or Antigravity
 - **History**: Git audit model, skill/version filtering, local changed files, and database boundary
 - **Settings**: managed skills repository, default branch, local skill root, and default install provider

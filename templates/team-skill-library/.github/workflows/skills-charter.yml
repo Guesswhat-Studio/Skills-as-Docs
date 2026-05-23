@@ -1,21 +1,53 @@
-name: Skills Charter
+name: Skills Charter Policy
 
 on:
   pull_request:
   push:
-    branches: [main]
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  check:
+  verify:
+    name: Verify governed skills
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout skill library
+        uses: actions/checkout@v4
+        with:
+          path: library
+
+      - name: Checkout Skills Charter tooling
+        uses: actions/checkout@v4
+        with:
+          repository: Guesswhat-Studio/Skills-as-Docs
+          ref: main
+          path: skills-charter
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
-      - run: npm run build
-      - run: node packages/cli/dist/index.js lint --root . --policy strict
-      - run: node packages/cli/dist/index.js generate registry --root . --source owner/team-skills --out skills.json --check --policy strict
-      - run: node packages/cli/dist/index.js generate registry --root . --source owner/team-skills --approved-only --out "$RUNNER_TEMP/skills.approved.json" --policy strict
+          cache-dependency-path: skills-charter/package-lock.json
+
+      - name: Build Skills Charter CLI
+        working-directory: skills-charter
+        run: |
+          npm ci
+          npm run build
+
+      - name: Enforce skill policy
+        working-directory: library
+        run: node ../skills-charter/packages/cli/dist/index.js lint --root . --policy strict
+
+      - name: Check registry drift
+        working-directory: library
+        run: node ../skills-charter/packages/cli/dist/index.js generate registry --root . --source "$GITHUB_REPOSITORY" --out skills.json --check --policy strict
+
+      - name: Smoke approved-only registry
+        working-directory: library
+        run: node ../skills-charter/packages/cli/dist/index.js generate registry --root . --source "$GITHUB_REPOSITORY" --approved-only --out "$RUNNER_TEMP/skills.approved.json" --policy strict

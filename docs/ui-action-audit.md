@@ -21,6 +21,7 @@ No user/account chip is shown in the top bar until Skills Charter has authentica
 | Control | Status | Behavior |
 | --- | --- | --- |
 | `Run policy` | active | Recomputes browser-side package policy state from the currently staged packages. |
+| `Browse all` in Live Policy findings | active | Navigates to Review after the dashboard shows the top five findings sorted by severity and review impact. |
 | `Run PDF intake` | active | Fetches `anthropics/skills/skills/pdf`, stages an optimized browser-local package, adds evidence, marks it approved for handoff, and exposes install readiness. |
 | Review ticket | active | Selects the package for review context. |
 | Inventory row | active | Selects the package. |
@@ -71,6 +72,7 @@ No user/account chip is shown in the top bar until Skills Charter has authentica
 | `Refresh PRs` | active | Fetches open pull requests and selected PR files from the configured public GitHub repository. |
 | PR rows | active | Selects a PR and loads its changed files. |
 | `Open on GitHub` | active | Opens the selected PR in GitHub for review, checks, comments, or merge. |
+| GitHub check rows | active | Opens the selected Actions check run in GitHub when check-run URLs are available. |
 | Git handoff command block | explanatory | Shows checkout, policy, registry generation, commit, push, and merge commands. It does not execute commands in the browser. |
 
 ## Review, Registry, And History

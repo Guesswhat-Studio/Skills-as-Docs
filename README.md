@@ -71,6 +71,7 @@ Demo artifacts:
 - [Demo runbook](./docs/demo-scenario.md)
 - [Practical GitHub guide](./docs/guides/run-team-agent-skill-library-from-github.md)
 - [Case study](./case-studies/public-skill-to-approved.md)
+- Field run: [Guesswhat-Studio/testSkills PR #2](https://github.com/Guesswhat-Studio/testSkills/pull/2)
 - [Example review evidence](./examples/public-import-governance-demo/review-notes/skill-creator-intake.md)
 
 The demo uses `anthropics/skills` as a live source. A local Skills Charter scan on 2026-05-20 found 17 packages in that repository, including multi-file packages such as `skill-creator`, `docx`, `pptx`, `xlsx`, and `canvas-design`. The important point is not that the upstream repo is bad; it is that real skill packages contain enough routing, scripts, assets, links, and supporting material to deserve a Git-backed review path before internal approval.
@@ -260,7 +261,7 @@ The CLI should work against a normal Git checkout. That is the core claim of thi
 
 ## Current Status
 
-This repository is in early public-surface and core implementation development. The static Pages prototype can load public GitHub skill repos, import local folders, edit files, run core-aligned browser lint, preview `skills.json`, and generate Git handoff plus approval-gated `npx skills` commands. `packages/core` plus `packages/cli` provide the first scanner, frontmatter parser, lifecycle and provenance model, risk lint rules, strict policy mode, approved-only registry generation, install snippets, onboarding smoke, `npx skills --list` compatibility smoke, and doctor command. The registry schema, Skills Charter CI workflow, launch blog draft, team template, minimal example, first case-study artifact, PR template, and GitHub practical guide are in place. The React manager rewrite, authenticated GitHub write flow, and richer file-level policy checks are still upcoming.
+This repository is in early public-surface and core implementation development. The static Pages prototype can load public GitHub skill repos, import local folders, edit files, run core-aligned browser lint, preview `skills.json`, inspect open PRs with GitHub check-run status, and generate Git handoff plus approval-gated `npx skills` commands. `packages/core` plus `packages/cli` provide the first scanner, frontmatter parser, lifecycle and provenance model, risk lint rules, strict policy mode, approved-only registry generation, install snippets, onboarding smoke, `npx skills --list` compatibility smoke, and doctor command. The registry schema, Skills Charter CI workflow, launch blog draft, copyable team template, minimal example, real field-run case study, PR template, and GitHub practical guide are in place. The React manager rewrite, authenticated GitHub write flow, and richer file-level policy checks are still upcoming.
 
 The detailed product and technical plan lives in [PLAN.md](./PLAN.md).
 The current manager UI semantics are documented in [docs/manager-semantics.md](./docs/manager-semantics.md).

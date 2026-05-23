@@ -1,0 +1,52 @@
+{
+  "$schema": "https://skills-charter.dev/schemas/skills-registry.v0.json",
+  "schema_version": "skills-charter.registry.v0",
+  "generated_at": "2026-05-23T15:11:31.434Z",
+  "source": {
+    "repository": "Guesswhat-Studio/team-skill-library-template"
+  },
+  "packages": [
+    {
+      "name": "code-review",
+      "path": "skills/code-review",
+      "entrypoint": "skills/code-review/SKILL.md",
+      "description": "Use this skill when reviewing pull requests for correctness, maintainability, test coverage, and security risk.",
+      "category": "engineering",
+      "owner": "@platform",
+      "review_status": "approved",
+      "lifecycle": "approved",
+      "provenance": {
+        "source_type": "manual",
+        "approved_by": "@platform-lead",
+        "approved_at": "2026-05-20"
+      },
+      "evidence": {
+        "evals": [],
+        "reports": [],
+        "review_notes": [
+          "skills/code-review/review-notes/approval.md"
+        ],
+        "trigger_samples": []
+      },
+      "risk": "low",
+      "risk_reasons": [],
+      "files": [
+        {
+          "path": "skills/code-review/SKILL.md",
+          "kind": "entrypoint",
+          "size": 949
+        },
+        {
+          "path": "skills/code-review/review-notes/approval.md",
+          "kind": "evidence",
+          "size": 416
+        }
+      ],
+      "install": [
+        "npx skills add Guesswhat-Studio/team-skill-library-template --skill code-review -g -a codex",
+        "npx skills add Guesswhat-Studio/team-skill-library-template --skill code-review -g -a claude-code",
+        "npx skills add Guesswhat-Studio/team-skill-library-template --skill code-review -g -a antigravity"
+      ]
+    }
+  ]
+}

@@ -103,6 +103,30 @@ npx skills add org/research-skills --skill skill-creator -g -a antigravity
 
 > Skills Charter does not ask teams to stop learning from public skills. It gives them a Git-backed path to internalize what is useful without turning installation into blind trust.
 
+## Field Run: Guesswhat-Studio/testSkills PR #2
+
+On 2026-05-23, the workflow was tested against a real empty repository: `Guesswhat-Studio/testSkills`.
+
+Run summary:
+
+| Step | Evidence |
+| --- | --- |
+| Source repo initialized | `Guesswhat-Studio/testSkills` started empty and became the managed skill library. |
+| Candidate imported | `skills/skill-creator/SKILL.md` was imported from `anthropics/skills`. |
+| Review branch | `review/skill-creator-approval`. |
+| Approval evidence | `skills/skill-creator/review-notes/approval.md`. |
+| Registry output | `skills.json` regenerated with approved install snippets. |
+| PR | `https://github.com/Guesswhat-Studio/testSkills/pull/2`. |
+| Merge commit | `38f5f45` on `main`. |
+| Installer smoke | `npx skills add Guesswhat-Studio/testSkills --list` showed `pdf` and `skill-creator`. |
+
+Two product bugs were found because the run used a real GitHub repository instead of a fake fixture:
+
+- CRLF text size churn made generated registry output unstable on Windows. The core scanner now normalizes text files to LF byte sizes and treats font files as binary assets.
+- Raw GitHub CDN caching made the browser registry view lag after merge. The Pages manager now loads `skills.json` through the GitHub Contents API so the registry view reflects the merged branch more reliably.
+
+That is the point of the demo: the product claim becomes stronger when Git, PRs, CI status, generated registry drift, and the downstream installer are all part of the same story.
+
 ## Claim Proven
 
 The claim is not that Skills Charter is a better marketplace or installer. The claim is:

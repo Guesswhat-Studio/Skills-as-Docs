@@ -11,6 +11,15 @@ Use this folder as the starting point for a governed team skill repository. The 
 5. CI publishes `skills.json`.
 6. Team members install only approved packages with `npx skills`.
 
+## Copy This Template
+
+1. Copy this folder into a new repository.
+2. Commit the included `.github/workflows/skills-charter.yml`, `.github/pull_request_template.md`, `skills-charter.policy.json`, `skills/`, and `skills.json`.
+3. Enable GitHub Actions.
+4. Open every skill change as a pull request.
+
+The workflow currently checks out `Guesswhat-Studio/Skills-as-Docs` as the preview tooling source and runs the CLI against your repository. Pin the workflow to a tag when your team adopts a released version.
+
 ## Recommended Structure
 
 ```text
@@ -50,3 +59,14 @@ Runtime files stay inside each skill package. Repository-level docs, launch post
 - high-risk packages fail CI.
 
 Adjust the policy deliberately in code review rather than relying on UI convention.
+
+## Install
+
+After a package is approved and `skills.json` is current, install from the governed registry:
+
+```bash
+npx skills add <org>/<team-skill-repo> --list
+npx skills add <org>/<team-skill-repo> --skill code-review -g -a codex
+```
+
+Runtime installation stays delegated to `npx skills`; Skills Charter owns the review trail, policy gate, and registry output.

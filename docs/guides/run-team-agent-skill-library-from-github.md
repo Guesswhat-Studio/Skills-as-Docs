@@ -8,13 +8,14 @@ The flagship scenario:
 
 ## 1. Fork Or Clone The Library
 
-Start from this repository or from `templates/team-skill-library/`.
+Start from `templates/team-skill-library/` for a standalone skill repository, or from this repository when developing Skills Charter itself.
 
 ```bash
-git clone https://github.com/Guesswhat-Studio/Skills-as-Docs.git team-skills
+git clone https://github.com/Guesswhat-Studio/Skills-as-Docs.git skills-charter-tooling
+mkdir team-skills
+cp -R skills-charter-tooling/templates/team-skill-library/. team-skills/
 cd team-skills
-npm install
-npm run build
+git init
 ```
 
 Keep this repository outside agent install folders such as `.claude/skills` or `.agents/skills`. The Git repo is the reviewed source of truth; `npx skills` materializes approved packages into each agent.
@@ -54,7 +55,7 @@ The default strict policy is intentionally small:
 }
 ```
 
-Run it locally before opening a PR:
+When developing against this monorepo, run it locally before opening a PR:
 
 ```bash
 node packages/cli/dist/index.js lint --root . --policy strict
@@ -108,14 +109,12 @@ The example in `examples/public-import-governance-demo/review-notes/skill-creato
 
 ## 6. Let CI Block Drift
 
-The Skills Charter workflow should run on every pull request:
+The template workflow should run on every pull request. It checks out the team skill library and the Skills Charter tooling repo, builds the CLI, then runs:
 
 ```bash
-npm ci
-npm run build
-node packages/cli/dist/index.js lint --root . --policy strict
-node packages/cli/dist/index.js generate registry --root . --source "$GITHUB_REPOSITORY" --out skills.json --check --policy strict
-node packages/cli/dist/index.js generate registry --root . --source "$GITHUB_REPOSITORY" --approved-only --out "$RUNNER_TEMP/skills.approved.json" --policy strict
+node ../skills-charter/packages/cli/dist/index.js lint --root . --policy strict
+node ../skills-charter/packages/cli/dist/index.js generate registry --root . --source "$GITHUB_REPOSITORY" --out skills.json --check --policy strict
+node ../skills-charter/packages/cli/dist/index.js generate registry --root . --source "$GITHUB_REPOSITORY" --approved-only --out "$RUNNER_TEMP/skills.approved.json" --policy strict
 ```
 
 This proves three things:
@@ -123,6 +122,8 @@ This proves three things:
 - package metadata and files pass policy;
 - committed `skills.json` matches the repository;
 - an approved-only registry can be generated for safe install surfaces.
+
+Use the Skills Charter **Pull Requests** workspace to inspect the same PR from the browser: changed skill packages, changed files, review impact, GitHub check-run status, and the Git handoff commands for checkout, fix, push, and merge.
 
 ## 7. Install Only After Merge
 

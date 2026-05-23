@@ -151,6 +151,8 @@ Risk is derived from package lint issues:
 - **medium**: no failures, one or more warnings.
 - **low**: no failures or warnings.
 
+The dashboard shows only the top five live policy findings so it remains a health overview rather than a full issue tracker. Findings are sorted by severity first, then by review impact: high-risk/secret-like findings, script and ownership/evidence issues, dependency/link/asset review issues, and finally lower-risk package warnings. The Review workspace remains the place to browse and resolve the full queue.
+
 The `Registry` tab renders a browser-side `skills.json` preview with the same schema id, package records, lifecycle values, provenance, evidence, risk values, file lists, and approved-only `npx skills` install snippets as the CLI contract. CI remains the final source of truth for committed `skills.json`.
 
 ## Run Policy
@@ -163,12 +165,13 @@ In the real P0 implementation, CI should run equivalent checks plus link validat
 
 The static manager prepares staged file context, review notes, registry preview, install snippets, and PR intent. It does not create a GitHub PR without authentication.
 
-The `Pull Requests` workspace fetches open PRs from the configured public GitHub repository and shows branch context, changed files, affected skills, policy hints, and Git handoff commands. It is a review cockpit, not an authenticated merge client.
+The `Pull Requests` workspace fetches open PRs from the configured public GitHub repository and shows branch context, changed files, affected skills, GitHub check-run status, policy hints, and Git handoff commands. It is a review cockpit, not an authenticated merge client.
 
 The prototype generates:
 
 - changed file summary;
 - branch name;
+- GitHub Actions check-run summary when public check data is available;
 - lint, registry, check, add, commit, and push commands;
 - a diff surface that explains what CI will regenerate.
 

@@ -622,6 +622,7 @@ input:focus-visible {
 
 .kpi-top,
 .card-head,
+.card-actions,
 .lane-head,
 .editor-toolbar,
 .split-head {
@@ -934,6 +935,7 @@ input:focus-visible {
 .finding-list,
 .file-change-list,
 .check-list,
+.check-run-list,
 .timeline {
   display: grid;
   gap: 9px;
@@ -944,6 +946,7 @@ input:focus-visible {
 .finding-item,
 .file-change,
 .check-item,
+.check-run-row,
 .timeline-item {
   display: grid;
   gap: 3px;
@@ -955,8 +958,29 @@ input:focus-visible {
 .finding-item:first-child,
 .file-change:first-child,
 .check-item:first-child,
+.check-run-row:first-child,
 .timeline-item:first-child {
   border-top: 0;
+}
+
+.finding-more {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.check-run-list {
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.check-run-row {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  color: var(--text);
 }
 
 .empty-state {

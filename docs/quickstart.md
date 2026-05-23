@@ -10,7 +10,31 @@ fork or clone repo -> add skills under skills/<name>/ -> lint + generate registr
 
 ## 1. Create Your Library Repo
 
-Use this repository as a starting point:
+For a governed team repository, start from the copyable template:
+
+```bash
+git clone https://github.com/Guesswhat-Studio/Skills-as-Docs.git skills-charter-tooling
+mkdir team-skills
+cp -R skills-charter-tooling/templates/team-skill-library/. team-skills/
+cd team-skills
+git init
+git add .
+git commit -m "chore(repo): initialize skills charter library"
+```
+
+Then create a GitHub repository for your team, for example `org/team-skills`, and push this checkout there. The template includes:
+
+```text
+skills/
+skills.json
+skills-charter.policy.json
+.github/workflows/skills-charter.yml
+.github/pull_request_template.md
+```
+
+The template workflow checks out the Skills Charter tooling repo during CI and runs strict lint plus registry drift checks against your skill library.
+
+If you are developing Skills Charter itself, use this repository directly:
 
 ```bash
 git clone https://github.com/Guesswhat-Studio/Skills-as-Docs.git team-skills
@@ -18,8 +42,6 @@ cd team-skills
 npm install
 npm run check
 ```
-
-Then create a GitHub repository for your team, for example `org/team-skills`, and push this checkout there.
 
 ## 2. Initialize The Skill Library Shape
 
@@ -114,7 +136,14 @@ git commit -m "edit(literature-review): refine review rubric"
 git push
 ```
 
-Open a PR. CI should check build/test, package lint, and registry drift. Use [commit conventions](./commit-conventions.md) so the Git history stays readable as a governance record.
+Open a PR. CI should check package lint, registry drift, and approved-only registry output. Use the Skills Charter **Pull Requests** workspace to inspect:
+
+- changed skills and files;
+- manifest, evidence, script, and registry impact;
+- GitHub Actions check status;
+- the checkout/fix/push/merge handoff commands.
+
+Use [commit conventions](./commit-conventions.md) so the Git history stays readable as a governance record.
 
 After merge, developers install the approved package from GitHub:
 
@@ -143,3 +172,13 @@ node packages/cli/dist/index.js generate registry --root . --source org/team-ski
 The migration goal is not to preserve every local install detail. The goal is to make the Git repo the reviewed, reversible source of truth.
 
 For the fuller GitHub operating model, see [Run a Team Agent Skill Library from GitHub](./guides/run-team-agent-skill-library-from-github.md).
+
+## Real Field Run
+
+The first end-to-end field run used `Guesswhat-Studio/testSkills`, imported Anthropic's `skill-creator`, added approval evidence, regenerated `skills.json`, opened PR #2, merged it to `main`, and verified discovery through:
+
+```bash
+npx skills add Guesswhat-Studio/testSkills --list
+```
+
+See [the public skill intake case study](../case-studies/public-skill-to-approved.md) for the exact governance trail.
