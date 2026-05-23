@@ -292,8 +292,8 @@ Rules:
 - Markdown preview strips frontmatter.
 - Code-like files show highlighted code preview.
 - Diff preview is local/staged until authenticated GitHub write support exists.
-- The package/file rail can collapse independently.
-- Zen mode is full-screen and hides chrome, package rail, and inspector.
+- The package/file rail can collapse independently and includes a package search field for quick selection.
+- Zen mode lives with the editor tabs and full-screens only the text editor surface.
 
 ### Inspector
 

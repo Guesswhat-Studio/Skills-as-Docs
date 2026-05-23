@@ -156,28 +156,6 @@ textarea,
   grid-template-columns: 56px minmax(0, 1fr);
 }
 
-.app.zen-mode {
-  display: block;
-}
-
-.app.zen-mode .sidebar,
-.app.zen-mode .topbar {
-  display: none;
-}
-
-.app.zen-mode .main {
-  position: fixed;
-  inset: 0;
-  z-index: 30;
-  padding: 0;
-  background: var(--bg);
-}
-
-.app.zen-mode .page-head,
-.app.zen-mode .editor-control-card {
-  display: none;
-}
-
 .sidebar {
   grid-area: sidebar;
   display: flex;
@@ -391,13 +369,16 @@ textarea,
   place-items: center;
   border-radius: 4px;
   color: var(--muted);
-  font-family: var(--font-mono);
-  font-size: 11px;
 }
 
 .nav-item.active .nav-glyph {
   background: var(--accent);
   color: var(--accent-ink);
+}
+
+.nav-glyph svg {
+  width: 15px;
+  height: 15px;
 }
 
 .nav-text {
@@ -1428,27 +1409,23 @@ input:focus-visible {
   grid-template-columns: 44px minmax(520px, 1.7fr) minmax(270px, 0.88fr);
 }
 
-.editor-workspace.zen-active {
-  grid-template-columns: minmax(0, 1fr);
-  min-height: 100vh;
-  gap: 0;
-}
-
-.editor-workspace.zen-active .editor-side {
-  display: none;
-}
-
-.app.zen-mode .editor-main {
+.app.zen-mode .editor-main.zen-active {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
   min-height: 100vh;
   border: 0;
   border-radius: 0;
+  background: var(--surface);
+  box-shadow: none;
+  overflow: hidden;
 }
 
 .zen-exit {
   position: fixed;
   top: 12px;
   right: 12px;
-  z-index: 34;
+  z-index: 70;
 }
 
 .editor-main {
@@ -1491,6 +1468,28 @@ input:focus-visible {
   display: grid;
   gap: 7px;
   margin-bottom: 14px;
+}
+
+.package-search {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  margin-bottom: 10px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--muted);
+}
+
+.package-search input {
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  outline: 0;
 }
 
 .editor-package-grid {
@@ -1653,11 +1652,19 @@ input:focus-visible {
   font-size: 14px;
 }
 
+.app.zen-mode .editor-main.zen-active .editor-toolbar {
+  padding-right: 118px;
+}
+
 .editor-surface {
   display: grid;
   grid-template-columns: 54px minmax(0, 1fr);
   min-height: 0;
   background: var(--surface);
+}
+
+.app.zen-mode .editor-main.zen-active .editor-surface {
+  height: calc(100vh - 58px);
 }
 
 .line-numbers {
@@ -1684,6 +1691,11 @@ input:focus-visible {
   font-family: var(--font-mono);
   font-size: var(--editor-font-size, 13px);
   line-height: 1.65;
+}
+
+.app.zen-mode .editor-main.zen-active .code-textarea {
+  height: 100%;
+  min-height: 0;
 }
 
 .preview-doc,

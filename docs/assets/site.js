@@ -3,6 +3,12 @@ const root = document.documentElement;
 
 const icons = {
   dashboard: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h6V4H4v9Zm10 7h6V4h-6v16ZM4 20h6v-4H4v4Z"></path></svg>',
+  library: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5a2 2 0 0 1 2-2h11v18H6a2 2 0 0 1-2-2Zm4-12h6M8 11h6M19 7h1a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-1"></path></svg>',
+  editor: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l11-11a2.1 2.1 0 0 0-3-3L5 17l-1 3Zm12-12 3 3M13 20h7"></path></svg>',
+  review: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Zm4-12-5 5-3-3"></path></svg>',
+  prs: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a3 3 0 1 1-2-2.83V8.83A3 3 0 1 1 7 8.83v6.34A3 3 0 0 1 7 18Zm10-9a3 3 0 1 0-2-2.83V8a4 4 0 0 1-4 4H9m8 3v-3"></path></svg>',
+  registry: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 4-8 4-8-4 8-4Zm8 8-8 4-8-4m16 4-8 4-8-4"></path></svg>',
+  history: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8m0-5v5h5m4-1v5l4 2"></path></svg>',
   search: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.3-4.3M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z"></path></svg>',
   sync: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 0 0-15.3-6.4L3 8m0-5v5h5M3 12a9 9 0 0 0 15.3 6.4L21 16m0 5v-5h-5"></path></svg>',
   panel: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4V5Zm6 0v14"></path></svg>',
@@ -143,6 +149,8 @@ const copy = {
     "edit.title": "Editor",
     "preview.title": "Preview",
     "diff.title": "Diff",
+    "package.search": "Search skills...",
+    "package.searchEmpty": "No matching skills.",
     "registry.title": "Approved install registry",
     "registry.subtitle": "Only approved packages expose npx skills install snippets.",
     "history.title": "Git audit trail",
@@ -224,6 +232,8 @@ const copy = {
     "edit.title": "编辑器",
     "preview.title": "预览",
     "diff.title": "差异",
+    "package.search": "搜索 skills...",
+    "package.searchEmpty": "没有匹配的 skill。",
     "registry.title": "Approved install registry",
     "registry.subtitle": "只有 approved 包会暴露 npx skills 安装命令。",
     "history.title": "Git 审计路径",
@@ -254,18 +264,18 @@ const navGroups = [
   {
     label: "nav.workspace",
     items: [
-      ["dashboard", "D", null],
-      ["library", "L", 47],
-      ["editor", "E", null],
-      ["review", "R", 12, true],
-      ["prs", "P", null]
+      ["dashboard", "dashboard", null],
+      ["library", "library", 47],
+      ["editor", "editor", null],
+      ["review", "review", 12, true],
+      ["prs", "prs", null]
     ]
   },
   {
     label: "nav.release",
     items: [
-      ["registry", "S", null],
-      ["history", "H", null]
+      ["registry", "registry", null],
+      ["history", "history", null]
     ]
   }
 ];
@@ -303,6 +313,7 @@ const state = {
   tutorialOpen: false,
   tutorialStep: 0,
   search: "",
+  packageSearch: "",
   filtersOpen: false,
   filters: { approved: true, review: true, candidate: true, blocked: true },
   agent: localStorage.getItem("skills-charter-agent") || "codex",
@@ -1521,12 +1532,12 @@ function renderSidebar() {
   const groups = navGroups.map((group) => `
     <div class="nav-section">${t(group.label)}</div>
     <nav class="nav-list" aria-label="${esc(t(group.label))}">
-      ${group.items.map(([route, glyph, count, alert]) => {
+      ${group.items.map(([route, icon, count, alert]) => {
         const liveCount = route === "library" ? seed.metrics.total : route === "review" ? seed.metrics.queue : route === "registry" ? seed.metrics.approved : route === "prs" ? state.pullRequests.length : count;
         const liveAlert = route === "review" ? seed.metrics.queue > 0 : alert;
         return `
         <button type="button" class="nav-item ${state.route === route ? "active" : ""}" data-action="route" data-route="${route}">
-          <span class="nav-glyph">${glyph}</span>
+          <span class="nav-glyph">${icons[icon] || icons.dashboard}</span>
           <span class="nav-text">${t(`route.${route}`)}</span>
           ${liveCount != null ? `<span class="nav-count ${liveAlert ? "alert" : ""}">${liveCount}</span>` : ""}
         </button>
@@ -1967,38 +1978,43 @@ function renderMeta(pkg) {
 function renderEditorWorkspace() {
   const pkg = currentPackage();
   const file = currentFile();
-  const body = state.editorTab === "package" ? renderEditorPackage(pkg) : state.editorTab === "preview" ? renderPreview(file) : state.editorTab === "diff" ? renderDiff(file) : renderEditor(file);
+  const body = state.zen ? renderEditor(file) : state.editorTab === "package" ? renderEditorPackage(pkg) : state.editorTab === "preview" ? renderPreview(file) : state.editorTab === "diff" ? renderDiff(file) : renderEditor(file);
   const tabs = [
     ["package", "Package"],
     ["edit", "Edit"],
     ["preview", "Preview"],
     ["diff", "Diff"]
   ];
+  const packageQuery = state.packageSearch.trim().toLowerCase();
+  const visiblePackages = packageQuery
+    ? seed.packages.filter((item) => [item.name, item.category, item.path, item.owner, item.source].some((value) => String(value || "").toLowerCase().includes(packageQuery)))
+    : seed.packages;
 
   return `${pageHead(t("editor.title"), t("editor.subtitle"), `<span>${esc(pkg.name)}</span><span>·</span><span>${esc(file.path)}</span>`)}
     <section class="editor-control-card card">
       <div class="card-head">
         <div class="editor-tabs" role="tablist" aria-label="Editor views">
           ${tabs.map(([tab, label]) => `<button type="button" class="${state.editorTab === tab ? "active" : ""}" data-action="editor-tab" data-tab="${tab}">${label}</button>`).join("")}
+          <button type="button" class="${state.zen ? "active" : ""}" data-action="toggle-zen" aria-pressed="${state.zen ? "true" : "false"}">Zen</button>
         </div>
         <div class="chip-row">
-          <button type="button" class="button subtle ${state.zen ? "active" : ""}" data-action="toggle-zen">Zen</button>
           <button type="button" class="button subtle" data-action="run-checks">${t("action.runPolicy")}</button>
           <button type="button" class="button primary" data-action="route" data-route="review">Review</button>
         </div>
       </div>
     </section>
-    <div class="editor-workspace ${state.zen ? "zen-active" : ""} ${state.editorPackageCollapsed ? "package-collapsed" : ""}">
+    <div class="editor-workspace ${state.editorPackageCollapsed ? "package-collapsed" : ""}">
       <section class="workspace-panel editor-side package-rail ${state.editorPackageCollapsed ? "collapsed" : ""}">
         <div class="card-head"><h2 class="card-title">Skill package</h2><button type="button" class="icon-button" data-action="toggle-editor-package" aria-label="${state.editorPackageCollapsed ? "Expand package rail" : "Collapse package rail"}">${icons.panel}</button></div>
         ${state.editorPackageCollapsed ? `<button type="button" class="rail-reopen" data-action="toggle-editor-package"><span>Package</span><strong>${seed.packages.length}</strong></button>` : `<div class="panel-body">
+          <label class="package-search">${icons.search}<input type="search" data-package-search value="${esc(state.packageSearch)}" placeholder="${esc(t("package.search"))}" aria-label="${esc(t("package.search"))}"></label>
           <div class="package-picker">
-            ${seed.packages.map((item) => `
+            ${visiblePackages.length ? visiblePackages.map((item) => `
               <button type="button" class="package-row compact ${pkg.id === item.id ? "selected" : ""}" data-action="select-package" data-package="${item.id}">
                 <span><strong>${esc(item.name)}</strong><span class="package-path">${esc(item.category)}</span></span>
                 ${riskChip(item.risk)}
               </button>
-            `).join("")}
+            `).join("") : `<div class="empty-cell">${t("package.searchEmpty")}</div>`}
           </div>
           <div class="split-head"><h3 class="card-title">Files</h3><span class="count-chip">${pkg.files.length}</span></div>
           <div class="crud-toolbar">
@@ -2009,7 +2025,7 @@ function renderEditorWorkspace() {
           <div class="file-list">${renderFileList(pkg)}</div>
         </div>`}
       </section>
-      <section class="workspace-panel editor-main ${state.editorTab === "package" ? "" : "editor-shell"}">${body}</section>
+      <section class="workspace-panel editor-main ${state.editorTab === "package" && !state.zen ? "" : "editor-shell"} ${state.zen ? "zen-active" : ""}">${body}</section>
       <section class="workspace-panel editor-side">
         <div class="card-head"><h2 class="card-title">Governance</h2>${statusChip(pkg.status)}</div>
         <div class="panel-body">
@@ -2498,11 +2514,46 @@ function positionTutorialOverlay() {
   hole.style.setProperty("--hole-left", `${left}px`);
   hole.style.setProperty("--hole-width", `${width}px`);
   hole.style.setProperty("--hole-height", `${height}px`);
-  const placeRight = left + width + 380 < window.innerWidth;
-  const cardLeft = placeRight ? left + width + 14 : Math.max(14, Math.min(window.innerWidth - 374, left));
-  const cardTop = Math.max(14, Math.min(window.innerHeight - card.offsetHeight - 14, top));
-  card.style.left = `${cardLeft}px`;
-  card.style.top = `${cardTop}px`;
+
+  const margin = 14;
+  const gap = 16;
+  const cardWidth = card.offsetWidth || 360;
+  const cardHeight = card.offsetHeight || 200;
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+  const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+  const maxLeft = Math.max(margin, viewportWidth - cardWidth - margin);
+  const maxTop = Math.max(margin, viewportHeight - cardHeight - margin);
+  const focusRect = { left, top, right: left + width, bottom: top + height };
+  const overlapArea = (x, y) => {
+    const overlapX = Math.max(0, Math.min(x + cardWidth, focusRect.right) - Math.max(x, focusRect.left));
+    const overlapY = Math.max(0, Math.min(y + cardHeight, focusRect.bottom) - Math.max(y, focusRect.top));
+    return overlapX * overlapY;
+  };
+  const overflowArea = (x, y) => {
+    const overflowX = Math.max(0, margin - x) + Math.max(0, x + cardWidth + margin - viewportWidth);
+    const overflowY = Math.max(0, margin - y) + Math.max(0, y + cardHeight + margin - viewportHeight);
+    return overflowX * cardHeight + overflowY * cardWidth;
+  };
+  const candidates = [
+    { x: focusRect.right + gap, y: clamp(top, margin, maxTop), preference: 0 },
+    { x: focusRect.left - cardWidth - gap, y: clamp(top, margin, maxTop), preference: 1 },
+    { x: clamp(left, margin, maxLeft), y: focusRect.bottom + gap, preference: 2 },
+    { x: clamp(left, margin, maxLeft), y: focusRect.top - cardHeight - gap, preference: 3 },
+    { x: clamp(focusRect.right - cardWidth, margin, maxLeft), y: focusRect.bottom + gap, preference: 4 },
+    { x: clamp(focusRect.right - cardWidth, margin, maxLeft), y: focusRect.top - cardHeight - gap, preference: 5 }
+  ].map((candidate) => {
+    const x = clamp(candidate.x, margin, maxLeft);
+    const y = clamp(candidate.y, margin, maxTop);
+    return {
+      x,
+      y,
+      score: overlapArea(x, y) * 100000 + overflowArea(x, y) * 1000 + candidate.preference
+    };
+  }).sort((a, b) => a.score - b.score);
+
+  card.style.left = `${candidates[0].x}px`;
+  card.style.top = `${candidates[0].y}px`;
 }
 
 function render() {
@@ -2673,6 +2724,7 @@ document.addEventListener("click", async (event) => {
 
   if (action === "toggle-zen") {
     state.zen = !state.zen;
+    if (state.zen) state.editorTab = "edit";
     render();
     return;
   }
@@ -2784,6 +2836,17 @@ document.addEventListener("input", (event) => {
   if (event.target.matches("[data-search]")) {
     state.search = event.target.value;
     if (state.route === "library") render();
+    return;
+  }
+
+  if (event.target.matches("[data-package-search]")) {
+    state.packageSearch = event.target.value;
+    render();
+    window.setTimeout(() => {
+      const input = document.querySelector("[data-package-search]");
+      input?.focus();
+      input?.setSelectionRange(input.value.length, input.value.length);
+    }, 0);
     return;
   }
 

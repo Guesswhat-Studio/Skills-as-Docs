@@ -52,9 +52,10 @@ No user/account chip is shown in the top bar until Skills Charter has authentica
 | --- | --- | --- |
 | package rows | active | Selects the package. |
 | file rows | active | Selects the file. |
-| `Package/Edit/Preview/Diff` tabs | active | Switches the editor mode. |
+| package search | active | Filters the Skill package list by name, category, path, owner, or source. |
+| `Package/Edit/Preview/Diff/Zen` tabs | active | Switches the editor mode; Zen forces the text editor into focus. |
 | package rail toggle | active | Collapses or expands the skill package/file rail so the editor has more horizontal room. |
-| `Zen` | active | Enters a full-screen editor mode and exposes an `Exit Zen` control. |
+| `Zen` | active | Full-screens only the central text editor surface and exposes an `Exit Zen` control. |
 | `Run policy` | active | Recomputes browser-side package findings and risk from current package metadata and files. |
 | `Review` | active | Navigates to Review. |
 | `New file` | active | Adds a browser-local file to the selected package. |
