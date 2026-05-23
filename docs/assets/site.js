@@ -403,13 +403,22 @@ function serializeFrontmatter(meta, body) {
   return `---\n${yaml}\n---\n\n${body}`;
 }
 
+const secretPatterns = [
+  /\bsk-[A-Za-z0-9_-]{20,}\b/,
+  /\bsk-proj-[A-Za-z0-9_-]{20,}\b/,
+  /\bgh[pousr]_[A-Za-z0-9_]{20,}\b/,
+  /\bxox[baprs]-[A-Za-z0-9-]{20,}\b/,
+  /\bAKIA[0-9A-Z]{16}\b/,
+  /\bAIza[0-9A-Za-z_-]{20,}\b/
+];
+
 function assessPackage(files) {
   const findings = [];
   if (files.some((file) => file.kind === "script")) findings.push("script.review-required");
   if (files.some((file) => file.kind === "asset")) findings.push("asset.review-required");
   const joined = files.map((file) => file.content || "").join("\n");
   if (/https?:\/\//i.test(joined)) findings.push("external-url.review-required");
-  if (/(sk-[A-Za-z0-9_-]{20,}|api[_-]?key|secret|password|token)/i.test(joined)) findings.push("possible-secret.review-required");
+  if (secretPatterns.some((pattern) => pattern.test(joined))) findings.push("possible-secret.review-required");
   const risk = findings.some((finding) => finding.includes("secret")) ? "high" : findings.length ? "medium" : "low";
   return { findings: uniqueList(findings), risk };
 }
