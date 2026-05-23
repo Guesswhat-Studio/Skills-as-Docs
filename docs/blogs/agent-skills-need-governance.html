@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Agent Skills Need Governance</title>
-    <meta name="description" content="A bilingual full-screen manifesto for Skills Charter: the governance gate between skill distribution and runtime.">
+    <title>Every Agent Skill Needs a Charter Before Runtime</title>
+    <meta name="description" content="A bilingual full-screen manifesto for Skills Charter: the chartered trust gate between skill distribution and runtime.">
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2315140f'/%3E%3Ctext x='32' y='38' text-anchor='middle' font-family='monospace' font-size='18' font-weight='700' fill='%23efe7d2'%3ESC%3C/text%3E%3C/svg%3E">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,7 +34,10 @@
         --shadow: 0 24px 70px rgba(47, 38, 24, 0.14);
         --radius: 8px;
         --max: 1260px;
-        --topbar: 108px;
+        --topbar: 72px;
+        --deck-progress: 0;
+        --ease-out-quint: cubic-bezier(0.23, 1, 0.32, 1);
+        --ease-in-out-quart: cubic-bezier(0.77, 0, 0.175, 1);
         --display: "Inter Tight", Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
         font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -123,10 +126,25 @@
       }
 
       .topbar {
+        position: relative;
+        z-index: 20;
         min-height: var(--topbar);
         border-bottom: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
         background: color-mix(in srgb, var(--bg) 92%, var(--paper));
         backdrop-filter: blur(16px);
+      }
+
+      .topbar::after {
+        content: "";
+        position: absolute;
+        right: 0;
+        bottom: -1px;
+        left: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--green), var(--acid), var(--blue));
+        transform: scaleX(var(--deck-progress));
+        transform-origin: left center;
+        transition: transform 180ms ease;
       }
 
       .edition-strip {
@@ -162,6 +180,7 @@
         border-radius: 999px;
         background: var(--acid);
         vertical-align: 1px;
+        animation: live-pulse 1800ms var(--ease-out-quint) infinite;
       }
 
       .topbar-inner {
@@ -222,6 +241,7 @@
         font-weight: 700;
         text-transform: uppercase;
         white-space: nowrap;
+        transition: border-color 160ms ease, color 160ms ease, transform 160ms ease;
       }
 
       .nav a.active,
@@ -229,6 +249,7 @@
         border-bottom-color: var(--acid);
         background: transparent;
         color: var(--ink);
+        transform: translateY(-1px);
       }
 
       .actions {
@@ -252,12 +273,14 @@
         font-size: 13px;
         font-weight: 900;
         cursor: pointer;
+        transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease, transform 160ms var(--ease-out-quint);
       }
 
       .button:hover,
       .lang-toggle:hover,
       .theme-toggle:hover {
         border-color: var(--ink);
+        transform: translateY(-1px);
       }
 
       .button.primary {
@@ -325,6 +348,80 @@
         align-items: center;
         min-height: calc(100svh - var(--topbar));
         padding: 30px 0;
+      }
+
+      .slide-label,
+      .eyebrow,
+      h1,
+      .slide h2,
+      .lede,
+      .copy,
+      .sharp,
+      .claim-block,
+      .hero-actions,
+      .loop-panel,
+      .evidence-card,
+      .system-card,
+      .path-list li,
+      .landscape-card,
+      .boundary-strip,
+      .roadmap-card,
+      .bib-list li {
+        opacity: 0;
+        transform: translate3d(0, 18px, 0) scale(0.985);
+        transition:
+          opacity 520ms var(--ease-out-quint),
+          transform 640ms var(--ease-out-quint);
+        transition-delay: calc(var(--stagger, 0) * 48ms);
+        will-change: transform, opacity;
+      }
+
+      .slide.is-active .slide-label,
+      .slide.is-active .eyebrow,
+      .slide.is-active h1,
+      .slide.is-active h2,
+      .slide.is-active .lede,
+      .slide.is-active .copy,
+      .slide.is-active .sharp,
+      .slide.is-active .claim-block,
+      .slide.is-active .hero-actions,
+      .slide.is-active .loop-panel,
+      .slide.is-active .evidence-card,
+      .slide.is-active .system-card,
+      .slide.is-active .path-list li,
+      .slide.is-active .landscape-card,
+      .slide.is-active .boundary-strip,
+      .slide.is-active .roadmap-card,
+      .slide.is-active .bib-list li {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1);
+      }
+
+      .slide-label,
+      .eyebrow {
+        --stagger: 0;
+      }
+
+      h1,
+      .slide h2 {
+        --stagger: 1;
+      }
+
+      .lede,
+      .copy {
+        --stagger: 2;
+      }
+
+      .sharp,
+      .claim-block {
+        --stagger: 3;
+      }
+
+      .hero-actions,
+      .system-card,
+      .loop-panel,
+      .boundary-strip {
+        --stagger: 4;
       }
 
       .slide-label {
@@ -418,7 +515,10 @@
       }
 
       .claim-block {
-        margin: 16px 0 0;
+        position: relative;
+        overflow: hidden;
+        grid-column: 1 / -1;
+        margin: 0;
         border: 1px solid var(--ink);
         border-radius: var(--radius);
         background: var(--ink);
@@ -427,7 +527,20 @@
         padding: 18px 20px;
       }
 
-      .claim-block span {
+      .claim-block::after {
+        content: "";
+        position: absolute;
+        inset: -1px;
+        background: linear-gradient(108deg, transparent 0 34%, color-mix(in srgb, var(--bg) 18%, transparent) 46%, transparent 58% 100%);
+        transform: translate3d(-120%, 0, 0);
+        pointer-events: none;
+      }
+
+      .hero.is-active .claim-block::after {
+        animation: claim-sweep 4800ms var(--ease-in-out-quart) 650ms infinite;
+      }
+
+      .claim-block > span {
         display: block;
         margin-bottom: 11px;
         color: color-mix(in srgb, var(--bg) 64%, transparent);
@@ -443,6 +556,20 @@
         font-size: 28px;
         line-height: 1.08;
         letter-spacing: 0;
+      }
+
+      .quote-hot {
+        border-radius: 0.18em;
+        background: color-mix(in srgb, var(--acid) 24%, transparent);
+        color: inherit;
+        padding: 0.02em 0.12em 0.04em;
+        -webkit-box-decoration-break: clone;
+        box-decoration-break: clone;
+      }
+
+      .claim-block .quote-hot {
+        background: color-mix(in srgb, var(--acid) 46%, transparent);
+        color: var(--bg);
       }
 
       .hero-actions {
@@ -531,6 +658,10 @@
         stroke-width: 2;
       }
 
+      .hero.is-active .loop-svg path {
+        animation: loop-dash 5200ms linear infinite;
+      }
+
       .flow {
         position: relative;
         display: grid;
@@ -541,6 +672,7 @@
       }
 
       .flow-node {
+        --flow-step: 0;
         display: grid;
         justify-items: center;
         align-content: center;
@@ -551,26 +683,37 @@
         background: color-mix(in srgb, var(--paper-strong) 94%, transparent);
         padding: 12px 9px;
         text-align: center;
+        transition: transform 260ms var(--ease-out-quint), box-shadow 260ms ease, border-color 260ms ease;
+        will-change: transform;
       }
 
       .flow-node.blue {
+        --flow-step: 0;
         border-color: rgba(31, 95, 159, 0.58);
         box-shadow: inset 0 4px 0 var(--blue);
       }
 
       .flow-node.green {
+        --flow-step: 1;
         border-color: rgba(31, 122, 88, 0.58);
         box-shadow: inset 0 4px 0 var(--green);
       }
 
       .flow-node.amber {
+        --flow-step: 2;
         border-color: rgba(179, 111, 21, 0.58);
         box-shadow: inset 0 4px 0 var(--amber);
       }
 
       .flow-node.violet {
+        --flow-step: 3;
         border-color: rgba(88, 81, 166, 0.58);
         box-shadow: inset 0 4px 0 var(--violet);
+      }
+
+      .hero.is-active .flow-node {
+        animation: node-breathe 5200ms var(--ease-in-out-quart) infinite;
+        animation-delay: calc(var(--flow-step) * 320ms);
       }
 
       .flow-icon {
@@ -609,6 +752,11 @@
         stroke-width: 2;
       }
 
+      .hero.is-active .flow-icon svg {
+        animation: icon-settle 5200ms var(--ease-in-out-quart) infinite;
+        animation-delay: calc(var(--flow-step) * 320ms + 120ms);
+      }
+
       .flow-node strong {
         display: block;
         margin-bottom: 3px;
@@ -627,6 +775,15 @@
         position: relative;
         height: 2px;
         background: var(--line-dark);
+        overflow: hidden;
+      }
+
+      .arrow::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, transparent, var(--acid), transparent);
+        transform: translate3d(-125%, 0, 0);
       }
 
       .arrow::after {
@@ -639,6 +796,10 @@
         border-top: 2px solid var(--line-dark);
         border-right: 2px solid var(--line-dark);
         transform: translateY(-50%) rotate(45deg);
+      }
+
+      .hero.is-active .arrow::before {
+        animation: signal-pass 2400ms var(--ease-in-out-quart) infinite;
       }
 
       .improve {
@@ -661,22 +822,14 @@
         text-align: center;
       }
 
-      .plate-caption {
-        position: relative;
-        margin: 0;
-        border-top: 1px solid color-mix(in srgb, var(--ink) 13%, transparent);
-        padding: 10px 18px 12px;
-        color: var(--muted);
-        font-family: var(--mono);
-        font-size: 10.5px;
-        line-height: 1.45;
-        text-transform: uppercase;
+      .hero.is-active .improve span {
+        animation: review-pulse 5200ms var(--ease-in-out-quart) 950ms infinite;
       }
 
       .split {
         display: grid;
         grid-template-columns: minmax(0, 0.82fr) minmax(430px, 1.18fr);
-        gap: 40px;
+        gap: 24px 40px;
         align-items: center;
       }
 
@@ -698,13 +851,32 @@
       }
 
       .sharp {
+        display: grid;
+        gap: 6px;
         max-width: 650px;
         margin: 22px 0 0;
-        border-left: 4px solid currentColor;
-        padding-left: 14px;
-        font-size: 20px;
+        border: 1px solid currentColor;
+        border-radius: var(--radius);
+        background: color-mix(in srgb, currentColor 8%, transparent);
+        padding: 16px 18px;
+        font-size: 21px;
         font-weight: 950;
-        line-height: 1.28;
+        line-height: 1.22;
+      }
+
+      .split > .sharp,
+      .bib-grid > .sharp {
+        grid-column: 1 / -1;
+        max-width: none;
+        margin-top: 0;
+      }
+
+      .sharp > span {
+        display: block;
+      }
+
+      .sharp .quote-hot {
+        background: color-mix(in srgb, currentColor 18%, transparent);
       }
 
       .gap .sharp {
@@ -734,6 +906,29 @@
         border-radius: var(--radius);
         background: var(--paper);
         padding: 16px;
+      }
+
+      .evidence-card:nth-child(1),
+      .roadmap-card:nth-child(1),
+      .bib-list li:nth-child(1) {
+        --stagger: 3;
+      }
+
+      .evidence-card:nth-child(2),
+      .roadmap-card:nth-child(2),
+      .bib-list li:nth-child(2) {
+        --stagger: 4;
+      }
+
+      .evidence-card:nth-child(3),
+      .roadmap-card:nth-child(3),
+      .bib-list li:nth-child(3) {
+        --stagger: 5;
+      }
+
+      .evidence-card:nth-child(4),
+      .bib-list li:nth-child(4) {
+        --stagger: 6;
       }
 
       .evidence-card b {
@@ -817,6 +1012,22 @@
         padding: 14px 17px;
       }
 
+      .path-list li:nth-child(1) {
+        --stagger: 4;
+      }
+
+      .path-list li:nth-child(2) {
+        --stagger: 5;
+      }
+
+      .path-list li:nth-child(3) {
+        --stagger: 6;
+      }
+
+      .path-list li:nth-child(4) {
+        --stagger: 7;
+      }
+
       .path-list li:last-child {
         border-bottom: 0;
       }
@@ -859,6 +1070,26 @@
         border-radius: var(--radius);
         background: var(--paper);
         padding: 12px;
+      }
+
+      .landscape-card:nth-child(1) {
+        --stagger: 3;
+      }
+
+      .landscape-card:nth-child(2) {
+        --stagger: 4;
+      }
+
+      .landscape-card:nth-child(3) {
+        --stagger: 5;
+      }
+
+      .landscape-card:nth-child(4) {
+        --stagger: 6;
+      }
+
+      .landscape-card:nth-child(5) {
+        --stagger: 7;
       }
 
       .landscape-card:nth-child(5) {
@@ -915,24 +1146,24 @@
 
       .roadmap-board {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 14px;
       }
 
       .roadmap-card {
         display: grid;
         grid-template-rows: auto auto 1fr;
-        min-height: 260px;
+        min-height: 0;
         border: 1px solid var(--line);
         border-radius: var(--radius);
         background: var(--paper);
-        padding: 19px;
+        padding: 17px;
       }
 
       .roadmap-card b {
         display: inline-flex;
         width: fit-content;
-        margin-bottom: 18px;
+        margin-bottom: 12px;
         border-radius: 999px;
         background: var(--wash-blue);
         padding: 7px 10px;
@@ -943,8 +1174,8 @@
       }
 
       .roadmap-card h3 {
-        margin-bottom: 10px;
-        font-size: 22px;
+        margin-bottom: 8px;
+        font-size: 20px;
         line-height: 1.14;
       }
 
@@ -958,7 +1189,7 @@
       .bib-grid {
         display: grid;
         grid-template-columns: minmax(0, 0.62fr) minmax(430px, 1.38fr);
-        gap: 34px;
+        gap: 22px 34px;
         align-items: center;
       }
 
@@ -983,6 +1214,7 @@
         border-radius: var(--radius);
         background: var(--paper);
         padding: 12px;
+        transition: border-color 180ms ease, transform 220ms var(--ease-out-quint);
       }
 
       .bib-list b {
@@ -1026,16 +1258,166 @@
         background: color-mix(in srgb, var(--paper) 74%, transparent);
         padding: 0;
         cursor: pointer;
+        transition: background-color 180ms ease, border-color 180ms ease, transform 220ms var(--ease-out-quint);
       }
 
       .progress button.active {
         background: var(--ink);
+        transform: scaleY(1.28);
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        .slide.is-active .evidence-card:hover,
+        .slide.is-active .landscape-card:hover,
+        .slide.is-active .roadmap-card:hover,
+        .slide.is-active .bib-list a:hover {
+          border-color: color-mix(in srgb, var(--ink) 46%, var(--line));
+          transform: translate3d(0, -3px, 0);
+        }
+
+        .button:active,
+        .lang-toggle:active,
+        .theme-toggle:active {
+          transform: translateY(0) scale(0.97);
+        }
+      }
+
+      @keyframes live-pulse {
+        0%,
+        100% {
+          opacity: 0.72;
+          transform: scale(1);
+        }
+
+        45% {
+          opacity: 1;
+          transform: scale(1.45);
+        }
+      }
+
+      @keyframes claim-sweep {
+        0%,
+        40% {
+          transform: translate3d(-120%, 0, 0);
+        }
+
+        68% {
+          transform: translate3d(120%, 0, 0);
+        }
+
+        100% {
+          transform: translate3d(120%, 0, 0);
+        }
+      }
+
+      @keyframes loop-dash {
+        to {
+          stroke-dashoffset: -56;
+        }
+      }
+
+      @keyframes node-breathe {
+        0%,
+        100% {
+          transform: translate3d(0, 0, 0);
+        }
+
+        42% {
+          transform: translate3d(0, -3px, 0);
+        }
+      }
+
+      @keyframes icon-settle {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+
+        42% {
+          transform: scale(1.06);
+        }
+      }
+
+      @keyframes signal-pass {
+        0%,
+        32% {
+          transform: translate3d(-125%, 0, 0);
+        }
+
+        68%,
+        100% {
+          transform: translate3d(125%, 0, 0);
+        }
+      }
+
+      @keyframes review-pulse {
+        0%,
+        100% {
+          transform: translate3d(0, 0, 0);
+        }
+
+        45% {
+          transform: translate3d(0, -2px, 0);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html,
+        .deck {
+          scroll-behavior: auto;
+        }
+
+        .live-dot,
+        .hero.is-active .claim-block::after,
+        .hero.is-active .loop-svg path,
+        .hero.is-active .flow-node,
+        .hero.is-active .flow-icon svg,
+        .hero.is-active .arrow::before,
+        .hero.is-active .improve span {
+          animation: none;
+        }
+
+        .claim-block::after,
+        .arrow::before {
+          display: none;
+        }
+
+        .slide-label,
+        .eyebrow,
+        h1,
+        .slide h2,
+        .lede,
+        .copy,
+        .sharp,
+        .claim-block,
+        .hero-actions,
+        .loop-panel,
+        .evidence-card,
+        .system-card,
+        .path-list li,
+        .landscape-card,
+        .boundary-strip,
+        .roadmap-card,
+        .bib-list li {
+          opacity: 1;
+          transform: none;
+          transition: none;
+        }
+
+        .button,
+        .lang-toggle,
+        .theme-toggle,
+        .nav a,
+        .progress button,
+        .topbar::after {
+          transition: none;
+        }
       }
 
       @media (min-width: 3000px) and (min-height: 1500px) {
         :root {
           --max: 1890px;
-          --topbar: 162px;
+          --topbar: 108px;
           --radius: 12px;
         }
 
@@ -1115,7 +1497,7 @@
 
         .slide-inner {
           align-items: start;
-          padding: 180px 0 120px;
+          padding: 120px 0 90px;
         }
 
         .slide-label {
@@ -1262,14 +1644,9 @@
           font-size: 20px;
         }
 
-        .plate-caption {
-          padding: 15px 27px 18px;
-          font-size: 16px;
-        }
-
         .split {
           grid-template-columns: minmax(0, 0.82fr) minmax(645px, 1.18fr);
-          gap: 60px;
+          gap: 36px 60px;
         }
 
         .slide h2 {
@@ -1284,10 +1661,9 @@
         }
 
         .sharp {
-          max-width: 975px;
-          margin-top: 33px;
-          border-left-width: 6px;
-          padding-left: 21px;
+          max-width: none;
+          margin-top: 0;
+          padding: 24px 27px;
           font-size: 30px;
         }
 
@@ -1373,12 +1749,12 @@
         }
 
         .roadmap-card {
-          min-height: 390px;
+          min-height: 0;
         }
 
         .bib-grid {
           grid-template-columns: minmax(0, 0.62fr) minmax(645px, 1.38fr);
-          gap: 51px;
+          gap: 33px 51px;
         }
 
         .bib-list {
@@ -1454,7 +1830,15 @@
         }
 
         .slide-inner {
-          padding: 28px 0;
+          padding: 18px 0;
+        }
+
+        .split {
+          gap: 14px 40px;
+        }
+
+        .bib-grid {
+          gap: 14px 34px;
         }
 
         h1 {
@@ -1507,12 +1891,32 @@
 
         .sharp {
           font-size: 16px;
+          gap: 4px;
+          padding: 12px 14px;
         }
 
         .evidence-card,
         .landscape-card,
         .roadmap-card {
-          padding: 14px;
+          padding: 12px;
+        }
+
+        .roadmap-card {
+          padding: 10px 12px;
+        }
+
+        .roadmap-card b {
+          margin-bottom: 8px;
+        }
+
+        .roadmap-card h3 {
+          margin-bottom: 6px;
+          font-size: 18px;
+        }
+
+        .roadmap-card p {
+          font-size: 13px;
+          line-height: 1.38;
         }
 
         .landscape-card {
@@ -1521,22 +1925,43 @@
         }
 
         .roadmap-card {
-          min-height: 226px;
+          min-height: 0;
         }
 
         .bib-list {
           gap: 7px;
         }
 
+        .bibliography .bib-list {
+          max-height: 338px;
+          overflow-y: auto;
+          padding-right: 4px;
+        }
+
         .bib-list a {
-          gap: 9px;
-          padding: 9px;
+          grid-template-columns: 36px 1fr;
+          gap: 8px;
+          padding: 7px;
+        }
+
+        .bib-list b {
+          width: 30px;
+          height: 30px;
+        }
+
+        .bib-list strong {
+          font-size: 13px;
+        }
+
+        .bib-list span span {
+          font-size: 11px;
+          line-height: 1.22;
         }
       }
 
       @media (max-width: 760px) {
         :root {
-          --topbar: 98px;
+          --topbar: 64px;
         }
 
         .shell {
@@ -1563,11 +1988,23 @@
           min-height: 64px;
         }
 
+        .brand-mark {
+          width: 32px;
+          height: 32px;
+          border-radius: 8px;
+          font-size: 11px;
+        }
+
+        .brand strong {
+          font-size: 14px;
+        }
+
         .lang-toggle,
         .theme-toggle {
           min-width: 48px;
           min-height: 36px;
           padding: 0 10px;
+          font-size: 12px;
         }
 
         .deck {
@@ -1575,43 +2012,95 @@
         }
 
         .slide-inner {
-          padding: 26px 0 44px;
+          align-items: start;
+          padding: 16px 0 22px;
         }
 
         .slide::before {
-          font-size: 112px;
+          font-size: 84px;
+        }
+
+        .slide-label {
+          margin-bottom: 9px;
+          font-size: 10px;
+        }
+
+        .slide-label::before {
+          width: 28px;
+        }
+
+        .eyebrow {
+          width: 34px;
+          height: 34px;
+          margin-bottom: 11px;
+          font-size: 11px;
+        }
+
+        .hero-grid,
+        .split,
+        .bib-grid {
+          gap: 12px;
         }
 
         h1 {
-          font-size: 38px;
-          line-height: 1.03;
+          margin-bottom: 10px;
+          font-size: clamp(30px, 9vw, 35px);
+          line-height: 1.02;
+        }
+
+        .hero-meta {
+          margin-bottom: 10px;
+          font-size: 9.5px;
+          line-height: 1.35;
+          text-transform: none;
         }
 
         .lede {
-          font-size: 16px;
-          line-height: 1.5;
+          margin-bottom: 0;
+          font-size: 13px;
+          line-height: 1.42;
+        }
+
+        .hero-actions {
+          display: none;
         }
 
         .claim-block {
-          padding: 16px;
+          padding: 12px 13px;
+        }
+
+        .claim-block > span {
+          margin-bottom: 7px;
+          font-size: 10px;
         }
 
         .claim-block strong {
-          font-size: 24px;
+          font-size: 20px;
+          line-height: 1.1;
         }
 
         .loop-head {
           display: block;
-          padding: 14px;
+          padding: 10px 11px;
+        }
+
+        .loop-head span,
+        .loop-pill {
+          display: none;
+        }
+
+        .loop-head strong {
+          margin-top: 0;
+          font-size: 16px;
+          line-height: 1.12;
         }
 
         .loop-pill {
-          display: inline-flex;
-          margin-top: 10px;
+          margin-top: 0;
         }
 
         .loop-stage {
-          padding: 17px;
+          padding: 10px;
         }
 
         .loop-svg {
@@ -1619,19 +2108,39 @@
         }
 
         .flow {
-          grid-template-columns: 1fr;
-          gap: 10px;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 8px;
           min-height: 0;
         }
 
         .flow-node {
-          min-height: 98px;
+          min-height: 64px;
+          padding: 8px 7px;
+        }
+
+        .flow-icon {
+          width: 28px;
+          height: 28px;
+          margin-bottom: 5px;
+        }
+
+        .flow-icon svg {
+          width: 17px;
+          height: 17px;
+        }
+
+        .flow-node strong {
+          margin-bottom: 0;
+          font-size: 12px;
+          line-height: 1.12;
+        }
+
+        .flow-node small {
+          display: none;
         }
 
         .arrow {
-          width: 2px;
-          height: 20px;
-          justify-self: center;
+          display: none;
         }
 
         .arrow::after {
@@ -1642,35 +2151,108 @@
           transform: translateX(-50%) rotate(135deg);
         }
 
+        .improve {
+          margin-top: 8px;
+        }
+
+        .improve span {
+          padding: 6px 8px;
+          font-size: 10px;
+          line-height: 1.25;
+        }
+
         .slide h2 {
-          font-size: 30px;
+          margin-bottom: 10px;
+          font-size: clamp(25px, 8vw, 31px);
+          line-height: 1.04;
         }
 
         .copy {
-          font-size: 15px;
+          font-size: 13px;
+          line-height: 1.42;
         }
 
         .sharp {
+          gap: 4px;
+          padding: 11px 12px;
           font-size: 16px;
+          line-height: 1.18;
         }
 
         .evidence-grid {
-          grid-template-columns: 1fr;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 8px;
         }
 
         .evidence-card,
         .landscape-card,
         .roadmap-card {
-          padding: 14px;
+          padding: 10px;
+        }
+
+        .evidence-card b,
+        .roadmap-card b {
+          margin-bottom: 7px;
+          padding: 5px 8px;
+          font-size: 10px;
+        }
+
+        .evidence-card h3,
+        .roadmap-card h3 {
+          margin-bottom: 0;
+          font-size: 14px;
+          line-height: 1.12;
+        }
+
+        .evidence-card p,
+        .roadmap-card p {
+          display: none;
+        }
+
+        .system-card header {
+          padding: 10px 12px;
+        }
+
+        .system-card header span {
+          font-size: 10px;
+        }
+
+        .system-card header strong {
+          font-size: 15px;
+          line-height: 1.16;
+        }
+
+        .path-list li {
+          grid-template-columns: 32px 1fr;
+          gap: 8px;
+          padding: 9px 12px;
+        }
+
+        .path-list b {
+          width: 26px;
+          height: 26px;
+          border-radius: 7px;
+          font-size: 10px;
+        }
+
+        .path-list strong {
+          margin-bottom: 0;
+          font-size: 13px;
+          line-height: 1.16;
+        }
+
+        .path-list span {
+          display: none;
         }
 
         .landscape-board {
           grid-template-columns: 1fr;
+          gap: 7px;
         }
 
         .landscape-card {
-          grid-template-columns: 56px 1fr;
-          gap: 10px;
+          grid-template-columns: 42px 1fr;
+          gap: 8px;
         }
 
         .landscape-card:nth-child(5) {
@@ -1678,11 +2260,27 @@
         }
 
         .landscape-card b {
-          min-height: 36px;
+          min-height: 30px;
+          border-radius: 7px;
+          font-size: 10px;
+        }
+
+        .landscape-card strong {
+          margin-bottom: 0;
+          font-size: 13px;
+        }
+
+        .landscape-card span {
+          display: none;
         }
 
         .boundary-strip {
           font-size: 15px;
+        }
+
+        .roadmap-board {
+          grid-template-columns: 1fr;
+          gap: 8px;
         }
 
         .roadmap-card {
@@ -1691,10 +2289,153 @@
 
         .bib-list {
           grid-template-columns: 1fr;
+          max-height: min(32svh, 270px);
+          overflow-y: auto;
+          padding-right: 4px;
+        }
+
+        .bib-list a {
+          grid-template-columns: 34px 1fr;
+          gap: 8px;
+          padding: 8px;
+        }
+
+        .bib-list b {
+          width: 28px;
+          height: 28px;
+          border-radius: 7px;
+          font-size: 10px;
+        }
+
+        .bib-list strong {
+          font-size: 12px;
+        }
+
+        .bib-list span span {
+          display: none;
         }
 
         .progress {
           display: none;
+        }
+      }
+
+      @media (max-width: 360px) {
+        .shell {
+          width: min(100% - 22px, var(--max));
+        }
+
+        .brand strong {
+          font-size: 13px;
+        }
+
+        .lang-toggle,
+        .theme-toggle {
+          min-width: 43px;
+          padding: 0 8px;
+        }
+
+        h1 {
+          font-size: 29px;
+        }
+
+        .slide h2 {
+          font-size: 24px;
+        }
+
+        .lede,
+        .copy {
+          font-size: 12.5px;
+        }
+
+        .loop-head strong {
+          font-size: 15px;
+        }
+
+        .claim-block strong {
+          font-size: 19px;
+        }
+
+        .sharp {
+          font-size: 15px;
+        }
+      }
+
+      @media (max-width: 360px) and (max-height: 650px) {
+        .slide-inner {
+          padding: 12px 0 16px;
+        }
+
+        .slide-label {
+          margin-bottom: 7px;
+        }
+
+        .eyebrow {
+          margin-bottom: 8px;
+        }
+
+        h1 {
+          margin-bottom: 8px;
+          font-size: 27px;
+        }
+
+        .hero-meta {
+          margin-bottom: 8px;
+          font-size: 9px;
+        }
+
+        .lede,
+        .copy {
+          display: none;
+        }
+
+        .loop-head {
+          display: none;
+        }
+
+        .loop-stage {
+          padding: 9px;
+        }
+
+        .flow-node {
+          min-height: 56px;
+        }
+
+        .flow-icon {
+          width: 24px;
+          height: 24px;
+          margin-bottom: 4px;
+        }
+
+        .flow-icon svg {
+          width: 15px;
+          height: 15px;
+        }
+
+        .flow-node strong {
+          font-size: 11px;
+        }
+
+        .improve {
+          display: none;
+        }
+
+        .claim-block {
+          padding: 10px 11px;
+        }
+
+        .claim-block strong {
+          font-size: 18px;
+        }
+
+        .slide h2 {
+          margin-bottom: 8px;
+          font-size: 22px;
+        }
+
+        .sharp {
+          padding: 10px 11px;
+          font-size: 14px;
         }
       }
     </style>
@@ -1703,11 +2444,6 @@
     <a class="skip-link" href="#hero" data-en="Skip to content" data-zh="跳到正文">Skip to content</a>
 
     <header class="topbar">
-      <div class="shell edition-strip" aria-label="Publication metadata">
-        <span><b>SC / 2026</b> · Vol. 01 / Issue Nº 01</span>
-        <span data-en="Filed under Skill Governance · Agent Memory" data-zh="归档于 Skill 治理 · Agent 记忆">Filed under Skill Governance · Agent Memory</span>
-        <span><span class="live-dot" aria-hidden="true"></span><span data-en="Apache-2.0 · yuyangxueed@guesswhat studio" data-zh="Apache-2.0 · yuyangxueed@guesswhat studio">Apache-2.0 · yuyangxueed@guesswhat studio</span></span>
-      </div>
       <div class="shell topbar-inner">
         <a class="brand" href="../" aria-label="Skills Charter home">
           <span class="brand-mark">SC</span>
@@ -1730,28 +2466,22 @@
           <button class="lang-toggle" type="button" data-lang-toggle aria-label="Switch language">中</button>
           <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle dark theme">Dark</button>
           <a class="button" href="../" data-en="Demo" data-zh="演示">Demo</a>
-          <a class="button primary" href="https://github.com/Guesswhat-Studio/Skills-as-Docs" data-en="GitHub" data-zh="GitHub">GitHub</a>
+          <a class="button primary" href="https://github.com/Guesswhat-Studio/Skills-Charter" data-en="GitHub" data-zh="GitHub">GitHub</a>
         </div>
       </div>
     </header>
 
     <main class="deck" id="deck">
-      <section class="slide hero" id="hero" data-ghost="TRUST">
+      <section class="slide hero is-active" id="hero" data-ghost="TRUST">
         <div class="shell slide-inner">
           <div class="hero-grid">
             <div>
               <p class="slide-label" data-en="Skills Charter Manifesto" data-zh="Skills Charter 宣言">Skills Charter Manifesto</p>
               <div class="hero-meta" aria-label="Manifesto metadata">
-                <span data-en="Open-source skill governance · Nº 01" data-zh="开源 Skill 治理 · Nº 01">Open-source skill governance · Nº 01</span>
-                <span data-en="Doc · Git sync · hooks · runtime" data-zh="文档 · Git 同步 · hooks · runtime">Doc · Git sync · hooks · runtime</span>
-                <span data-en="Edited by yuyangxueed@guesswhat studio" data-zh="yuyangxueed@guesswhat studio 编辑">Edited by yuyangxueed@guesswhat studio</span>
+                <span data-en="Proposed by YUYANG XUE @ University of Edinburgh" data-zh="由 YUYANG XUE @ University of Edinburgh 提出">Proposed by YUYANG XUE @ University of Edinburgh</span>
               </div>
-              <h1 data-en="Agent Skills Need Governance." data-zh="Agent Skills 需要治理。">Agent Skills Need Governance.</h1>
+              <h1 data-en="Every Agent Skill Needs a Charter Before Runtime." data-zh="每个 Agent Skill 进入 runtime 前都需要 charter。">Every Agent Skill Needs a Charter Before Runtime.</h1>
               <p class="lede" data-en="Skills are becoming operational memory. Marketplaces, registries, and installers can move them; teams still need to decide which ones are safe, owned, reviewed, and ready to run." data-zh="Skills 正在变成团队的运行记忆。Marketplace、registry 和 installer 能让它们流动；团队仍然需要判断哪些安全、有负责人、经过审查，并且可以运行。">Skills are becoming operational memory. Marketplaces, registries, and installers can move them; teams still need to decide which ones are safe, owned, reviewed, and ready to run.</p>
-              <div class="claim-block">
-                <span data-en="One-line claim" data-zh="一句话主张">One-line claim</span>
-                <strong data-en="Treat every distributed skill as a candidate until its charter is approved." data-zh="每个分发来的 skill 都先是候选，直到它的 charter 被批准。">Treat every distributed skill as a candidate until its charter is approved.</strong>
-              </div>
               <div class="hero-actions">
                 <a class="button primary" href="#gap" data-en="Start with the gap" data-zh="先看缺口">Start with the gap</a>
                 <a class="button" href="../" data-en="Open demo" data-zh="打开演示">Open demo</a>
@@ -1811,8 +2541,12 @@
                   <span data-en="Feedback patches the skill, then the gate runs again" data-zh="反馈修补 skill，然后再次过闸门">Feedback patches the skill, then the gate runs again</span>
                 </div>
               </div>
-              <p class="plate-caption" data-en="FIG. 01 / SC-26 Plate Nº 01 · Docs sync to Git, Git runs hooks, agents consume only approved skill memory." data-zh="FIG. 01 / SC-26 Plate Nº 01 · Docs 同步到 Git，Git 运行 hooks，Agents 只消费 approved skill memory。">FIG. 01 / SC-26 Plate Nº 01 · Docs sync to Git, Git runs hooks, agents consume only approved skill memory.</p>
             </aside>
+
+            <div class="claim-block">
+              <span data-en="One-line claim" data-zh="一句话主张">One-line claim</span>
+              <strong data-en="Treat every distributed skill as a candidate until its [[charter is approved]]." data-zh="每个分发来的 skill 都先是候选，直到它的 [[charter 被批准]]。">Treat every distributed skill as a candidate until its <mark class="quote-hot">charter is approved</mark>.</strong>
+            </div>
           </div>
         </div>
       </section>
@@ -1825,7 +2559,6 @@
               <p class="slide-label" data-en="The gap" data-zh="缺口">The gap</p>
               <h2 data-en="Teams receive skills faster than they can trust them." data-zh="团队收到 skills 的速度，已经超过信任它们的能力。">Teams receive skills faster than they can trust them.</h2>
               <p class="copy" data-en="Public, generated, and evolved skills can guide tools, scripts, files, and team decisions. Distribution can deliver those candidates; it cannot decide whether this team should trust them before runtime." data-zh="公共、生成、演化出来的 skills 会影响工具、脚本、文件和团队决策。Distribution 能把候选送进来；它不能决定这个团队是否应该在运行前信任它们。">Public, generated, and evolved skills can guide tools, scripts, files, and team decisions. Distribution can deliver those candidates; it cannot decide whether this team should trust them before runtime.</p>
-              <p class="sharp" data-en="The enterprise question is not only: where do we get skills? It is: which skills become trusted team memory?" data-zh="企业问题不只是：skills 从哪里来？而是：哪些 skills 可以成为可信的团队记忆？">The enterprise question is not only: where do we get skills? It is: which skills become trusted team memory?</p>
             </div>
 
             <div class="evidence-grid" aria-label="Research evidence">
@@ -1850,6 +2583,8 @@
                 <p data-en="Recent work on semantic supply-chain attacks argues that skill metadata and instructions can steer agent selection and behavior." data-zh="关于 semantic supply-chain attacks 的研究指出，skill 元数据和指令会影响 agent 的选择和行为。">Recent work on semantic supply-chain attacks argues that skill metadata and instructions can steer agent selection and behavior.</p>
               </article>
             </div>
+
+            <p class="sharp" data-en="Skills are easy to find.|[[Shared runtime memory]] must be earned." data-zh="Skills 不难找到。|[[共享运行记忆]]必须被证明。"><span>Skills are easy to find.</span><span><mark class="quote-hot">Shared runtime memory</mark> must be earned.</span></p>
           </div>
         </div>
       </section>
@@ -1862,7 +2597,6 @@
               <p class="slide-label" data-en="The solution" data-zh="方案">The solution</p>
               <h2 data-en="Make every distributed skill carry an approved charter before runtime." data-zh="每个分发来的 skill，运行前都要有批准过的 charter。">Make every distributed skill carry an approved charter before runtime.</h2>
               <p class="copy" data-en="Skills Charter turns a Git repository into the review surface and source of truth for team-owned skill libraries. Each candidate receives a charter: source, owner, evidence, policy checks, approval state, install target, and runtime constraints." data-zh="Skills Charter 把 Git 仓库变成团队 skill library 的审查界面和事实来源。每个 candidate 都会获得一份 charter：来源、负责人、证据、策略检查、批准状态、安装目标和运行边界。">Skills Charter turns a Git repository into the review surface and source of truth for team-owned skill libraries. Each candidate receives a charter: source, owner, evidence, policy checks, approval state, install target, and runtime constraints.</p>
-              <p class="sharp" data-en="Distributed candidate -> Skill Charter -> review -> approval -> runtime install." data-zh="分发候选 -> Skill Charter -> 审查 -> 批准 -> runtime 安装。">Distributed candidate -> Skill Charter -> review -> approval -> runtime install.</p>
             </div>
 
             <aside class="system-card">
@@ -1877,6 +2611,8 @@
                 <li><b>4</b><div><strong data-en="Install only approved packages" data-zh="只安装已批准包">Install only approved packages</strong><span data-en="Generate approved library views and install snippets for Codex, Claude Code, Copilot, and other clients." data-zh="为 Codex、Claude Code、Copilot 等客户端生成 approved library view 和安装命令。">Generate approved library views and install snippets for Codex, Claude Code, Copilot, and other clients.</span></div></li>
               </ol>
             </aside>
+
+            <p class="sharp" data-en="No runtime by default.|Only through a [[reviewed charter]]." data-zh="默认不进 runtime。|只能通过[[经过审查的 charter]]。"><span>No runtime by default.</span><span>Only through a <mark class="quote-hot">reviewed charter</mark>.</span></p>
           </div>
         </div>
       </section>
@@ -1889,7 +2625,6 @@
               <p class="slide-label" data-en="The lifecycle" data-zh="生命周期">The lifecycle</p>
               <h2 data-en="Agent skills have five layers. Skills Charter owns governance." data-zh="Agent skills 有五层。Skills Charter 负责治理层。">Agent skills have five layers. Skills Charter owns governance.</h2>
               <p class="copy" data-en="Creation produces candidates. Evaluation produces evidence. Distribution moves packages. Governance decides what a team should trust. Runtime loads and enforces approved skills." data-zh="Creation 产出候选。Evaluation 产出证据。Distribution 让包流动。Governance 判断团队应该信任什么。Runtime 加载并约束 approved skills。">Creation produces candidates. Evaluation produces evidence. Distribution moves packages. Governance decides what a team should trust. Runtime loads and enforces approved skills.</p>
-              <p class="sharp" data-en="Evaluation asks: does it work? Governance asks: should our team trust it?" data-zh="Evaluation 问：它有效吗？Governance 问：我们团队该信任它吗？">Evaluation asks: does it work? Governance asks: should our team trust it?</p>
             </div>
 
             <aside>
@@ -1915,37 +2650,42 @@
                   <div><strong data-en="Runtime layer" data-zh="Runtime layer">Runtime layer</strong><span data-en="Claude, Codex, Copilot, Cursor, allowlists, and MCP permissions load and enforce approved skills." data-zh="Claude、Codex、Copilot、Cursor、allowlists 和 MCP permissions 加载并约束 approved skills。">Claude, Codex, Copilot, Cursor, allowlists, and MCP permissions load and enforce approved skills.</span></div>
                 </article>
               </div>
-              <p class="boundary-strip" data-en="Creation, evaluation, and distribution create candidates. Governance turns the right candidates into approved team memory before runtime." data-zh="Creation、evaluation 和 distribution 产出 candidates。Governance 把正确的 candidates 变成 runtime 之前的 approved team memory。">Creation, evaluation, and distribution create candidates. Governance turns the right candidates into approved team memory before runtime.</p>
             </aside>
+
+            <p class="sharp" data-en="Evaluation proves it works.|[[Governance]] decides whether teams [[trust it]]." data-zh="Evaluation 证明它有效。|[[Governance]] 决定团队是否[[信任它]]。"><span>Evaluation proves it works.</span><span><mark class="quote-hot">Governance</mark> decides whether teams <mark class="quote-hot">trust it</mark>.</span></p>
           </div>
         </div>
       </section>
 
       <section class="slide roadmap" id="roadmap" data-ghost="NEXT">
         <div class="shell slide-inner">
-          <div>
-            <span class="eyebrow">05</span>
-            <p class="slide-label" data-en="The roadmap" data-zh="路线图">The roadmap</p>
-            <h2 data-en="Build the gate. Then connect it everywhere skills move." data-zh="先建闸门，再接入 skills 流动的地方。">Build the gate. Then connect it everywhere skills move.</h2>
-            <p class="copy" data-en="The demo proves the handoff from distributed candidate to approved runtime memory. Adapters make the charter gate usable inside existing teams, docs stacks, and agent clients." data-zh="Demo 证明 distributed candidate 到 approved runtime memory 的交接。适配器让 charter gate 进入真实团队、文档栈和 agent clients。">The demo proves the handoff from distributed candidate to approved runtime memory. Adapters make the charter gate usable inside existing teams, docs stacks, and agent clients.</p>
-          </div>
+          <div class="split">
+            <div>
+              <span class="eyebrow">05</span>
+              <p class="slide-label" data-en="The roadmap" data-zh="路线图">The roadmap</p>
+              <h2 data-en="Build the gate. Then connect it everywhere skills move." data-zh="先建闸门，再接入 skills 流动的地方。">Build the gate. Then connect it everywhere skills move.</h2>
+              <p class="copy" data-en="The demo proves the handoff from distributed candidate to approved runtime memory. Adapters make the charter gate usable inside existing teams, docs stacks, and agent clients." data-zh="Demo 证明 distributed candidate 到 approved runtime memory 的交接。适配器让 charter gate 进入真实团队、文档栈和 agent clients。">The demo proves the handoff from distributed candidate to approved runtime memory. Adapters make the charter gate usable inside existing teams, docs stacks, and agent clients.</p>
+            </div>
 
-          <div class="roadmap-board">
-            <article class="roadmap-card">
-              <b data-en="Now" data-zh="现在">Now</b>
-              <h3 data-en="GitHub Pages manager" data-zh="GitHub Pages 管理器">GitHub Pages manager</h3>
-              <p data-en="Browse candidate packages, edit SKILL.md, inspect risk, preview approved outputs, and hand off review-ready PRs." data-zh="浏览候选 package、编辑 SKILL.md、检查风险、预览 approved outputs，并交付可审查的 PR。">Browse candidate packages, edit SKILL.md, inspect risk, preview approved outputs, and hand off review-ready PRs.</p>
-            </article>
-            <article class="roadmap-card">
-              <b data-en="Next" data-zh="下一步">Next</b>
-              <h3 data-en="Adapters for existing tools" data-zh="接入现有工具的适配器">Adapters for existing tools</h3>
-              <p data-en="Connect the gate to Codex, Claude Code, GitHub Copilot, Cursor, GitBook, VitePress, MkDocs, Obsidian, Feishu, and Yuque." data-zh="把信任闸门接入 Codex、Claude Code、GitHub Copilot、Cursor、GitBook、VitePress、MkDocs、Obsidian、飞书和语雀。">Connect the gate to Codex, Claude Code, GitHub Copilot, Cursor, GitBook, VitePress, MkDocs, Obsidian, Feishu, and Yuque.</p>
-            </article>
-            <article class="roadmap-card">
-              <b data-en="Later" data-zh="之后">Later</b>
-              <h3 data-en="Evidence-aware intake" data-zh="证据感知的导入">Evidence-aware intake</h3>
-              <p data-en="Import eval reports, skill-creator outputs, traces, and evolved candidates as review evidence instead of auto-publishing them." data-zh="把 eval 报告、skill-creator 输出、轨迹和演化候选作为审查证据导入，而不是自动发布。">Import eval reports, skill-creator outputs, traces, and evolved candidates as review evidence instead of auto-publishing them.</p>
-            </article>
+            <aside class="roadmap-board">
+              <article class="roadmap-card">
+                <b data-en="Now" data-zh="现在">Now</b>
+                <h3 data-en="GitHub Pages manager" data-zh="GitHub Pages 管理器">GitHub Pages manager</h3>
+                <p data-en="Browse candidate packages, edit SKILL.md, inspect risk, preview approved outputs, and hand off review-ready PRs." data-zh="浏览候选 package、编辑 SKILL.md、检查风险、预览 approved outputs，并交付可审查的 PR。">Browse candidate packages, edit SKILL.md, inspect risk, preview approved outputs, and hand off review-ready PRs.</p>
+              </article>
+              <article class="roadmap-card">
+                <b data-en="Next" data-zh="下一步">Next</b>
+                <h3 data-en="Adapters for existing tools" data-zh="接入现有工具的适配器">Adapters for existing tools</h3>
+                <p data-en="Connect the gate to Codex, Claude Code, GitHub Copilot, Cursor, GitBook, VitePress, MkDocs, Obsidian, Feishu, and Yuque." data-zh="把信任闸门接入 Codex、Claude Code、GitHub Copilot、Cursor、GitBook、VitePress、MkDocs、Obsidian、飞书和语雀。">Connect the gate to Codex, Claude Code, GitHub Copilot, Cursor, GitBook, VitePress, MkDocs, Obsidian, Feishu, and Yuque.</p>
+              </article>
+              <article class="roadmap-card">
+                <b data-en="Later" data-zh="之后">Later</b>
+                <h3 data-en="Evidence-aware intake" data-zh="证据感知的导入">Evidence-aware intake</h3>
+                <p data-en="Import eval reports, skill-creator outputs, traces, and evolved candidates as review evidence instead of auto-publishing them." data-zh="把 eval 报告、skill-creator 输出、轨迹和演化候选作为审查证据导入，而不是自动发布。">Import eval reports, skill-creator outputs, traces, and evolved candidates as review evidence instead of auto-publishing them.</p>
+              </article>
+            </aside>
+
+            <p class="sharp" data-en="Build the gate first.|Then follow skills everywhere." data-zh="先建闸门。|再跟上 skills 流动的地方。"><span>Build the gate first.</span><span>Then follow skills everywhere.</span></p>
           </div>
         </div>
       </section>
@@ -1958,7 +2698,6 @@
               <p class="slide-label" data-en="Bibliography" data-zh="参考文献">Bibliography</p>
               <h2 data-en="The claim sits on public signals, not vibes." data-zh="这个主张基于公开信号，不是感觉。">The claim sits on public signals, not vibes.</h2>
               <p class="copy" data-en="These sources support the gap: skill volume is growing, distribution is accelerating, utility depends on context, security risk is real, and skill evolution needs review." data-zh="这些来源支撑这个缺口：skill 数量增长，分发加速，效果依赖上下文，安全风险真实，skill 演化需要审查。">These sources support the gap: skill volume is growing, distribution is accelerating, utility depends on context, security risk is real, and skill evolution needs review.</p>
-              <p class="sharp" data-en="Let tools create, evaluate, and distribute skills. Let teams decide what becomes trusted runtime memory." data-zh="让工具去创建、评估和分发 skills。让团队决定什么能成为可信 runtime memory。">Let tools create, evaluate, and distribute skills. Let teams decide what becomes trusted runtime memory.</p>
             </div>
 
             <ol class="bib-list">
@@ -1974,6 +2713,8 @@
               <li><a href="https://aiquinta.ai/blog/ai-agent-governance-skill-permissions-allowlist-tools/"><b>[10]</b><span><strong>AIQuinta permissions and allowlists</strong><span data-en="Skill permission and runtime allowlist framing." data-zh="Skill 权限和运行时 allowlist 框架。">Skill permission and runtime allowlist framing.</span></span></a></li>
               <li><a href="https://jfrog.com/ai-catalog/skills-registry/"><b>[11]</b><span><strong>JFrog Agent Skills Registry</strong><span data-en="Private registry, scanning, signing, access control, and audit trail signal." data-zh="私有 registry、扫描、签名、访问控制和审计信号。">Private registry, scanning, signing, access control, and audit trail signal.</span></span></a></li>
             </ol>
+
+            <p class="sharp" data-en="Let tools move skills.|Let teams decide trust." data-zh="让工具推动 skills 流动。|让团队决定信任。"><span>Let tools move skills.</span><span>Let teams decide trust.</span></p>
           </div>
         </div>
       </section>
@@ -2000,17 +2741,55 @@
       let activeIndex = 0;
       let wheelLock = false;
 
+      const appendMarkedText = (target, text) => {
+        const pattern = /\[\[([^\]]+)\]\]/g;
+        let cursor = 0;
+        let match;
+        while ((match = pattern.exec(text)) !== null) {
+          if (match.index > cursor) {
+            target.append(document.createTextNode(text.slice(cursor, match.index)));
+          }
+          const mark = document.createElement("mark");
+          mark.className = "quote-hot";
+          mark.textContent = match[1];
+          target.append(mark);
+          cursor = pattern.lastIndex;
+        }
+        if (cursor < text.length) {
+          target.append(document.createTextNode(text.slice(cursor)));
+        }
+      };
+
+      const renderRichText = (node, value) => {
+        node.replaceChildren();
+        const lines = value.split("|");
+        lines.forEach((line) => {
+          if (lines.length > 1) {
+            const span = document.createElement("span");
+            appendMarkedText(span, line);
+            node.append(span);
+            return;
+          }
+          appendMarkedText(node, line);
+        });
+      };
+
       const applyLanguage = (lang) => {
         root.dataset.lang = lang;
         root.lang = lang === "zh" ? "zh-CN" : "en";
         translatable.forEach((node) => {
-          node.textContent = node.dataset[lang];
+          const value = node.dataset[lang];
+          if (node.classList.contains("sharp") || value.includes("[[")) {
+            renderRichText(node, value);
+            return;
+          }
+          node.textContent = value;
         });
         if (toggle) {
           toggle.textContent = lang === "zh" ? "EN" : "中";
           toggle.setAttribute("aria-label", lang === "zh" ? "Switch to English" : "切换到中文");
         }
-        document.title = lang === "zh" ? "Agent Skills 需要治理" : "Agent Skills Need Governance";
+        document.title = lang === "zh" ? "每个 Agent Skill 进入 runtime 前都需要 charter" : "Every Agent Skill Needs a Charter Before Runtime";
         localStorage.setItem("skills-charter-manifesto-lang", lang);
       };
 
@@ -2032,6 +2811,9 @@
 
       const setActive = () => {
         const topbarHeight = document.querySelector(".topbar").offsetHeight;
+        const maxScroll = deck ? deck.scrollHeight - deck.clientHeight : 0;
+        const progress = maxScroll > 0 ? Math.min(Math.max(deck.scrollTop / maxScroll, 0), 1) : 0;
+        root.style.setProperty("--deck-progress", progress.toFixed(4));
         const current = sections
           .map((section, index) => ({
             id: section.id,
@@ -2042,6 +2824,9 @@
 
         if (!current) return;
         activeIndex = current.index;
+        sections.forEach((section, index) => {
+          section.classList.toggle("is-active", index === activeIndex);
+        });
         navLinks.forEach((link) => link.classList.toggle("active", link.getAttribute("href") === "#" + current.id));
         progressButtons.forEach((button) => button.classList.toggle("active", button.dataset.progress === current.id));
       };

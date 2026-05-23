@@ -11,7 +11,7 @@ The flagship scenario:
 Start from `templates/team-skill-library/` for a standalone skill repository, or from this repository when developing Skills Charter itself.
 
 ```bash
-git clone https://github.com/Guesswhat-Studio/Skills-as-Docs.git skills-charter-tooling
+git clone https://github.com/Guesswhat-Studio/Skills-Charter.git skills-charter-tooling
 mkdir team-skills
 cp -R skills-charter-tooling/templates/team-skill-library/. team-skills/
 cd team-skills

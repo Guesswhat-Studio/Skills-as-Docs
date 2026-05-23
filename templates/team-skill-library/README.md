@@ -18,7 +18,7 @@ Use this folder as the starting point for a governed team skill repository. The 
 3. Enable GitHub Actions.
 4. Open every skill change as a pull request.
 
-The workflow currently checks out `Guesswhat-Studio/Skills-as-Docs` as the preview tooling source and runs the CLI against your repository. Pin the workflow to a tag when your team adopts a released version.
+The workflow currently checks out `Guesswhat-Studio/Skills-Charter` as the preview tooling source and runs the CLI against your repository. Pin the workflow to a tag when your team adopts a released version.
 
 ## Recommended Structure
 

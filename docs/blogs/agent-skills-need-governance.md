@@ -1,6 +1,6 @@
 ---
-title: "Agent Skills Need Governance"
-description: "Agent skills are becoming infrastructure. Distribution can move skills, but teams still need a trust gate before runtime."
+title: "Every Agent Skill Needs a Charter Before Runtime"
+description: "Creation, evaluation, and distribution can move agent skills quickly. Teams still need a chartered trust gate before runtime."
 date: "2026-05-20"
 author: "Skills Charter"
 tags:
@@ -11,9 +11,11 @@ tags:
   - Team Skill Libraries
 ---
 
-# Agent Skills Need Governance
+# Every Agent Skill Needs a Charter Before Runtime
 
-Agent skills are moving faster than most teams have noticed.
+Agent skills are moving faster than most teams have noticed, and the missing object is no longer another prompt record or marketplace listing.
+
+It is a charter.
 
 A few months ago, a "skill" still sounded like a better prompt in a nicer folder. Now the shape is clearer: skills are becoming the procedural layer between human intent and agent execution. They teach agents how a team reviews code, drafts documents, handles incidents, uses design tools, queries internal systems, or turns repeated work into reliable workflows.
 
@@ -33,7 +35,7 @@ It is operational memory.
 > - Agent skills are becoming a real infrastructure layer, not just reusable prompts.
 > - The lifecycle is splitting into creation, evaluation, distribution, governance, and runtime.
 > - Distribution is necessary, but distribution is not trust.
-> - The missing layer is governance between distributed candidate packages and runtime execution.
+> - The missing object is a Skill Charter between distributed candidate packages and runtime execution.
 > - Teams should treat public, generated, and evolved skills as candidates before they become shared runtime memory.
 
 ## The Five-Layer Skill Lifecycle
@@ -122,7 +124,7 @@ create or discover -> evaluate -> distribute as a candidate -> govern -> runtime
 
 That governance gate is the difference between a distribution channel and an operating model for team knowledge.
 
-## Skills Need Charters Before Runtime
+## Every Skill Needs a Charter Before Runtime
 
 The simplest mental model is this:
 

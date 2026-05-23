@@ -62,7 +62,7 @@ These are implementation, schema, examples, or generated output rather than curr
 ## Current Design Constraints To Preserve
 
 - The public concept is **Skills Charter** / **Skills Charter**.
-- Core loop: `Docs UI -> Git sync + hooks -> SKILL.md Registry -> Agents -> Improve the docs`.
+- Core loop: `Charter Editor -> Git sync + hooks -> approved registry -> Agents -> improve the charter`.
 - The UI is a workbench for human review and management of agent skill packages, not a marketing landing page.
 - Header taxonomy: product identity, workspace context, concept reference, workflow actions, global utilities.
 - Initial workspace status should say `No local edits` / `无本地改动`, not `Clean`.

@@ -1607,7 +1607,7 @@ function renderTopbar() {
       <a class="button subtle" href="./blogs/agent-skills-need-governance.html">${t("action.manifesto")}</a>
       <button type="button" class="icon-button" data-action="locale" aria-label="Switch language">${state.locale === "en" ? "中" : "En"}</button>
       <button type="button" class="icon-button" data-action="theme" aria-label="Toggle theme">${state.theme === "dark" ? icons.sun : icons.moon}</button>
-      <a class="icon-button" href="https://github.com/Guesswhat-Studio/Skills-as-Docs" aria-label="GitHub">${icons.github}</a>
+      <a class="icon-button" href="https://github.com/Guesswhat-Studio/Skills-Charter" aria-label="GitHub">${icons.github}</a>
       <button type="button" class="button primary" data-action="open-intake">${icons.plus}${t("action.intake")}</button>
     </div>
   </header>`;

@@ -135,7 +135,7 @@ Or in Chinese:
 The workflow loop:
 
 ```text
-Pages Manager / Docs UI -> branch + PR + CI -> skill package + skills.json -> Agent clients -> Feedback -> Pages Manager / Docs UI
+Pages Manager / Charter Editor -> branch + PR + CI -> skill package + skills.json -> Agent clients -> Feedback -> Pages Manager / Charter Editor
 ```
 
 This loop is the first thing the README and GitHub Pages site should communicate.
@@ -1253,7 +1253,7 @@ skills-charter/
 - "Skills Charter: Govern Skills Before They Become Runtime Memory"
 - "Build a GitBook-backed Agent Skills Library"
 - "Build a VitePress Skill Portal for Your Team"
-- "Agent Skills Need Governance"
+- "Every Agent Skill Needs a Charter Before Runtime"
 
 ### Chinese
 

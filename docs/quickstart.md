@@ -13,7 +13,7 @@ fork or clone repo -> add skills under skills/<name>/ -> lint + generate registr
 For a governed team repository, start from the copyable template:
 
 ```bash
-git clone https://github.com/Guesswhat-Studio/Skills-as-Docs.git skills-charter-tooling
+git clone https://github.com/Guesswhat-Studio/Skills-Charter.git skills-charter-tooling
 mkdir team-skills
 cp -R skills-charter-tooling/templates/team-skill-library/. team-skills/
 cd team-skills
@@ -37,7 +37,7 @@ The template workflow checks out the Skills Charter tooling repo during CI and r
 If you are developing Skills Charter itself, use this repository directly:
 
 ```bash
-git clone https://github.com/Guesswhat-Studio/Skills-as-Docs.git team-skills
+git clone https://github.com/Guesswhat-Studio/Skills-Charter.git team-skills
 cd team-skills
 npm install
 npm run check
