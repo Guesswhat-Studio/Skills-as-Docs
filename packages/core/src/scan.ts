@@ -48,6 +48,14 @@ export function detectFileKind(repoPath: string): SkillFileKind {
   if (repoPath.endsWith("/SKILL.md")) return "entrypoint";
   if (repoPath.includes("/scripts/")) return "script";
   if (
+    repoPath.includes("/evals/")
+    || repoPath.includes("/reports/")
+    || repoPath.includes("/review-notes/")
+    || repoPath.includes("/trigger-samples/")
+  ) {
+    return "evidence";
+  }
+  if (
     repoPath.includes("/assets/")
     || /\.(png|jpe?g|gif|webp|pdf|xlsx?|pptx?|docx?|zip|gz|tar|ico)$/i.test(repoPath)
   ) {
@@ -67,7 +75,8 @@ async function collectPackageFiles(rootDir: string, packageRootAbs: string): Pro
       absolutePath,
       kind: detectFileKind(repoPath),
       size: stat.size,
-      changed: false
+      changed: false,
+      content: await readTextIfSafe(absolutePath, repoPath, stat.size)
     });
   });
   return files.sort((a, b) => {
@@ -75,6 +84,20 @@ async function collectPackageFiles(rootDir: string, packageRootAbs: string): Pro
     if (b.kind === "entrypoint") return 1;
     return a.path.localeCompare(b.path);
   });
+}
+
+async function readTextIfSafe(absolutePath: string, repoPath: string, size: number): Promise<string | undefined> {
+  if (size > 256 * 1024) return undefined;
+  if (isLikelyBinary(repoPath)) return undefined;
+  try {
+    return await fs.readFile(absolutePath, "utf8");
+  } catch {
+    return undefined;
+  }
+}
+
+function isLikelyBinary(repoPath: string): boolean {
+  return /\.(png|jpe?g|gif|webp|pdf|xlsx?|pptx?|docx?|zip|gz|tar|ico)$/i.test(repoPath);
 }
 
 async function walk(dir: string, visit: (absolutePath: string) => Promise<void>): Promise<void> {

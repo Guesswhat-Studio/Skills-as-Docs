@@ -1,4 +1,4 @@
-# Quickstart: Run SkillDocs As Your Team Skill Library
+# Quickstart: Run Skills Charter As Your Team Skill Library
 
 This guide is the day-one path for a team that wants Git to become the management layer for Agent Skills.
 
@@ -13,7 +13,7 @@ fork or clone repo -> add skills under skills/<name>/ -> lint + generate registr
 Use this repository as a starting point:
 
 ```bash
-git clone https://github.com/Guesswhat-Studio/Skills-as-Docs.git team-skills
+git clone https://github.com/Guesswhat-Studio/Skills-Charter.git team-skills
 cd team-skills
 npm install
 npm run check
@@ -68,9 +68,9 @@ skills/literature-review/assets/
 
 ```bash
 npm run check
-node packages/cli/dist/index.js lint --root .
+node packages/cli/dist/index.js lint --root . --policy strict
 node packages/cli/dist/index.js generate registry --root . --source org/team-skills --out skills.json
-node packages/cli/dist/index.js generate registry --root . --source org/team-skills --out skills.json --check
+node packages/cli/dist/index.js generate registry --root . --source org/team-skills --out skills.json --check --policy strict
 ```
 
 The important idea: the PR should prove that `skills/` and `skills.json` agree.
@@ -91,7 +91,7 @@ npx skills add . --skill literature-review -g -a claude-code
 npx skills add . --skill literature-review -g -a antigravity
 ```
 
-Do not clone the whole SkillDocs repository into `.claude/skills`, `.agents/skills`, or another agent directory. Keep the Git repo as the source of truth, then let `npx skills` materialize packages into each agent.
+Do not clone the whole Skills Charter repository into `.claude/skills`, `.agents/skills`, or another agent directory. Keep the Git repo as the source of truth, then let `npx skills` materialize packages into each agent.
 
 For a non-mutating compatibility smoke test:
 
@@ -106,7 +106,7 @@ For a normal skill change:
 ```bash
 git checkout -b skill/literature-review-rubric
 $EDITOR skills/literature-review/SKILL.md
-node packages/cli/dist/index.js lint --root .
+node packages/cli/dist/index.js lint --root . --policy strict
 node packages/cli/dist/index.js generate registry --root . --source org/team-skills --out skills.json
 npm run check
 git add skills skills.json
@@ -136,8 +136,10 @@ Then run:
 
 ```bash
 node packages/cli/dist/index.js scan --root .
-node packages/cli/dist/index.js lint --root .
+node packages/cli/dist/index.js lint --root . --policy strict
 node packages/cli/dist/index.js generate registry --root . --source org/team-skills --out skills.json
 ```
 
 The migration goal is not to preserve every local install detail. The goal is to make the Git repo the reviewed, reversible source of truth.
+
+For the fuller GitHub operating model, see [Run a Team Agent Skill Library from GitHub](./guides/run-team-agent-skill-library-from-github.md).

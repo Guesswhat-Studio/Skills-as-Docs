@@ -16,7 +16,7 @@ It should let a user:
 4. Edit required `SKILL.md` metadata through a form.
 5. Preview Markdown and code-like files.
 6. Run browser-side checks.
-7. Generate install commands through `npx skills`.
+7. Generate install commands through `npx skills` for approved packages.
 8. Prepare, but not silently create, a draft PR payload.
 
 The MVP should not:
@@ -82,14 +82,14 @@ Recommended stack:
 
 The durable backend is GitHub: repository files, branches, pull requests, Actions, and Pages.
 
-The first CI workflow lives at `.github/workflows/skilldocs.yml`. It treats registry drift as a review signal: if `skills.json` does not match the current Git checkout, the PR fails until the generated registry is updated.
+The first CI workflow lives at `.github/workflows/skills-charter.yml`. It treats registry drift as a review signal: if `skills.json` does not match the current Git checkout, the PR fails until the generated registry is updated.
 
 ## 3. Data Model
 
 Use these conceptual types in the core package and manager state.
 
 ```ts
-type SkillFileKind = "entrypoint" | "supporting" | "script" | "asset";
+type SkillFileKind = "entrypoint" | "supporting" | "script" | "asset" | "evidence";
 
 interface SkillFile {
   path: string;
@@ -113,8 +113,16 @@ interface SkillFrontmatter {
   category?: string;
   version?: string;
   owner?: string;
-  review_status?: "draft" | "review" | "approved";
+  review_status?: "candidate" | "in_review" | "approved" | "rejected" | "deprecated" | "retired";
+  source_type?: "manual" | "public_import" | "generated" | "evolved" | "template";
   source_url?: string;
+  source_commit?: string;
+  imported_at?: string;
+  imported_by?: string;
+  generator?: string;
+  upstream?: string;
+  approved_by?: string;
+  approved_at?: string;
   license?: string;
 }
 
@@ -148,6 +156,10 @@ skills/<name>/
   examples/
   scripts/
   assets/
+  evals/
+  reports/
+  review-notes/
+  trigger-samples/
 ```
 
 Rules:
@@ -155,7 +167,8 @@ Rules:
 - `SKILL.md` is required and is the entrypoint.
 - Supporting files remain part of the installable package.
 - `scripts/` files are allowed but always increase review risk.
-- Governance-only files belong outside `skills/<name>/`.
+- Review evidence can live inside `skills/<name>/evals`, `reports`, `review-notes`, or `trigger-samples` so it travels with the package history.
+- Repository-wide governance files belong outside `skills/<name>/`.
 - The manager should preserve unknown files instead of deleting or rewriting them.
 
 ## 5. Metadata Rules
@@ -174,12 +187,18 @@ MVP optional fields:
 - `owner`
 - `review_status`
 - `source_url`
+- `source_type`
+- `source_commit`
+- `generator`
+- `upstream`
+- `approved_by`
+- `approved_at`
 - `license`
 
 UI policy:
 
 - Show `name` and `description` as required.
-- Show `category`, `version`, `owner`, and `review_status` as optional default fields.
+- Show `category`, `version`, `owner`, `review_status`, `source_type`, `source_url`, `generator`, and `approved_by` as optional default fields.
 - Do not promote `license` in the main form unless the team is preparing public distribution.
 - Edits in the form rewrite frontmatter.
 - Edits in `SKILL.md` update the form.
@@ -194,7 +213,8 @@ description: Use this skill when the user needs a clear, repeatable workflow for
 category: workflow
 version: 0.1.0
 owner:
-review_status: draft
+review_status: candidate
+source_type: manual
 ---
 
 # new-skill
@@ -211,6 +231,10 @@ Use this skill when the user needs help with...
 ## Notes
 
 Add references, templates, examples, scripts, or assets as separate files when the skill grows beyond this entrypoint.
+
+## Evidence
+
+Add review notes, evals, reports, or trigger samples before promoting this package to approved.
 ```
 
 ## 6. Manager UI Contract
@@ -330,8 +354,12 @@ MVP browser checks:
 - `name` exists.
 - `description` exists and is long enough to be useful.
 - Every package file stays under `skills/<name>/`.
-- Scripts trigger a warning.
-- Editing a supporting file shows contextual guidance, but does not change package risk.
+- Review status and source type are known lifecycle values.
+- Approved packages have an owner.
+- Public, generated, or evolved packages should include provenance.
+- Approved public, generated, or evolved packages should include evidence.
+- Scripts, suspicious commands, assets, dependency manifests, external URLs, and possible secrets raise review signals.
+- Editing a supporting file shows contextual guidance, but package risk comes from the whole package scan.
 
 Risk mapping:
 
@@ -352,7 +380,7 @@ Future CI checks:
 
 ## 9. Install Contract
 
-SkillDocs delegates installation to `npx skills`.
+Skills Charter delegates installation to `npx skills`.
 
 Generated commands should follow this shape:
 
@@ -361,6 +389,8 @@ npx skills add owner/repo --skill skill-name -g -a codex
 npx skills add owner/repo --skill skill-name -g -a claude-code
 npx skills add owner/repo --skill skill-name -g -a antigravity
 ```
+
+Install snippets are generated only when a package is `approved` and has no high-risk lint failures. Candidate, rejected, deprecated, or retired packages remain visible in the registry, but are not installable by default.
 
 For local imported or cloned repos:
 
@@ -381,8 +411,8 @@ npm run check
 npm run smoke:npx-list
 node --check docs/assets/site.js
 git diff --check -- docs/index.html docs/assets/site.css docs/assets/site.js docs/manager-semantics.md docs/development.md README.md PLAN.md package.json tsconfig.base.json packages
-npx playwright screenshot --viewport-size=1440,960 http://127.0.0.1:4173/ %TEMP%/skilldocs-desktop.png
-npx playwright screenshot --viewport-size=390,1200 http://127.0.0.1:4173/ %TEMP%/skilldocs-mobile.png
+npx playwright screenshot --viewport-size=1440,960 http://127.0.0.1:4173/ %TEMP%/skills-charter-desktop.png
+npx playwright screenshot --viewport-size=390,1200 http://127.0.0.1:4173/ %TEMP%/skills-charter-mobile.png
 ```
 
 Real-repo smoke target:
@@ -420,14 +450,14 @@ Production MVP should add:
 
 ### Milestone 3: Registry And CLI
 
-- Initialize a skill library. Initial `skilldocs init` command exists.
-- Create a new skill package. Initial `skilldocs new <name>` command exists.
+- Initialize a skill library. Initial `skills-charter init` command exists.
+- Create a new skill package. Initial `skills-charter new <name>` command exists.
 - Generate `skills.json`. Initial generator exists in `packages/core/src/registry.ts`.
 - Fix the v0 registry contract. Initial schema lives in `schemas/skills-registry.v0.json`.
-- Check registry drift in CI. Initial workflow lives in `.github/workflows/skilldocs.yml`.
+- Check registry drift in CI. Initial workflow lives in `.github/workflows/skills-charter.yml`.
 - Generate install snippets. Initial generator exists in `packages/core/src/install-snippets.ts`.
-- Add `skilldocs lint`. Initial CLI command exists.
-- Add `skilldocs doctor`. Initial CLI command exists.
+- Add `skills-charter lint`. Initial CLI command exists.
+- Add `skills-charter doctor`. Initial CLI command exists.
 
 ### Milestone 4: GitHub Write Flow
 

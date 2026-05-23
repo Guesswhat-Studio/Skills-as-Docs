@@ -6,7 +6,7 @@ import path from "node:path";
 
 const root = process.cwd();
 const cli = path.join(root, "packages", "cli", "dist", "index.js");
-const tmp = mkdtempSync(path.join(tmpdir(), "skilldocs-onboarding-"));
+const tmp = mkdtempSync(path.join(tmpdir(), "skills-charter-onboarding-"));
 
 function run(args, options = {}) {
   return execFileSync(process.execPath, [cli, ...args], {
@@ -28,7 +28,9 @@ try {
     "--category",
     "research",
     "--owner",
-    "@research"
+    "@research",
+    "--review-status",
+    "approved"
   ]);
 
   const scan = JSON.parse(run(["scan", "--root", tmp]));

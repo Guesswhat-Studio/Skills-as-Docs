@@ -1,6 +1,7 @@
-# Agent SkillDocs Project Plan
+# Skills Charter Project Plan
 
-Status: market-updated, naming-updated, and pages-manager-updated on 2026-05-18
+Status: market-updated, naming-updated, pages-manager-updated, and Phase 1-4 hardening started on 2026-05-20
+Latest research update: 2026-05-21, after reviewing verified skill catalogs, enterprise skills registries, runtime governance skills, and skill lifecycle research.
 
 ## 0. Current Decision
 
@@ -8,59 +9,98 @@ This project should be positioned as a paradigm and toolkit, not as a marketplac
 
 Core thesis:
 
-> Turn a Git repository into the trusted source of truth for Agent Skill packages, with a built-in GitHub Pages manager as the default human UI and optional docs-platform adapters for teams that already have one.
+> Skills Charter is the Git-native approval workflow for Agent Skill packages: issue a charter, attach evidence, enforce policy, and publish only approved installable packages.
+
+Lifecycle frame:
+
+```text
+Creation -> Evaluation -> Distribution -> Governance -> Runtime
+```
+
+Skills Charter owns the **Governance** layer: the trust decision between creation/evaluation/distribution inputs and runtime execution. The core object is a **Skill Charter**: the reviewable contract for provenance, ownership, evidence, policy, approval, install target, and runtime constraints.
 
 中文一句话：
 
-> Git 仓库是 Agent Skill package 的可信源，GitHub Pages 是默认管理界面；文档平台 adapter 是可选扩展，不是第一依赖。
+> Skills Charter 管的是 skill 进入团队运行记忆之前的 Git 审查与批准链路；它不是 marketplace、runtime gateway 或私有 registry。
 
 The market already has:
 
-- Agent Skills standards and client support.
-- Public skill marketplaces.
+- Creation: Agent Skills standards, client support, docs workflows, generators, and auto-evolution systems.
+- Evaluation: evals, benchmarks, trigger tests, scanners, and regression reports.
+- Distribution: public skill marketplaces, installers, verified catalogs, and private enterprise registries.
+- Runtime: permission gateways, allowlist governance systems, and agent-client loading paths.
 - Prompt management platforms.
 - AI-ready documentation platforms.
 - Feishu/Yuque/Notion/Obsidian-style knowledge workflows.
 
 The open gap is:
 
-> Teams do not yet have a simple, open, docs-native way to govern their own private skill libraries across humans, Git, and multiple agent clients.
+> Teams do not yet have a simple, open, docs-native pre-registry workflow for deciding which public, generated, or evolved skills become trusted team assets.
+
+2026-05-21 landscape update:
+
+- Use the five-layer lifecycle model: Creation, Evaluation, Distribution, Governance, Runtime.
+- NVIDIA Verified Agent Skills and JFrog's Agent Skills Registry validate the enterprise need for capability governance, scanning, signing, catalogs, access control, and audit trails.
+- SkillsVote validates lifecycle governance: skills should be proposed, evaluated, voted on, and promoted with evidence instead of silently mutating.
+- GitHub's `agent-governance` skill, MCPMarket governance tools, and allowlist/permission systems validate adjacent runtime governance, but they mostly control what agents may do after a skill is already in play.
+- Skills Charter should own the upstream workflow: candidate intake, provenance, evidence, policy-as-code, review gates, approved registry output, and exportable trust metadata.
 
 2026-05-18 product decision:
 
 - P0 should be a built-in GitHub Pages Skill Manager, not a GitBook-first adapter.
 - Adapters should become optional authoring/export templates for teams that prefer GitBook, VitePress, MkDocs, Obsidian, Feishu, or Yuque.
 - A skill is a Git-tracked package with `SKILL.md` as the required entrypoint, not merely one Markdown page.
-- Install and agent-directory placement should delegate to the existing `npx skills` ecosystem where possible. SkillDocs should be the review/manage/governance layer, not a competing universal installer.
+- Install and agent-directory placement should delegate to the existing `npx skills` ecosystem where possible. Skills Charter should be the review/manage/governance layer, not a competing universal installer.
+
+2026-05-20 implementation update:
+
+- Phase 1: make the registry approved-first. Candidate packages remain visible for review, but install snippets are generated only for approved packages without high-risk lint failures.
+- Phase 2: add risk scanner v1 across CLI and Pages. The scanner calls out scripts, suspicious commands, dependency manifests, assets, external URLs, possible secrets, missing owners, unknown lifecycle values, missing provenance, and missing evidence.
+- Phase 3: turn the Pages inspector into a review cockpit. It now shows lifecycle, provenance, evidence, review gate checks, and approval-gated install commands.
+- Phase 4: add adoption artifacts. The repository now includes a launch blog draft, team library template, minimal example library, and a flagship public-import-to-approved demo using `anthropics/skills` as the live source.
+- Demo thesis update: the primary demo should be a governance event, not a generic editor walkthrough. The strongest story is a research operations team importing Anthropic's public `skill-creator` as a candidate, reviewing scripts/assets/links/evidence in Git, then approving install snippets only after CI and PR review.
+- UI taxonomy update: the Pages manager header is split into product identity, workspace context, concept reference, workflow actions, and global utilities. The ambiguous `Clean` label has been replaced with `No local edits` / `无本地改动` and moved into workspace context, because it describes browser workspace state rather than an action.
+
+Current software diagnosis:
+
+- The strongest product wedge is not editing Markdown; it is making the candidate-to-approved workflow visible and repeatable.
+- The static Pages manager is enough for demonstrating the paradigm, but not enough for long-term maintainability. The next software step should be a typed React manager that shares the core package model directly.
+- Risk checks should stay conservative and explainable. We should avoid claiming full sandbox security; the product should make human review unavoidable for risky imports.
+- Templates and examples are as important as features because the main adoption problem is paradigm transfer, not raw capability.
 
 Public naming decision:
 
-- Project name: **Agent SkillDocs**
-- Short name: **SkillDocs**
-- CLI name: `skilldocs`
-- Paradigm name: **Skills-as-Docs**
-- Core loop name: **The SkillDocs Loop**
+- Project name: **Skills Charter**
+- Short name: **Skills Charter**
+- Single-skill governance object: **Skill Charter**
+- CLI name: `skills-charter`
+- Category name: **Agent Skill Governance**
+- Core loop name: **The Skills Charter Loop**
 
 Rationale:
 
-- "Agent SkillDocs" makes the idea legible at first glance: these are docs for agent skills.
-- "SkillDocs" is shorter and easier to remember than "Skills-as-Docs Kit".
-- "Skills-as-Docs" remains the paradigm and essay title, not necessarily the product name.
+- "Charter" carries the right governance metaphor: authorization, scope, accountability, and operating boundaries.
+- "Skills Charter" keeps the agent-skill domain legible without making "docs" the product promise.
+- The product name is **Skills Charter**; the artifact a team approves is a **Skill Charter**.
 - Avoid "SkillBook", "SkillFlow", "SkillOps", and "SkillPort" because those names are already crowded or too close to existing agent-skill projects.
 
 ## 1. One-Line Positioning
 
 English:
 
-> Manage skills like docs. Distribute them like code.
+> Every agent skill needs a charter before runtime.
+
+Sharper trust version:
+
+> Govern skills before they become team runtime memory.
 
 Chinese:
 
-> 像管理文档一样管理 Agent Skills，像分发代码一样分发给 AI agents。
+> 每个 Agent Skill 进入 runtime 之前，都需要一份团队批准的 charter。
 
 Expanded:
 
-> Agent SkillDocs is a Git-backed, Markdown-entrypoint workflow for turning team knowledge, SOPs, playbooks, and repeated AI instructions into installable Agent Skill packages.
+> Skills Charter is a Git-backed workflow for turning public, generated, and evolved Agent Skill candidates into reviewed, chartered, installable team packages.
 
 The project promotes a new Human + LLM collaboration model:
 
@@ -70,7 +110,7 @@ The project promotes a new Human + LLM collaboration model:
 
 ## 2. Paradigm Thesis
 
-`SKILL.md` is not just a prompt. It is procedural knowledge that can be governed like documentation and consumed like code.
+`SKILL.md` is not just a prompt. It is procedural knowledge that needs a charter before it becomes team runtime memory.
 
 The useful mental model:
 
@@ -86,7 +126,7 @@ Feishu/Yuque            registry manifest            other skill clients
 
 This creates a new category:
 
-> Operational docs for agents.
+> Agent Skill Governance.
 
 Or in Chinese:
 
@@ -125,7 +165,7 @@ Collision risk:
 
 Differentiation:
 
-- Agent SkillDocs sits above the client layer.
+- Skills Charter sits above the client layer.
 - It manages authoring, review, docs navigation, registry generation, and adapter output.
 - It should export to multiple agent-client conventions instead of competing with any one of them.
 
@@ -137,6 +177,8 @@ Examples:
 - SkillHQ.
 - skills.md.
 - skill.broker and other emerging public registries.
+- NVIDIA Verified Agent Skills.
+- JFrog Agent Skills Registry.
 
 What they solve:
 
@@ -144,6 +186,7 @@ What they solve:
 - Creator monetization.
 - One-command installation.
 - Hosted or remote execution for some skills.
+- Enterprise catalog governance: scanning, signing, access control, audit trails, and curated distribution.
 
 Collision risk:
 
@@ -155,7 +198,8 @@ Differentiation:
 
 - Focus on private/team-owned skills first.
 - Treat public marketplace integration as optional downstream distribution.
-- Make the core value governance and repeatability, not shopping for third-party skills.
+- Make the core value pre-registry governance and repeatability, not shopping for third-party skills.
+- Export trust metadata that verified catalogs and private registries can consume, rather than becoming a competing registry.
 
 ### 3.3 Prompt management platforms
 
@@ -183,7 +227,7 @@ Differentiation:
 
 - Do not call this a prompt manager.
 - Skills are filesystem packages and docs assets, not only runtime prompt templates.
-- Agent SkillDocs should emphasize SOPs, checklists, tool-use procedures, team conventions, and agent playbooks.
+- Skills Charter should emphasize SOPs, checklists, tool-use procedures, team conventions, and agent playbooks.
 - Evaluation can come later, but the first wedge is authoring and distribution through existing docs and Git workflows.
 
 ### 3.4 AI-ready documentation platforms
@@ -252,6 +296,53 @@ Implication for this project:
 - The first CLI should include linting, provenance, generated manifests, and review-friendly outputs.
 - Public marketplace support should remain downstream until the private/team workflow is credible.
 
+### 3.7 Agent skill lifecycle and adjacent systems
+
+The 2026 survey "A Comprehensive Survey on Agent Skills" is useful because it frames agent skills as reusable procedural artifacts that bridge the "procedural gap": tools expose capabilities, but do not specify when to invoke them, how to compose them, how to handle failures, or how to validate outputs.
+
+The survey's lifecycle model is:
+
+- **Representation**: how the skill is packaged, including the main instruction document, auxiliary resources, and applicability conditions.
+- **Acquisition**: where skills come from, including human expertise, agent experience, task demands, and external corpora.
+- **Retrieval and selection**: how agents find the right skill from a growing library.
+- **Evolution**: how skills are revised, validated, synchronized, deprecated, and governed after deployment.
+
+Our market-facing lifecycle model should be simpler and more actionable:
+
+```text
+Creation -> Evaluation -> Distribution -> Governance -> Runtime
+```
+
+This reinforces the Skills Charter wedge:
+
+> Skills Charter is the human governance layer for team-owned skill packages: it turns creation/evaluation/distribution inputs into trusted packages before runtime.
+
+Relevant adjacent systems:
+
+- **SkillNet**: search, install, auto-create, evaluate, and relate large public skill collections. It is close to npm-style discovery and quality scoring.
+- **AgentSkillOS**: capability-tree organization and DAG-based orchestration over large public skill pools.
+- **SkillRouter**: hosted discovery, validation, auth, execution, observability, and routing API for external skills.
+- **NVIDIA Verified Agent Skills**: enterprise-ready verified skill catalogs, with trust, validation, and capability-governance framing.
+- **JFrog Agent Skills Registry**: private enterprise skill registry with security scanning, signing, access control, and audit trails.
+- **Agent governance skills and allowlist systems**: runtime permission, tool, and policy controls after a skill is already available to an agent.
+- **Awesome-Agent-Skills**: research map and paper/resource index, useful for ongoing market tracking.
+
+Collision risk:
+
+- "Skill OS", "skill router", "skill marketplace", and "npm for AI capabilities" are already crowded narratives.
+- Competing directly on public skill count, hosted execution, or universal routing would dilute the project.
+- Competing directly with enterprise registries would make Skills Charter less open and less portable.
+
+Differentiation:
+
+- Lead with Git-backed private/team skill governance.
+- Make `SKILL.md` and package files visible, editable, diffable, lintable, and reviewable.
+- Treat evaluation outputs as evidence for governance, not as the whole trust decision.
+- Treat verified catalogs and private registries as distribution consumers for approved packages.
+- Treat runtime governance as complementary enforcement after install.
+- Treat retrieval/orchestration systems as downstream consumers of better-governed skill packages.
+- Borrow the lifecycle language, but own the practical workflow: branch, PR, CI, registry, install snippet, rollback.
+
 ## 4. Collision Avoidance
 
 Avoid these messages:
@@ -262,19 +353,23 @@ Avoid these messages:
 - "AI documentation generator."
 - "Universal Feishu/Yuque bidirectional sync."
 - "Hosted registry for all skills."
+- "Skill OS."
+- "Skill routing API."
+- "npm for AI capabilities."
 
 Use these messages instead:
 
+- "A Git-backed human governance layer for team Agent Skill packages."
 - "A docs-native management layer for team Agent Skills."
 - "Bring governance, review, and publishing workflows to `SKILL.md`."
 - "Use your existing documentation platform as the human UI for skills."
-- "Private skill libraries before public marketplaces."
+- "Governance between distribution and runtime."
 - "Plain Markdown entrypoint, installable skill packages out."
 - "Git is the trust and distribution layer."
 
 ## 5. Product Goal
 
-Build an open-source, Git-native manager that helps any team govern Agent Skill packages as reviewable operational docs.
+Build an open-source, Git-native manager that helps any team govern Agent Skill packages through reviewable Skill Charters.
 
 The default product surface is a static GitHub Pages Skill Manager backed by GitHub branches, pull requests, CI, and generated registries. Existing docs platforms remain useful as optional authoring or browsing adapters, but the first-party path should not depend on GitBook, VitePress, Feishu, Yuque, or any hosted docs vendor.
 
@@ -331,13 +426,13 @@ Most urgent user pain:
 - Adapters should be thin and replaceable.
 - Runtime package files must be separated from governance-only files such as tests, lint fixtures, and generated reports.
 - The library must be installable by current local agents through `npx skills add`, with generated install commands for Claude Code, Codex, Antigravity, and other supported targets.
-- SkillDocs must not maintain a competing full agent path registry unless the upstream `npx skills` registry is unavailable for a target.
+- Skills Charter must not maintain a competing full agent path registry unless the upstream `npx skills` registry is unavailable for a target.
 - Private team workflows come before public discovery.
 - Security and provenance are part of the MVP.
 
 ## 8. Canonical File Model
 
-A SkillDocs library is a collection of Git-tracked skill packages. `SKILL.md` is the required entrypoint, but the package may include references, templates, examples, scripts, and assets.
+A Skills Charter library is a collection of Git-tracked skill packages. `SKILL.md` is the required entrypoint, but the package may include references, templates, examples, scripts, and assets.
 
 Default directory structure:
 
@@ -393,16 +488,16 @@ Package boundary rule:
 
 Keep the user story split into two products:
 
-- SkillDocs manages, reviews, previews, and versions the canonical skill library.
+- Skills Charter manages, reviews, previews, and versions the canonical skill library.
 - `npx skills` installs approved skill packages into Claude Code, Codex, Antigravity, Cursor, OpenCode, GitHub Copilot, and other agent-specific directories.
 
 #### Flow A: Team publishes a managed skill library
 
 Use when a team wants one governed source of truth.
 
-1. Create or fork a SkillDocs repo.
+1. Create or fork a Skills Charter repo.
 2. Put runtime packages under `skills/<name>/`.
-3. Enable GitHub Pages and the SkillDocs GitHub Actions workflow.
+3. Enable GitHub Pages and the Skills Charter GitHub Actions workflow.
 4. Use the Pages Manager to browse, edit, lint, and open PRs.
 5. Merge approved PRs; CI regenerates `skills.json` and redeploys Pages.
 6. The Pages Manager shows copy-ready install commands for each skill and target agent.
@@ -438,8 +533,8 @@ This is the default consumption path. The user should not need to understand `.c
 Use when someone is actively maintaining the skill library.
 
 ```bash
-git clone https://github.com/org/team-skills.git ~/skilldocs/team-skills
-cd ~/skilldocs/team-skills
+git clone https://github.com/org/team-skills.git ~/skills-charter/team-skills
+cd ~/skills-charter/team-skills
 npx skills add . --skill literature-review -g -a claude-code -a codex
 ```
 
@@ -465,22 +560,22 @@ Use only when a repository root is exactly one skill package with `SKILL.md` at 
 git clone https://github.com/org/one-skill.git ~/.claude/skills/one-skill
 ```
 
-Do not use this for a multi-skill SkillDocs library.
+Do not use this for a multi-skill Skills Charter library.
 
 #### Rules Of Thumb
 
 - Default for users: install with `npx skills add`.
-- Default for maintainers: clone the SkillDocs repo outside agent directories, then install from the local path for testing.
-- Default for teams: keep SkillDocs as the governed source of truth; use PRs for changes.
+- Default for maintainers: clone the Skills Charter repo outside agent directories, then install from the local path for testing.
+- Default for teams: keep Skills Charter as the governed source of truth; use PRs for changes.
 - Default for product repos: copy/materialize only project-specific skills.
-- Never clone a full SkillDocs repo, including its `.git`, inside another repo's `.claude/skills`, `.agents/skills`, or similar agent directory.
+- Never clone a full Skills Charter repo, including its `.git`, inside another repo's `.claude/skills`, `.agents/skills`, or similar agent directory.
 
-SkillDocs manager implications:
+Skills Charter manager implications:
 
 - Each package page should show install commands generated from this flow.
 - The manager should surface `npx skills` agent names such as `claude-code`, `codex`, `antigravity`, `cursor`, and `opencode`.
-- `skilldocs doctor` may check whether `npx skills` is available and whether `npx skills add <repo> --list` can discover the expected packages.
-- SkillDocs should not replace `npx skills list`, `remove`, `update`, symlink/copy behavior, or the upstream agent path registry.
+- `skills-charter doctor` may check whether `npx skills` is available and whether `npx skills add <repo> --list` can discover the expected packages.
+- Skills Charter should not replace `npx skills list`, `remove`, `update`, symlink/copy behavior, or the upstream agent path registry.
 
 Recommended frontmatter:
 
@@ -526,7 +621,7 @@ Generate `skills.json` as the project-level inventory and package manifest:
 
 ```json
 {
-  "schema": "https://agent-skilldocs.dev/schemas/skills-registry.v0.json",
+  "schema": "https://skills-charter.dev/schemas/skills-registry.v0.json",
   "generated_at": "2026-05-18T00:00:00Z",
   "source": {
     "repo": "https://github.com/org/team-skills",
@@ -661,7 +756,7 @@ Authenticated PR flow:
 
 ```text
 1. Resolve default branch and latest commit SHA.
-2. Create branch skilldocs/<skill-name>-<timestamp>.
+2. Create branch skills-charter/<skill-name>-<timestamp>.
 3. Save edits to that branch.
 4. Regenerate skills.json client-side or ask CI to regenerate it.
 5. Open a draft PR with a generated review checklist.
@@ -769,51 +864,51 @@ Why React is still reasonable:
 
 Existing open-source projects to borrow from, not build on top of:
 
-- Decap CMS: borrow the editorial workflow pattern: save draft, create branch, open PR, update PR, merge through GitHub. Do not adopt the whole CMS unless SkillDocs becomes a generic content management product.
+- Decap CMS: borrow the editorial workflow pattern: save draft, create branch, open PR, update PR, merge through GitHub. Do not adopt the whole CMS unless Skills Charter becomes a generic content management product.
 - TinaCMS / TinaDocs: borrow the idea of Git-backed Markdown editing and field schemas. Avoid the full visual-editing and GraphQL stack for MVP.
-- Vercel `npx skills`: delegate installation, symlink/copy behavior, agent names, and agent path routing. SkillDocs should generate install snippets and validate repository compatibility, not reimplement the installer.
+- Vercel `npx skills`: delegate installation, symlink/copy behavior, agent names, and agent path routing. Skills Charter should generate install snippets and validate repository compatibility, not reimplement the installer.
 - GitHub web editor / github.dev: use as a fallback deep link when a user does not want to authenticate inside the Pages Manager.
 
-The SkillDocs-specific value is not the Markdown editor itself. It is the package-aware review surface: frontmatter validation, package file tree, script/asset risk labels, provenance, generated `skills.json`, install snippets, and PR workflow.
+The Skills Charter-specific value is not the Markdown editor itself. It is the package-aware review surface: frontmatter validation, package file tree, script/asset risk labels, provenance, generated `skills.json`, install snippets, and PR workflow.
 
 ## 11. CLI MVP
 
 Working CLI name candidates:
 
-- `skilldocs`
-- `agent-skilldocs`
-- `skills-as-docs`
+- `skills-charter`
+- `skills-charter`
+- `skills-charter`
 - `sadocs`
 
 Recommended default:
 
-> `skilldocs`
+> `skills-charter`
 
 MVP commands:
 
 ```bash
-skilldocs init
-skilldocs lint
-skilldocs generate registry
-skilldocs generate install-snippets
-skilldocs generate gitbook
-skilldocs generate vitepress
-skilldocs doctor
+skills-charter init
+skills-charter lint
+skills-charter generate registry
+skills-charter generate install-snippets
+skills-charter generate gitbook
+skills-charter generate vitepress
+skills-charter doctor
 ```
 
 Post-MVP commands:
 
 ```bash
-skilldocs generate mkdocs
-skilldocs generate obsidian
-skilldocs normalize feishu
-skilldocs normalize yuque
-skilldocs export claude
-skilldocs export codex
-skilldocs export cursor
+skills-charter generate mkdocs
+skills-charter generate obsidian
+skills-charter normalize feishu
+skills-charter normalize yuque
+skills-charter export claude
+skills-charter export codex
+skills-charter export cursor
 ```
 
-`skilldocs lint` should check:
+`skills-charter lint` should check:
 
 - Required frontmatter.
 - Valid skill folder naming.
@@ -825,7 +920,7 @@ skilldocs export cursor
 - Suspicious shell snippets or broad tool-use instructions.
 - Overly long `SKILL.md` files that should move content into references.
 
-`skilldocs doctor` should explain:
+`skills-charter doctor` should explain:
 
 - Which skills are installable.
 - Whether `npx skills` is available locally.
@@ -1014,7 +1109,7 @@ Recommended Chinese demos:
 
 - Write in Yuque.
 - Export through Elog or YuqueSync.
-- Run `skilldocs normalize yuque`.
+- Run `skills-charter normalize yuque`.
 - Generate installable skill repo.
 
 ### CODING + VitePress Skills Portal
@@ -1037,7 +1132,7 @@ Required public surfaces:
 - `docs/development.md`: MVP implementation contract for architecture, data model, UI behavior, GitHub boundaries, lint rules, testing, and milestones.
 - `docs/manager/`: the static GitHub Pages Skill Manager for browsing, previewing, linting, and proposing skill package edits.
 - `.github/workflows/pages.yml`: a static Pages deployment workflow.
-- `.github/workflows/skilldocs.yml`: build/test, package lint, registry drift, package health, and later security checks.
+- `.github/workflows/skills-charter.yml`: build/test, package lint, registry drift, package health, and later security checks.
 - `PLAN.md`: the deeper product, market, and implementation plan.
 - `schemas/`: the future home for `skills.json` and `SKILL.md` compatibility notes.
 - `examples/`: concrete team, research, personal, and China-specific skill libraries.
@@ -1067,7 +1162,7 @@ Future docs can keep the original thesis:
 Suggested new project structure:
 
 ```text
-agent-skilldocs/
+skills-charter/
   README.md
   LICENSE
   PLAN.md
@@ -1116,10 +1211,10 @@ agent-skilldocs/
 - Create repo.
 - Write README with paradigm positioning.
 - Define canonical skill package schema.
-- Implement `skilldocs lint`.
-- Implement `skilldocs generate registry`.
-- Implement `skilldocs generate install-snippets` using `npx skills add` commands.
-- Add basic `skilldocs doctor`.
+- Implement `skills-charter lint`.
+- Implement `skills-charter generate registry`.
+- Implement `skills-charter generate install-snippets` using `npx skills add` commands.
+- Add basic `skills-charter doctor`.
 - Port Vios Research Skills as flagship example.
 - Build read-only manager prototype: list skills, render `SKILL.md`, show package file tree from `skills.json`.
 
@@ -1145,8 +1240,8 @@ agent-skilldocs/
 
 - Prototype Feishu export workflow.
 - Prototype Yuque/Elog normalize workflow.
-- Add `skilldocs normalize feishu`.
-- Add `skilldocs normalize yuque`.
+- Add `skills-charter normalize feishu`.
+- Add `skills-charter normalize yuque`.
 - Write Chinese tutorial series.
 
 ## 17. Content Strategy
@@ -1154,11 +1249,11 @@ agent-skilldocs/
 ### English
 
 - "Your Docs Platform Is Already an Agent Skills Manager"
-- "Agent SkillDocs: Human-Readable, Agent-Executable Workflow Docs"
-- "Skills-as-Docs: Manage Skills Like Docs, Distribute Them Like Code"
+- "Skills Charter: Every Agent Skill Needs A Charter Before Runtime"
+- "Skills Charter: Govern Skills Before They Become Runtime Memory"
 - "Build a GitBook-backed Agent Skills Library"
 - "Build a VitePress Skill Portal for Your Team"
-- "Why Agent Skills Need Governance Before Marketplaces"
+- "Agent Skills Need Governance"
 
 ### Chinese
 
@@ -1194,7 +1289,7 @@ Early signals:
 
 Medium-term:
 
-- `skilldocs` used by external skills repos.
+- `skills-charter` used by external skills repos.
 - Community-contributed adapters.
 - GitBook, Mintlify, Feishu, or Yuque users asking for official integration.
 - Talks, blog invitations, or standards discussions around skill governance.
@@ -1247,7 +1342,7 @@ Mitigation:
 
 - Agent skill directory conventions differ across Claude Code, Codex, Antigravity, and future clients.
 - `npx skills` may change its supported agent table, source parsing, or install behavior.
-- Nested Git repositories can appear if users clone a SkillDocs repo directly into a project-local agent skills directory.
+- Nested Git repositories can appear if users clone a Skills Charter repo directly into a project-local agent skills directory.
 - Platform Markdown extensions may pollute `SKILL.md`.
 - Rich-text exports may lose important structure.
 - Generated navigation may diverge from source.
@@ -1261,7 +1356,7 @@ Mitigation:
 Mitigation:
 
 - Delegate install path mapping to `npx skills` where possible.
-- Keep SkillDocs focused on package validity, review, provenance, and generated install snippets.
+- Keep Skills Charter focused on package validity, review, provenance, and generated install snippets.
 - Add a compatibility check that verifies `npx skills add <repo> --list` can discover the expected packages.
 - Document global-first installs and per-project materialization; warn against nested `.git` in `.claude/skills` or `.agents/skills`.
 - Keep `SKILL.md` plain Markdown.
@@ -1291,7 +1386,7 @@ Mitigation:
 
 Release name:
 
-> Agent SkillDocs v0.1
+> Skills Charter v0.1
 
 Includes:
 
@@ -1312,11 +1407,11 @@ Includes:
 
 Launch message:
 
-> Agent SkillDocs turns a GitHub repo into a reviewable management layer for team Agent Skill packages, with optional docs adapters when your team already writes somewhere else.
+> Skills Charter turns a GitHub repo into a reviewable management layer for team Agent Skill packages, with optional docs adapters when your team already writes somewhere else.
 
 中文：
 
-> Agent SkillDocs 把 GitHub 仓库变成团队 Agent Skill package 的可审查管理层；如果你的团队已经在别的文档平台写作，也可以通过 adapter 接入。
+> Skills Charter 把 GitHub 仓库变成团队 Agent Skill package 的可审查管理层；如果你的团队已经在别的文档平台写作，也可以通过 adapter 接入。
 
 ## 22. Source Notes For Market Analysis
 
@@ -1342,6 +1437,11 @@ Useful external references checked on 2026-05-17 and 2026-05-18:
 - Agent Skills ecosystem analysis: https://arxiv.org/abs/2602.08004
 - Secure Agent Skills analysis: https://arxiv.org/abs/2604.02837
 - Semantic supply-chain attacks on SKILL.md registries: https://arxiv.org/abs/2605.11418
+- Comprehensive survey on Agent Skills: https://arxiv.org/html/2605.07358v1
+- Awesome Agent Skills resource hub: https://github.com/JayLZhou/Awesome-Agent-Skills
+- SkillNet: https://github.com/zjunlp/SkillNet
+- AgentSkillOS: https://ynulihao.github.io/AgentSkillOS/
+- SkillRouter: https://skillrouter.dev/
 - GitHub Pages site creation and static publishing: https://docs.github.com/pages/getting-started-with-github-pages/creating-a-github-pages-site
 - GitHub Pages custom workflows: https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages
 - GitHub REST Contents API: https://docs.github.com/en/rest/repos/contents

@@ -1,4 +1,4 @@
-name: SkillDocs CI
+name: Skills Charter CI
 
 on:
   pull_request:
@@ -30,8 +30,11 @@ jobs:
       - name: Build and test
         run: npm run check
 
-      - name: Lint skill packages
-        run: node packages/cli/dist/index.js lint --root .
+      - name: Enforce Skills Charter policy
+        run: node packages/cli/dist/index.js lint --root . --policy strict
 
       - name: Check skills registry drift
-        run: node packages/cli/dist/index.js generate registry --root . --source "$GITHUB_REPOSITORY" --out skills.json --check
+        run: node packages/cli/dist/index.js generate registry --root . --source "$GITHUB_REPOSITORY" --out skills.json --check --policy strict
+
+      - name: Smoke approved-only registry
+        run: node packages/cli/dist/index.js generate registry --root . --source "$GITHUB_REPOSITORY" --approved-only --out "$RUNNER_TEMP/skills.approved.json" --policy strict

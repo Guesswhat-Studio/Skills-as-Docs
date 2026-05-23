@@ -1,0 +1,8 @@
+{
+  "mode": "strict",
+  "failOnRisk": "high",
+  "requireOwner": "all",
+  "requireReviewStatus": true,
+  "requireProvenanceFor": ["public_import", "generated", "evolved"],
+  "requireEvidenceForApproved": ["public_import", "generated", "evolved"]
+}

@@ -1,3 +1,4 @@
+export * from "./approval.js";
 export * from "./frontmatter.js";
 export * from "./install-snippets.js";
 export * from "./lint.js";

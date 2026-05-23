@@ -2,7 +2,7 @@
 
 ## 0.1.0 Preview - 2026-05-18
 
-This is the first public preview of Agent SkillDocs.
+This is the first public preview of Skills Charter.
 
 ### Added
 

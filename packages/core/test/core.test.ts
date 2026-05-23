@@ -9,6 +9,7 @@ import {
   lintRepository,
   parseFrontmatter,
   scanSkillRepository,
+  shouldFailLint,
   setFrontmatterFields
 } from "../src/index.js";
 
@@ -30,7 +31,7 @@ test("parses CRLF frontmatter from Windows git checkouts", () => {
 });
 
 test("scans a git-style skills repository and lints package risk", async () => {
-  const root = await mkdtemp(path.join(tmpdir(), "skilldocs-core-"));
+  const root = await mkdtemp(path.join(tmpdir(), "skills-charter-core-"));
   try {
     await writeSkill(root, "literature-review", {
       skill: `---\nname: literature-review\ndescription: Use this skill when a user needs a structured literature review workflow with evidence extraction.\ncategory: research\nversion: 0.1.0\nreview_status: draft\n---\n\n# Literature Review\n`,
@@ -58,10 +59,10 @@ test("scans a git-style skills repository and lints package risk", async () => {
 });
 
 test("generates deterministic registry packages and npx skills commands", async () => {
-  const root = await mkdtemp(path.join(tmpdir(), "skilldocs-registry-"));
+  const root = await mkdtemp(path.join(tmpdir(), "skills-charter-registry-"));
   try {
     await writeSkill(root, "coding-standards", {
-      skill: `---\nname: coding-standards\ndescription: Use this skill when a user needs repository coding standards applied during implementation.\nowner: @platform\n---\n\n# Coding Standards\n`,
+      skill: `---\nname: coding-standards\ndescription: Use this skill when a user needs repository coding standards applied during implementation.\ncategory: coding/frontend\ntopics: review, standards\nowner: @platform\n---\n\n# Coding Standards\n`,
       files: {
         "templates/review.md": "# Review\n"
       }
@@ -74,12 +75,78 @@ test("generates deterministic registry packages and npx skills commands", async 
       installSource: "org/team-skills"
     });
 
-    assert.equal(registry.$schema, "https://agent-skilldocs.dev/schemas/skills-registry.v0.json");
-    assert.equal(registry.schema_version, "skilldocs.registry.v0");
+    assert.equal(registry.$schema, "https://skills-charter.dev/schemas/skills-registry.v0.json");
+    assert.equal(registry.schema_version, "skills-charter.registry.v0");
     assert.equal(registry.packages[0]?.name, "coding-standards");
+    assert.equal(registry.packages[0]?.category, "coding/frontend");
+    assert.equal(registry.packages[0]?.topics, "review, standards");
     assert.equal(registry.packages[0]?.risk, "low");
-    assert.equal(registry.packages[0]?.install?.[0], "npx skills add org/team-skills --skill coding-standards -g -a codex");
+    assert.equal(registry.packages[0]?.lifecycle, "candidate");
+    assert.equal(registry.packages[0]?.install, undefined);
     assert.equal(generateInstallCommand(".", "coding-standards", "antigravity"), "npx skills add . --skill coding-standards -g -a antigravity");
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("registry emits install commands only for approved packages without hard errors", async () => {
+  const root = await mkdtemp(path.join(tmpdir(), "skills-charter-approved-"));
+  try {
+    await writeSkill(root, "approved-review", {
+      skill: `---\nname: approved-review\ndescription: Use this skill when a user needs approved code review guidance for a repository.\nowner: @platform\nreview_status: approved\nsource_type: manual\n---\n\n# Approved Review\n`
+    });
+    await writeSkill(root, "candidate-review", {
+      skill: `---\nname: candidate-review\ndescription: Use this skill when a user needs candidate code review guidance for a repository.\nowner: @platform\nreview_status: candidate\nsource_type: generated\ngenerator: claude-skill-creator\n---\n\n# Candidate Review\n`
+    });
+    await writeSkill(root, "broken-approved", {
+      skill: `---\nname: broken-approved\ndescription: Use this skill when a user needs broken approved guidance for testing.\nreview_status: approved\nsource_type: manual\n---\n\n# Broken Approved\n`
+    });
+
+    const repo = await scanSkillRepository(root);
+    const registry = generateRegistry(repo.packages, {
+      generatedAt: "2026-05-18T00:00:00.000Z",
+      source: { repository: "org/team-skills" },
+      installSource: "org/team-skills"
+    });
+    const approvedOnlyRegistry = generateRegistry(repo.packages, {
+      generatedAt: "2026-05-18T00:00:00.000Z",
+      source: { repository: "org/team-skills" },
+      installSource: "org/team-skills",
+      approvedOnly: true
+    });
+
+    const approved = registry.packages.find((pkg) => pkg.name === "approved-review");
+    const candidate = registry.packages.find((pkg) => pkg.name === "candidate-review");
+    const broken = registry.packages.find((pkg) => pkg.name === "broken-approved");
+
+    assert.equal(approved?.install?.[0], "npx skills add org/team-skills --skill approved-review -g -a codex");
+    assert.equal(candidate?.install, undefined);
+    assert.equal(broken?.risk, "high");
+    assert.equal(broken?.install, undefined);
+    assert.deepEqual(approvedOnlyRegistry.packages.map((pkg) => pkg.name), ["approved-review"]);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("strict policy turns governance gaps into blocking lint", async () => {
+  const root = await mkdtemp(path.join(tmpdir(), "skills-charter-strict-"));
+  try {
+    await writeSkill(root, "public-approved", {
+      skill: `---\nname: public-approved\ndescription: Use this skill when a user needs approved public imported guidance for testing policy.\nowner: @platform\nreview_status: approved\nsource_type: public_import\nsource_url: https://github.com/example/skills/tree/main/skills/public-approved\n---\n\n# Public Approved\n`
+    });
+
+    const repo = await scanSkillRepository(root);
+    const advisory = lintRepository(repo);
+    const strict = lintRepository(repo, "strict");
+
+    assert.equal(advisory.risk, "medium");
+    assert.ok(advisory.issues.some((issue) => issue.id === "approval.evidence-recommended"));
+
+    assert.equal(strict.risk, "high");
+    assert.ok(strict.issues.some((issue) => issue.id === "approval.evidence-required" && issue.severity === "error"));
+    assert.equal(shouldFailLint(advisory), false);
+    assert.equal(shouldFailLint(strict, "strict"), true);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

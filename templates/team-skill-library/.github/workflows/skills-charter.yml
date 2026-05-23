@@ -1,0 +1,21 @@
+name: Skills Charter
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: node packages/cli/dist/index.js lint --root . --policy strict
+      - run: node packages/cli/dist/index.js generate registry --root . --source owner/team-skills --out skills.json --check --policy strict
+      - run: node packages/cli/dist/index.js generate registry --root . --source owner/team-skills --approved-only --out "$RUNNER_TEMP/skills.approved.json" --policy strict
