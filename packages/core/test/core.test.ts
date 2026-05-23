@@ -58,6 +58,27 @@ test("scans a git-style skills repository and lints package risk", async () => {
   }
 });
 
+test("normalizes text file sizes across CRLF working trees", async () => {
+  const root = await mkdtemp(path.join(tmpdir(), "skills-charter-crlf-size-"));
+  try {
+    await writeSkill(root, "windows-checkout", {
+      skill: "---\r\nname: windows-checkout\r\ndescription: Use this skill when testing registry file sizes from Windows checkouts.\r\n---\r\n\r\n# Windows Checkout\r\n",
+      files: {
+        "references/notes.md": "# Notes\r\n\r\nLine two\r\n"
+      }
+    });
+
+    const repo = await scanSkillRepository(root);
+    const entrypoint = repo.packages[0]?.files.find((file) => file.path.endsWith("/SKILL.md"));
+    const notes = repo.packages[0]?.files.find((file) => file.path.endsWith("/references/notes.md"));
+
+    assert.equal(entrypoint?.size, Buffer.byteLength(entrypoint.content?.replace(/\r\n/g, "\n") ?? "", "utf8"));
+    assert.equal(notes?.size, Buffer.byteLength("# Notes\n\nLine two\n", "utf8"));
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 test("generates deterministic registry packages and npx skills commands", async () => {
   const root = await mkdtemp(path.join(tmpdir(), "skills-charter-registry-"));
   try {

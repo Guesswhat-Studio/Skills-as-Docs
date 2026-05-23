@@ -70,13 +70,14 @@ async function collectPackageFiles(rootDir: string, packageRootAbs: string): Pro
     const stat = await fs.stat(absolutePath);
     if (!stat.isFile()) return;
     const repoPath = toRepoPath(path.relative(rootDir, absolutePath));
+    const metadata = await readFileMetadata(absolutePath, repoPath, stat.size);
     files.push({
       path: repoPath,
       absolutePath,
       kind: detectFileKind(repoPath),
-      size: stat.size,
+      size: metadata.size,
       changed: false,
-      content: await readTextIfSafe(absolutePath, repoPath, stat.size)
+      content: metadata.content
     });
   });
   return files.sort((a, b) => {
@@ -86,18 +87,22 @@ async function collectPackageFiles(rootDir: string, packageRootAbs: string): Pro
   });
 }
 
-async function readTextIfSafe(absolutePath: string, repoPath: string, size: number): Promise<string | undefined> {
-  if (size > 256 * 1024) return undefined;
-  if (isLikelyBinary(repoPath)) return undefined;
+async function readFileMetadata(absolutePath: string, repoPath: string, size: number): Promise<{ size: number; content?: string }> {
+  if (isLikelyBinary(repoPath)) return { size };
   try {
-    return await fs.readFile(absolutePath, "utf8");
+    const content = await fs.readFile(absolutePath, "utf8");
+    const normalizedSize = Buffer.byteLength(content.replace(/\r\n/g, "\n"), "utf8");
+    return {
+      size: normalizedSize,
+      content: size > 256 * 1024 ? undefined : content
+    };
   } catch {
-    return undefined;
+    return { size };
   }
 }
 
 function isLikelyBinary(repoPath: string): boolean {
-  return /\.(png|jpe?g|gif|webp|pdf|xlsx?|pptx?|docx?|zip|gz|tar|ico)$/i.test(repoPath);
+  return /\.(png|jpe?g|gif|webp|pdf|xlsx?|pptx?|docx?|zip|gz|tar|ico|ttf|otf|woff2?)$/i.test(repoPath);
 }
 
 async function walk(dir: string, visit: (absolutePath: string) => Promise<void>): Promise<void> {
