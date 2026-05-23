@@ -1652,6 +1652,12 @@ input:focus-visible {
   font-size: 14px;
 }
 
+.zen-toolbar-button.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
 .app.zen-mode .editor-main.zen-active .editor-toolbar {
   padding-right: 118px;
 }
@@ -1672,7 +1678,7 @@ input:focus-visible {
   border-right: 1px solid var(--line);
   background: var(--surface-2);
   color: var(--faint);
-  font-family: var(--font-mono);
+  font-family: var(--editor-font-family, var(--font-mono));
   font-size: 12px;
   line-height: 1.65;
   text-align: right;
@@ -1688,7 +1694,7 @@ input:focus-visible {
   resize: none;
   background: var(--surface);
   color: var(--text);
-  font-family: var(--font-mono);
+  font-family: var(--editor-font-family, var(--font-mono));
   font-size: var(--editor-font-size, 13px);
   line-height: 1.65;
 }
@@ -1726,7 +1732,7 @@ input:focus-visible {
 
 .code-preview,
 .diff-view {
-  font-family: var(--font-mono);
+  font-family: var(--editor-font-family, var(--font-mono));
   font-size: var(--editor-font-size, 13px);
   line-height: 1.65;
 }

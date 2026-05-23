@@ -53,9 +53,9 @@ No user/account chip is shown in the top bar until Skills Charter has authentica
 | package rows | active | Selects the package. |
 | file rows | active | Selects the file. |
 | package search | active | Filters the Skill package list by name, category, path, owner, or source. |
-| `Package/Edit/Preview/Diff/Zen` tabs | active | Switches the editor mode; Zen forces the text editor into focus. |
+| `Package/Edit/Preview/Diff` tabs | active | Switches the editor mode. |
 | package rail toggle | active | Collapses or expands the skill package/file rail so the editor has more horizontal room. |
-| `Zen` | active | Full-screens only the central text editor surface and exposes an `Exit Zen` control. |
+| Zen icon | active | Lives beside `Preview` and `Diff` in the text editor toolbar; full-screens only the central text editor surface and exposes an `Exit Zen` control. |
 | `Run policy` | active | Recomputes browser-side package findings and risk from current package metadata and files. |
 | `Review` | active | Navigates to Review. |
 | `New file` | active | Adds a browser-local file to the selected package. |
@@ -63,7 +63,8 @@ No user/account chip is shown in the top bar until Skills Charter has authentica
 | `Delete` | active | Deletes the selected browser-local file after confirmation. |
 | `New skill` | active | Creates a new browser-local candidate package. |
 | `Delete skill` | active | Deletes the selected browser-local package after confirmation. |
-| font size slider | moved | Lives in Settings and changes editor, preview, and diff font scale. |
+| editor font size | active | Lives in Settings as a numeric text field and changes editor, preview, and diff font size. |
+| editor font | active | Lives in Settings as a monospace font picker and changes editor, code preview, and diff font family. |
 
 ## Pull Requests
 

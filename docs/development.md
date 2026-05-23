@@ -285,7 +285,6 @@ Editor tabs:
 - Edit
 - Preview
 - Diff
-- Zen
 
 Rules:
 
@@ -293,7 +292,8 @@ Rules:
 - Code-like files show highlighted code preview.
 - Diff preview is local/staged until authenticated GitHub write support exists.
 - The package/file rail can collapse independently and includes a package search field for quick selection.
-- Zen mode lives with the editor tabs and full-screens only the text editor surface.
+- Zen mode lives in the text editor toolbar beside Preview and Diff, and full-screens only the text editor surface.
+- Settings controls editor font size with a numeric field and editor font with a monospace picker.
 
 ### Inspector
 
