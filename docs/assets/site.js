@@ -582,6 +582,124 @@ function markChanged(path, add = "+0", del = "-0") {
   seed.metrics.changed = seed.changedFiles.length;
 }
 
+function approvalBlockers(pkg) {
+  const hasSkill = pkg.files.some((file) => file.path.endsWith("/SKILL.md") || file.path.endsWith("SKILL.md"));
+  const blockers = [];
+  if (!hasSkill) blockers.push("missing SKILL.md");
+  if (!pkg.owner) blockers.push("missing owner");
+  if (!pkg.source) blockers.push("missing provenance");
+  if (pkg.risk === "high") blockers.push("high-risk finding");
+  return blockers;
+}
+
+function approvalEvidencePath(pkg) {
+  return `${pkg.path || `skills/${pkg.name}`}/review-notes/approval.md`;
+}
+
+function approvalNote(pkg) {
+  const scriptFiles = pkg.files.filter((file) => file.kind === "script");
+  const source = pkg.source || pkg.provenance?.source_url || "browser-local";
+  return `# ${pkg.name} Approval
+
+## Source
+
+- Repository: ${source}
+- Import mode: ${pkg.sourceType || "managed_repo"}
+
+## Review Decision
+
+Approved for governed use through Skills Charter. This package is exposed only through the approved registry and install snippets are generated after policy passes.
+
+## Script Review
+
+${scriptFiles.length ? `Reviewed ${scriptFiles.length} executable file${scriptFiles.length === 1 ? "" : "s"} as part of this approval decision.` : "No executable scripts were found in this package."}
+
+## Evidence
+
+Owner, provenance, package files, risk findings, and registry readiness were reviewed in the Skills Charter browser-local workflow.
+`;
+}
+
+async function loadFileContent(file) {
+  if (!file || typeof file.content === "string" || file.loading || file.loadError) return;
+  file.loading = true;
+  try {
+    const sourceUrl = file.rawUrl || rawFileUrl(file.path);
+    const response = await fetch(`${sourceUrl}?ts=${Date.now()}`, { cache: "no-store" });
+    if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+    const text = await response.text();
+    file.content = text;
+    file.original = text;
+  } catch (error) {
+    file.loadError = error.message || String(error);
+  } finally {
+    file.loading = false;
+  }
+}
+
+async function patchSkillFrontmatter(pkg, patch) {
+  const file = entrypointFile(pkg);
+  await loadFileContent(file);
+  if (typeof file.content !== "string") {
+    throw new Error(file.loadError ? `Could not load ${file.path}: ${file.loadError}` : `Could not load ${file.path}`);
+  }
+  const existing = file.content;
+  const meta = parseFrontmatter(existing);
+  const body = bodyWithoutFrontmatter(existing);
+  file.content = serializeFrontmatter({ ...meta, ...patch }, body);
+  markChanged(file.path, "+metadata", "-metadata");
+}
+
+async function approveCurrentPackage() {
+  const pkg = currentPackage();
+  const blockers = approvalBlockers(pkg);
+  if (blockers.length) {
+    showToast(`Cannot approve yet: ${blockers.join(", ")}.`);
+    return;
+  }
+
+  const evidencePath = approvalEvidencePath(pkg);
+  try {
+    await patchSkillFrontmatter(pkg, {
+      owner: pkg.owner,
+      review_status: "approved",
+      evidence: evidencePath,
+      approved_by: "@platform",
+      approved_at: new Date().toISOString().slice(0, 10)
+    });
+  } catch (error) {
+    showToast(`Approval failed: ${error.message || error}`);
+    render();
+    return;
+  }
+
+  if (!pkg.files.some((file) => file.path === evidencePath)) {
+    pkg.files.push({
+      path: evidencePath,
+      kind: "evidence",
+      content: approvalNote(pkg),
+      original: ""
+    });
+    pkg.files.sort((a, b) => a.path.localeCompare(b.path));
+    markChanged(evidencePath, "+approval", "-0");
+  }
+
+  pkg.status = "approved";
+  pkg.lane = "ready";
+  pkg.evidence = evidencePath;
+  pkg.evidencePaths = [evidencePath];
+  pkg.reviewers = uniqueList([...pkg.reviewers, "@platform", "@security"]);
+  pkg.install = true;
+
+  const assessed = assessPackage(pkg.files);
+  pkg.risk = assessed.risk;
+  pkg.findings = assessed.findings;
+  seed.activity.unshift(["approve", `${pkg.name} approved with script review evidence`, "just now", "browser-local"]);
+  refreshDerivedState();
+  showToast(`${pkg.name} approved. Scripts are now covered by the package decision.`);
+  render();
+}
+
 function upsertPackage(pkg, reason) {
   const existingIndex = seed.packages.findIndex((item) => item.id === pkg.id);
   if (existingIndex >= 0) {
@@ -1144,6 +1262,11 @@ function policyChecks(pkg) {
   const noHighRisk = pkg.risk !== "high";
   const scriptFiles = pkg.files.filter((file) => file.kind === "script");
   const scriptsReviewed = scriptFiles.length === 0 || pkg.status === "approved" || pkg.reviewers.length > 1;
+  const scriptDetail = scriptFiles.length
+    ? scriptsReviewed
+      ? `${scriptFiles.length} executable file(s) covered by the package decision.`
+      : `${scriptFiles.length} executable file(s) found. Review them, then approve the package.`
+    : "No executable scripts found.";
 
   return [
     ["SKILL.md entrypoint", hasSkill, "Required manifest and instructions exist."],
@@ -1151,7 +1274,7 @@ function policyChecks(pkg) {
     ["Provenance captured", Boolean(pkg.source), "Public and local sources must remain visible."],
     ["Evidence attached", hasEvidence, "External packages need review notes before install."],
     ["No high-risk findings", noHighRisk, "High-risk findings block registry exposure."],
-    ["Scripts reviewed", scriptsReviewed, scriptFiles.length ? `${scriptFiles.length} executable file(s) found.` : "No executable scripts found."]
+    ["Scripts reviewed", scriptsReviewed, scriptDetail]
   ];
 }
 
@@ -1542,6 +1665,13 @@ function renderCaseStudy(pkg) {
 function renderReview() {
   const pkg = currentPackage();
   const canInstall = packageIsInstallable(pkg);
+  const blockers = approvalBlockers(pkg);
+  const canApprove = !canInstall && blockers.length === 0;
+  const decisionText = canInstall
+    ? "This package can be written to the approved registry and installed downstream."
+    : canApprove
+      ? "Policy prerequisites are ready. Approve the package to record script review evidence and expose the install snippet."
+      : `Approval is blocked by ${blockers.join(", ")}. Resolve those findings before exposing install snippets.`;
   return `${pageHead(t("review.title"), t("review.subtitle"))}
     <div class="view-layout three-column">
       <section class="card">
@@ -1567,8 +1697,9 @@ function renderReview() {
       <section class="card">
         <div class="card-head"><h2 class="card-title">Decision</h2>${canInstall ? statusChip("approved") : statusChip("blocked")}</div>
         <div class="panel-body">
-          <p class="page-subtitle">${canInstall ? "This package can be written to the approved registry and installed downstream." : "Approval is blocked. Resolve policy findings, owner, provenance, or evidence before exposing install snippets."}</p>
+          <p class="page-subtitle">${esc(decisionText)}</p>
           <div class="chip-row">
+            ${!canInstall ? `<button type="button" class="button primary" data-action="approve-package">Approve package</button>` : ""}
             <button type="button" class="button subtle" data-action="route" data-route="editor">Open editor</button>
             <button type="button" class="button subtle" data-action="run-checks">${t("action.runPolicy")}</button>
             <button type="button" class="button ${canInstall ? "primary" : "subtle"}" data-action="route" data-route="registry">Registry</button>
@@ -1649,6 +1780,7 @@ function renderEditorWorkspace() {
         <div class="card-head"><h2 class="card-title">Governance</h2>${statusChip(pkg.status)}</div>
         <div class="panel-body">
           <div class="crud-toolbar">
+            ${!packageIsInstallable(pkg) ? `<button type="button" class="button primary" data-action="approve-package">Approve package</button>` : ""}
             <button type="button" class="button subtle" data-action="new-candidate">New skill</button>
             <button type="button" class="button danger" data-action="delete-skill">Delete skill</button>
           </div>
@@ -1696,22 +1828,10 @@ function fileText(file) {
 async function hydrateCurrentFile() {
   if (state.route !== "editor") return;
   const file = currentFile();
-  if (!file.path || typeof file.content === "string" || file.loading || file.loadError) return;
-
-  file.loading = true;
-  try {
-    const sourceUrl = file.rawUrl || rawFileUrl(file.path);
-    const response = await fetch(`${sourceUrl}?ts=${Date.now()}`, { cache: "no-store" });
-    if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
-    const text = await response.text();
-    file.content = text;
-    file.original = text;
-  } catch (error) {
-    file.loadError = error.message || String(error);
-  } finally {
-    file.loading = false;
-    render();
-  }
+  if (!file.path) return;
+  const wasPending = typeof file.content !== "string" && !file.loading && !file.loadError;
+  await loadFileContent(file);
+  if (wasPending) render();
 }
 
 function renderEditor(file) {
@@ -2168,6 +2288,11 @@ document.addEventListener("click", async (event) => {
   if (action === "run-checks") {
     refreshDerivedState(state.dataStatus === "browser-local" ? "browser-local" : state.dataSource);
     showToast(t("toast.checks"));
+    return;
+  }
+
+  if (action === "approve-package") {
+    await approveCurrentPackage();
     return;
   }
 
